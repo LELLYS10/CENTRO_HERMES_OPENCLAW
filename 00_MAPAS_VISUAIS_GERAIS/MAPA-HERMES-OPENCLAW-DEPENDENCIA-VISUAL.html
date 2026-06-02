@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hermes + OpenClaw em Dependência Mútua</title>
+  <style>
+    :root {
+      --bg: #07111d;
+      --panel: rgba(11, 21, 38, .94);
+      --panel-soft: rgba(255,255,255,.05);
+      --text: #f4f8fb;
+      --muted: #a9bfd4;
+      --cyan: #2ad4ff;
+      --green: #2fdf84;
+      --amber: #ffbf45;
+      --red: #ff7474;
+      --blue: #548fff;
+      --violet: #8a7cff;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(42,212,255,.15), transparent 20%),
+        radial-gradient(circle at 80% 15%, rgba(138,124,255,.16), transparent 22%),
+        radial-gradient(circle at 52% 88%, rgba(47,223,132,.12), transparent 18%),
+        linear-gradient(180deg, #040a13, #091524 48%, #0c1a2b 100%);
+      overflow-x: auto;
+    }
+
+    .page {
+      min-width: 1760px;
+      padding: 28px 28px 56px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .hero span {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(42,212,255,.12);
+      border: 1px solid rgba(42,212,255,.24);
+      color: #9ce8ff;
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      margin: 16px 0 10px;
+      font-size: 50px;
+      line-height: 1.02;
+      letter-spacing: -.04em;
+    }
+
+    .hero p {
+      max-width: 1040px;
+      margin: 0 auto;
+      color: #dce8f3;
+      font-size: 17px;
+      line-height: 1.65;
+    }
+
+    .map {
+      position: relative;
+      width: 1680px;
+      height: 1160px;
+      margin: 0 auto;
+      border-radius: 40px;
+      border: 1px solid rgba(255,255,255,.08);
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)),
+        rgba(8, 16, 29, .88);
+      box-shadow: 0 30px 80px rgba(0,0,0,.32);
+    }
+
+    .map::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,.05) 1px, transparent 1px);
+      background-size: 24px 24px;
+      opacity: .18;
+      pointer-events: none;
+    }
+
+    svg.lines {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .node {
+      position: absolute;
+      border-radius: 30px;
+      padding: 18px;
+      background:
+        linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.02)),
+        rgba(13, 24, 42, .96);
+      border: 1px solid rgba(255,255,255,.09);
+      box-shadow: 0 16px 34px rgba(0,0,0,.24);
+    }
+
+    .node::after {
+      content: "";
+      position: absolute;
+      right: -24px;
+      bottom: -24px;
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,.12), transparent 60%);
+      pointer-events: none;
+    }
+
+    .node .head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .node .head img {
+      width: 46px;
+      height: 46px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,.22));
+      border-radius: 14px;
+      background: rgba(255,255,255,.02);
+    }
+
+    .node .head h2,
+    .node .head h3 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -.03em;
+    }
+
+    .node p {
+      margin: 0;
+      color: #d8e4f1;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .chips span {
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: #edf4fb;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .core {
+      width: 360px;
+      min-height: 295px;
+      top: 375px;
+      z-index: 5;
+    }
+
+    .hermes {
+      left: 250px;
+      background:
+        linear-gradient(160deg, rgba(84,143,255,.24), rgba(42,212,255,.08)),
+        rgba(13, 24, 42, .97);
+    }
+
+    .openclaw {
+      right: 250px;
+      background:
+        linear-gradient(160deg, rgba(47,223,132,.22), rgba(138,124,255,.08)),
+        rgba(13, 24, 42, .97);
+    }
+
+    .core .big {
+      width: 78px;
+      height: 78px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .core .big img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .core h2 {
+      margin: 0 0 10px;
+      font-size: 32px;
+      letter-spacing: -.04em;
+    }
+
+    .core .function {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      font-size: 13px;
+      color: #e6f0fa;
+      line-height: 1.5;
+    }
+
+    .center {
+      width: 330px;
+      min-height: 250px;
+      left: 50%;
+      top: 472px;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 4;
+      background:
+        linear-gradient(160deg, rgba(255,191,69,.2), rgba(255,112,112,.08)),
+        rgba(24, 18, 28, .98);
+    }
+
+    .center .brand {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 14px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      overflow: hidden;
+    }
+
+    .center .brand img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .center h2 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      letter-spacing: -.04em;
+    }
+
+    .center p {
+      max-width: 240px;
+      margin: 0 auto;
+      color: #e3ecf5;
+    }
+
+    .dep {
+      position: absolute;
+      left: 50%;
+      top: 320px;
+      transform: translateX(-50%);
+      width: 520px;
+      padding: 16px 18px;
+      border-radius: 22px;
+      background: linear-gradient(90deg, rgba(42,212,255,.12), rgba(47,223,132,.12));
+      border: 1px solid rgba(255,255,255,.08);
+      text-align: center;
+      z-index: 6;
+      box-shadow: 0 16px 34px rgba(0,0,0,.22);
+      font-size: 15px;
+      line-height: 1.5;
+      color: #e8f4fe;
+    }
+
+    .top-left { width: 260px; left: 70px; top: 90px; }
+    .top-center { width: 260px; left: 50%; top: 70px; transform: translateX(-50%); }
+    .top-right { width: 260px; right: 70px; top: 90px; }
+
+    .mid-left { width: 270px; left: 80px; top: 740px; }
+    .mid-right { width: 270px; right: 80px; top: 740px; }
+
+    .bottom-left { width: 270px; left: 150px; bottom: 100px; }
+    .bottom-center { width: 270px; left: 50%; bottom: 70px; transform: translateX(-50%); }
+    .bottom-right { width: 270px; right: 150px; bottom: 100px; }
+
+    .legend {
+      margin: 24px auto 0;
+      width: 1680px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+    }
+
+    .legend-card {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+    }
+
+    .legend-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .legend-card span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <span>Dependência Mútua</span>
+      <h1>Hermes e OpenClaw Precisando Um do Outro</h1>
+      <p>Esse mapa mostra o cenário mais forte do seu projeto: Hermes e OpenClaw trabalhando juntos, um fortalecendo o outro. O Hermes segura inteligência, memória e adaptação. O OpenClaw segura operação, agentes e execução. O CredPlus continua no centro, com WhatsApp e Telegram como canais, Composio como ponte e n8n como costura.</p>
+    </div>
+
+    <section class="map">
+      <svg class="lines" viewBox="0 0 1680 1160" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="hermesLine" x1="0%" x2="100%">
+            <stop offset="0%" stop-color="#2ad4ff" stop-opacity=".82"/>
+            <stop offset="100%" stop-color="#548fff" stop-opacity=".4"/>
+          </linearGradient>
+          <linearGradient id="openclawLine" x1="0%" x2="100%">
+            <stop offset="0%" stop-color="#2fdf84" stop-opacity=".82"/>
+            <stop offset="100%" stop-color="#8a7cff" stop-opacity=".4"/>
+          </linearGradient>
+          <linearGradient id="credLine" x1="0%" x2="100%">
+            <stop offset="0%" stop-color="#ffbf45" stop-opacity=".82"/>
+            <stop offset="100%" stop-color="#ff7474" stop-opacity=".4"/>
+          </linearGradient>
+        </defs>
+
+        <line x1="430" y1="520" x2="840" y2="600" stroke="url(#hermesLine)" stroke-width="5"/>
+        <line x1="1250" y1="520" x2="840" y2="600" stroke="url(#openclawLine)" stroke-width="5"/>
+        <line x1="840" y1="600" x2="840" y2="955" stroke="url(#credLine)" stroke-width="5"/>
+
+        <line x1="430" y1="520" x2="200" y2="220" stroke="rgba(42,212,255,.36)" stroke-width="3"/>
+        <line x1="430" y1="520" x2="215" y2="855" stroke="rgba(42,212,255,.28)" stroke-width="3" stroke-dasharray="8 9"/>
+        <line x1="430" y1="520" x2="285" y2="1020" stroke="rgba(42,212,255,.24)" stroke-width="3" stroke-dasharray="8 9"/>
+
+        <line x1="1250" y1="520" x2="1480" y2="220" stroke="rgba(47,223,132,.36)" stroke-width="3"/>
+        <line x1="1250" y1="520" x2="1465" y2="855" stroke="rgba(47,223,132,.28)" stroke-width="3" stroke-dasharray="8 9"/>
+        <line x1="1250" y1="520" x2="1395" y2="1020" stroke="rgba(47,223,132,.24)" stroke-width="3" stroke-dasharray="8 9"/>
+
+        <line x1="840" y1="600" x2="840" y2="180" stroke="rgba(255,191,69,.28)" stroke-width="3" stroke-dasharray="8 9"/>
+      </svg>
+
+      <article class="node top-left">
+        <div class="head">
+          <img src="ICONES%20/Telegram.avif" alt="Telegram">
+          <h3>Telegram</h3>
+        </div>
+        <p>Entrada natural. Conversa, áudio, comando e resposta rápida.</p>
+      </article>
+
+      <article class="node top-center">
+        <div class="head">
+          <img src="ICONES%20/Composio.png" alt="Composio">
+          <h3>Composio</h3>
+        </div>
+        <p>Ponte oficial com Gmail, Drive, Calendar, Sheets e outros apps.</p>
+      </article>
+
+      <article class="node top-right">
+        <div class="head">
+          <img src="ICONES%20/N8N.png" alt="n8n">
+          <h3>n8n</h3>
+        </div>
+        <p>Orquestra automações, webhooks, workflows e sequência de execução.</p>
+      </article>
+
+      <article class="node core hermes">
+        <div class="big">
+          <img src="ICONES%20/Hermes%20agent.jpeg" alt="Hermes">
+        </div>
+        <h2>Hermes / Herminho</h2>
+        <p>É o cérebro adaptativo do sistema. Aprende com recorrência, segura memória viva, entende melhor o contexto e conversa como assistente central.</p>
+        <div class="chips">
+          <span>memória expansiva</span>
+          <span>aprende rápido</span>
+          <span>perfil do usuário</span>
+          <span>agenda e Google</span>
+        </div>
+        <div class="function">
+          <strong>Função principal:</strong><br>
+          pensar, lembrar, adaptar, interpretar e personalizar.
+        </div>
+      </article>
+
+      <div class="dep">
+        <strong>Dependência mútua:</strong> Hermes fica mais poderoso quando o OpenClaw executa bem. OpenClaw fica mais inteligente quando o Hermes entende melhor o contexto.
+      </div>
+
+      <article class="node core openclaw">
+        <div class="big">
+          <img src="ICONES%20/Openclaw.jpeg" alt="OpenClaw">
+        </div>
+        <h2>OpenClaw / BOBY</h2>
+        <p>É a máquina operacional do sistema. Organiza agentes, rotinas, dispatcher, execução de tarefas e sustentação mais industrializada do CredPlus.</p>
+        <div class="chips">
+          <span>agentes</span>
+          <span>dispatcher</span>
+          <span>operação forte</span>
+          <span>credplus bots</span>
+        </div>
+        <div class="function">
+          <strong>Função principal:</strong><br>
+          estruturar, despachar, automatizar e executar.
+        </div>
+      </article>
+
+      <article class="node center">
+        <div class="brand">
+          <img src="ICONES%20/CREDPLUS.jpg" alt="CredPlus">
+        </div>
+        <h2>CredPlus</h2>
+        <p>Centro da verdade do negócio. Juros, amortização, baixa, comissão, contrato, histórico e regra financeira ficam aqui.</p>
+      </article>
+
+      <article class="node mid-left">
+        <div class="head">
+          <img src="ICONES%20/G.%20Caelndersvg.png" alt="Agenda">
+          <h3>Hermes + Google</h3>
+        </div>
+        <p>Agenda, histórico do mês, Gmail, Drive, Sheets, contexto e apoio com dados reais.</p>
+      </article>
+
+      <article class="node mid-right">
+        <div class="head">
+          <img src="ICONES%20/WhatsApp.svg.png" alt="WhatsApp">
+          <h3>OpenClaw + Canais</h3>
+        </div>
+        <p>Opera bots, comandos e abre espaço para WhatsApp entrar logo como canal forte de negócio.</p>
+      </article>
+
+      <article class="node bottom-left">
+        <div class="head">
+          <img src="ICONES%20/Gmail.webp" alt="Gmail">
+          <h3>Conexões do Hermes</h3>
+        </div>
+        <p>Gmail, Calendar, Drive e Sheets deixam o Hermes mais útil, mais vivo e mais contextual.</p>
+      </article>
+
+      <article class="node bottom-center">
+        <div class="head">
+          <img src="ICONES%20/VPS%20hostinger.webp" alt="VPS">
+          <h3>VPS / Produção</h3>
+        </div>
+        <p>Onde tudo roda: Hermes, OpenClaw, n8n, banco, logs, integração e operação real.</p>
+      </article>
+
+      <article class="node bottom-right">
+        <div class="head">
+          <img src="ICONES%20/Supabase.jpeg" alt="Supabase">
+          <h3>Base / Estado / Dados</h3>
+        </div>
+        <p>Dados, persistência, memória aplicada, suporte a histórico e futuras estruturas mais inteligentes.</p>
+      </article>
+    </section>
+
+    <section class="legend">
+      <div class="legend-card">
+        <strong>Hermes depende do OpenClaw</strong>
+        <span>Porque sem execução forte, a inteligência fica solta e pouco produtiva.</span>
+      </div>
+      <div class="legend-card">
+        <strong>OpenClaw depende do Hermes</strong>
+        <span>Porque sem contexto rico, memória e adaptação, a operação fica mecânica demais.</span>
+      </div>
+      <div class="legend-card">
+        <strong>Composio</strong>
+        <span>Liga os agentes aos apps reais e melhora a capacidade prática dos dois lados.</span>
+      </div>
+      <div class="legend-card">
+        <strong>WhatsApp</strong>
+        <span>Já entra no mapa porque logo vai ser usado como canal importante do projeto.</span>
+      </div>
+      <div class="legend-card">
+        <strong>Resultado ideal</strong>
+        <span>Hermes pensa e aprende. OpenClaw organiza e executa. CredPlus continua sendo a verdade.</span>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

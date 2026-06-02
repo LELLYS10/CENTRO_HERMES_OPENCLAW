@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hermes Mais Poderoso — Antes e Depois</title>
+  <style>
+    :root {
+      --bg: #07111d;
+      --panel: rgba(11, 21, 38, 0.92);
+      --panel2: rgba(14, 28, 48, 0.96);
+      --line: rgba(255,255,255,.1);
+      --text: #f4f8fb;
+      --muted: #a8bdd0;
+      --cyan: #2ad4ff;
+      --green: #2fdf84;
+      --amber: #ffbf45;
+      --red: #ff7070;
+      --blue: #548fff;
+      --violet: #8a7cff;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(42,212,255,.16), transparent 20%),
+        radial-gradient(circle at 80% 12%, rgba(138,124,255,.16), transparent 22%),
+        radial-gradient(circle at 50% 90%, rgba(47,223,132,.12), transparent 20%),
+        linear-gradient(180deg, #040a13, #091524 48%, #0c1a2b 100%);
+      overflow-x: auto;
+    }
+
+    .page {
+      min-width: 1700px;
+      padding: 28px 28px 54px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .hero span {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(42,212,255,.24);
+      background: rgba(42,212,255,.12);
+      color: #9ce8ff;
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      margin: 16px 0 10px;
+      font-size: 48px;
+      line-height: 1.02;
+      letter-spacing: -.04em;
+    }
+
+    .hero p {
+      max-width: 980px;
+      margin: 0 auto;
+      color: #dce8f3;
+      font-size: 17px;
+      line-height: 1.62;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      margin-top: 24px;
+    }
+
+    .side {
+      position: relative;
+      border-radius: 34px;
+      padding: 24px;
+      border: 1px solid rgba(255,255,255,.08);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)),
+        rgba(9, 17, 31, .88);
+      box-shadow: 0 24px 60px rgba(0,0,0,.28);
+      overflow: hidden;
+    }
+
+    .side::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,.05) 1px, transparent 1px);
+      background-size: 24px 24px;
+      opacity: .18;
+      pointer-events: none;
+    }
+
+    .label {
+      position: relative;
+      z-index: 2;
+      display: inline-block;
+      padding: 9px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .before .label {
+      background: rgba(255,112,112,.12);
+      color: #ffc2c2;
+      border: 1px solid rgba(255,112,112,.24);
+    }
+
+    .after .label {
+      background: rgba(47,223,132,.12);
+      color: #bcf5d4;
+      border: 1px solid rgba(47,223,132,.24);
+    }
+
+    .side h2 {
+      position: relative;
+      z-index: 2;
+      margin: 0 0 8px;
+      font-size: 32px;
+      letter-spacing: -.04em;
+    }
+
+    .side > p {
+      position: relative;
+      z-index: 2;
+      margin: 0 0 20px;
+      color: #d8e5f1;
+      line-height: 1.55;
+      font-size: 15px;
+      max-width: 720px;
+    }
+
+    .mind {
+      position: relative;
+      z-index: 2;
+      height: 930px;
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(8, 15, 27, .62);
+      overflow: hidden;
+    }
+
+    .mind svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .orbit {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px dashed rgba(255,255,255,.08);
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .before .o1 { width: 330px; height: 330px; }
+    .before .o2 { width: 520px; height: 520px; }
+    .after .o1 { width: 330px; height: 330px; }
+    .after .o2 { width: 560px; height: 560px; }
+    .after .o3 { width: 760px; height: 760px; }
+
+    .node {
+      position: absolute;
+      border-radius: 28px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,.09);
+      background:
+        linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.02)),
+        rgba(13, 25, 43, .96);
+      box-shadow: 0 16px 34px rgba(0,0,0,.24);
+    }
+
+    .node::after {
+      content: "";
+      position: absolute;
+      right: -22px;
+      bottom: -22px;
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,.12), transparent 60%);
+      pointer-events: none;
+    }
+
+    .node .head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .node .head img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .node .head h3 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: -.03em;
+    }
+
+    .node p {
+      margin: 0;
+      color: #d7e3ef;
+      font-size: 13px;
+      line-height: 1.46;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .chips span {
+      font-size: 11px;
+      padding: 7px 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      color: #edf4fb;
+    }
+
+    .core {
+      width: 260px;
+      min-height: 220px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      padding-top: 22px;
+      z-index: 4;
+    }
+
+    .before .core {
+      background:
+        linear-gradient(160deg, rgba(255,112,112,.22), rgba(255,191,69,.08)),
+        rgba(24, 19, 29, .96);
+    }
+
+    .after .core {
+      background:
+        linear-gradient(160deg, rgba(84,143,255,.22), rgba(47,223,132,.1)),
+        rgba(14, 27, 47, .98);
+    }
+
+    .core .brand {
+      width: 68px;
+      height: 68px;
+      margin: 0 auto 12px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    .core h3 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      letter-spacing: -.04em;
+    }
+
+    .core p {
+      max-width: 200px;
+      margin: 0 auto;
+      font-size: 14px;
+      line-height: 1.55;
+      color: #e2ebf4;
+    }
+
+    .before .n1 { width: 240px; left: 60px; top: 130px; }
+    .before .n2 { width: 230px; right: 70px; top: 130px; }
+    .before .n3 { width: 240px; left: 70px; bottom: 130px; }
+    .before .n4 { width: 240px; right: 60px; bottom: 130px; }
+    .before .n5 { width: 220px; left: 50%; top: 60px; transform: translateX(-50%); }
+
+    .after .n1 { width: 250px; left: 45px; top: 95px; }
+    .after .n2 { width: 250px; right: 45px; top: 95px; }
+    .after .n3 { width: 250px; left: 40px; top: 380px; }
+    .after .n4 { width: 250px; right: 40px; top: 380px; }
+    .after .n5 { width: 250px; left: 45px; bottom: 105px; }
+    .after .n6 { width: 250px; right: 45px; bottom: 105px; }
+    .after .n7 { width: 240px; left: 50%; top: 55px; transform: translateX(-50%); }
+    .after .n8 { width: 240px; left: 50%; bottom: 55px; transform: translateX(-50%); }
+
+    .delta {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 14px;
+    }
+
+    .delta-card {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .delta-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .delta-card span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <span>Antes x Depois</span>
+      <h1>Hermes Como Assistente Comum x Hermes Como Cérebro Operacional</h1>
+      <p>Você queria o Hermes mais capaz, mais vivo e mais seu. Então o mapa abaixo mostra a diferença entre o Hermes de hoje, mais solto, e o Hermes ideal, estruturado para aprender mais rápido, guardar memória útil, criar rotinas e virar o cérebro central do seu ecossistema.</p>
+    </div>
+
+    <section class="compare">
+      <div class="side before">
+        <div class="label">Antes</div>
+        <h2>Hermes Menos Estruturado</h2>
+        <p>Funciona como assistente bom, mas ainda espalhado. Tem conversa, alguma memória e ferramentas, porém sem camadas fortes de aprendizado, especialização e biblioteca viva.</p>
+
+        <div class="mind">
+          <div class="orbit o1"></div>
+          <div class="orbit o2"></div>
+
+          <svg viewBox="0 0 820 930" preserveAspectRatio="none">
+            <line x1="410" y1="465" x2="180" y2="240" stroke="rgba(255,112,112,.45)" stroke-width="3"/>
+            <line x1="410" y1="465" x2="640" y2="240" stroke="rgba(255,112,112,.45)" stroke-width="3"/>
+            <line x1="410" y1="465" x2="180" y2="715" stroke="rgba(255,191,69,.35)" stroke-width="3"/>
+            <line x1="410" y1="465" x2="640" y2="715" stroke="rgba(255,191,69,.35)" stroke-width="3"/>
+            <line x1="410" y1="465" x2="410" y2="130" stroke="rgba(84,143,255,.35)" stroke-width="3"/>
+          </svg>
+
+          <article class="node core">
+            <div class="brand">H</div>
+            <h3>Hermes</h3>
+            <p>Assistente inteligente, mas ainda pouco modular.</p>
+          </article>
+
+          <article class="node n1">
+            <div class="head">
+              <img src="https://cdn.simpleicons.org/telegram/26A5E4" alt="">
+              <h3>Telegram</h3>
+            </div>
+            <p>Recebe comando e responde bem.</p>
+            <div class="chips">
+              <span>chat</span>
+              <span>entrada</span>
+            </div>
+          </article>
+
+          <article class="node n2">
+            <div class="head">
+              <img src="https://cdn.simpleicons.org/google/ffffff" alt="">
+              <h3>Ferramentas</h3>
+            </div>
+            <p>Google, agenda e e-mail já ajudam, mas ainda soltos.</p>
+            <div class="chips">
+              <span>agenda</span>
+              <span>Gmail</span>
+            </div>
+          </article>
+
+          <article class="node n3">
+            <div class="head">
+              <img src="https://cdn.simpleicons.org/googlecloud/4285F4" alt="">
+              <h3>Memória</h3>
+            </div>
+            <p>Lembra algumas coisas, mas sem arquitetura forte.</p>
+            <div class="chips">
+              <span>contexto</span>
+              <span>curta</span>
+            </div>
+          </article>
+
+          <article class="node n4">
+            <div class="head">
+              <img src="https://cdn.simpleicons.org/openai/ffffff" alt="">
+              <h3>Habilidades</h3>
+            </div>
+            <p>Age bem, mas não cresce sozinho com tanto reaproveitamento.</p>
+            <div class="chips">
+              <span>boas</span>
+              <span>limitadas</span>
+            </div>
+          </article>
+
+          <article class="node n5">
+            <div class="head">
+              <img src="https://cdn.simpleicons.org/docker/2496ED" alt="">
+              <h3>Motor</h3>
+            </div>
+            <p>Tem potência, mas a forma de uso ainda está menos industrializada.</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="side after">
+        <div class="label">Depois</div>
+        <h2>Hermes Mais Poderoso</h2>
+        <p>Vira um cérebro operacional com camadas de memória, roteamento, especialistas, biblioteca de habilidades e adaptação por uso recorrente. Menos solto. Muito mais inteligente para o seu caso.</p>
+
+        <div class="mind">
+          <div class="orbit o1"></div>
+          <div class="orbit o2"></div>
+          <div class="orbit o3"></div>
+
+          <svg viewBox="0 0 820 930" preserveAspectRatio="none">
+            <line x1="410" y1="465" x2="170" y2="205" stroke="rgba(42,212,255,.48)" stroke-width="3"/>
+            <line x1="410" y1="465" x2="650" y2="205" stroke="rgba(42,212,255,.48)" stroke-width="3"/>
+            <line x1="410" y1="465" x2="165" y2="490" stroke="rgba(47,223,132,.45)" stroke-width="3"/>
+            <line x1="410" y1="465" x2="655" y2="490" stroke="rgba(47,223,132,.45)" stroke-width="3"/>
+            <line x1="410" y1="465" x2="170" y2="770" stroke="rgba(255,191,69,.4)" stroke-width="3"/>
+            <line x1="410" y1="465" x2="650" y2="770" stroke="rgba(255,191,69,.4)" stroke-width="3"/>
+            <line x1="410" y1="465" x2="410" y2="140" stroke="rgba(84,143,255,.45)" stroke-width="3"/>
+            <line x1="410" y1="465" x2="410" y2="792" stroke="rgba(138,124,255,.42)" stroke-width="3"/>
+          </svg>
+
+          <article class="node core">
+            <div class="brand">H+</div>
+            <h3>Hermes</h3>
+            <p>Cérebro central, vivo, modular, com memória útil e evolução por recorrência.</p>
+          </article>
+
+          <article class="node n1">
+            <div class="head">
+              <img src="https://cdn.simpleicons.org/googlecloud/4285F4" alt="">
+              <h3>Memória Curta</h3>
+            </div>
+            <p>Entende a conversa atual sem se perder no fluxo.</p>
+            <div class="chips">
+              <span>sessão</span>
+              <span>chat atual</span>
+            </div>
+          </article>
+
+          <article class="node n2">
+            <div class="head">
+              <img src="https://cdn.simpleicons.org/googlecloud/4285F4" alt="">
+              <h3>Memória Longa</h3>
+            </div>
+            <p>Guarda preferências, pessoas, padrões e fatos permanentes.</p>
+            <div class="chips">
+              <span>perfil</span>
+              <span>preferências</span>
+            </div>
+          </article>
+
+          <article class="node n3">
+            <div class="head">
+              <img src="https://cdn.simpleicons.org/openai/ffffff" alt="">
+              <h3>Roteador</h3>
+            </div>
+            <p>Decide qual habilidade ou agente especialista chamar em cada pedido.</p>
+            <div class="chips">
+              <span>decisão</span>
+              <span>encaminha</span>
+            </div>
+          </article>
+
+          <article class="node n4">
+            <div class="head">
+              <img src="https://cdn.simpleicons.org/openai/ffffff" alt="">
+              <h3>Especialistas</h3>
+            </div>
+            <p>Agenda, Gmail, Drive, CredPlus, conteúdo, relatórios e o que mais você quiser.</p>
+            <div class="chips">
+              <span>agenda</span>
+              <span>Drive</span>
+              <span>CredPlus</span>
+            </div>
+          </article>
+
+          <article class="node n5">
+            <div class="head">
+              <img src="https://cdn.simpleicons.org/github/ffffff" alt="">
+              <h3>Biblioteca Viva</h3>
+            </div>
+            <p>Cria e reaproveita habilidades, comandos e rotinas com base no uso constante.</p>
+            <div class="chips">
+              <span>skills</span>
+              <span>rotinas</span>
+            </div>
+          </article>
+
+          <article class="node n6">
+            <div class="head">
+              <img src="https://cdn.simpleicons.org/composio/ffffff" alt="">
+              <h3>Conexões Reais</h3>
+            </div>
+            <p>Encosta no Composio, Google, n8n e outros apps sem inventar dado.</p>
+            <div class="chips">
+              <span>Google</span>
+              <span>Composio</span>
+            </div>
+          </article>
+
+          <article class="node n7">
+            <div class="head">
+              <img src="https://cdn.simpleicons.org/telegram/26A5E4" alt="">
+              <h3>Frente Conversacional</h3>
+            </div>
+            <p>Telegram, áudio, linguagem natural e interação mais humana.</p>
+          </article>
+
+          <article class="node n8">
+            <div class="head">
+              <img src="https://cdn.simpleicons.org/n8n/EA4B71" alt="">
+              <h3>Execução e Evolução</h3>
+            </div>
+            <p>Aprende com repetição, gera rotinas, melhora performance e vira seu centro de comando.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="delta">
+      <div class="delta-card">
+        <strong>Antes</strong>
+        <span>Hermes respondia bem, mas era mais assistente do que cérebro operacional.</span>
+      </div>
+      <div class="delta-card">
+        <strong>Depois</strong>
+        <span>Hermes vira núcleo central com memória em camadas, roteador e especialistas.</span>
+      </div>
+      <div class="delta-card">
+        <strong>Impacto</strong>
+        <span>Ele aprende mais rápido porque reaproveita padrões, preferências e rotinas vivas.</span>
+      </div>
+      <div class="delta-card">
+        <strong>Melhor Papel</strong>
+        <span>Hermes = cérebro adaptativo. OpenClaw = execução estruturada e industrializada.</span>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

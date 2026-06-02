@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Centro Hermes OpenClaw</title>
+  <style>
+    :root {
+      --bg: #07111d;
+      --text: #f5f8fc;
+      --muted: #a9bfd4;
+      --line: rgba(255,255,255,.08);
+      --cyan: #2ad4ff;
+      --green: #2fdf84;
+      --amber: #ffbf45;
+      --violet: #8a7cff;
+      --red: #ff7474;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(42,212,255,.15), transparent 22%),
+        radial-gradient(circle at 80% 18%, rgba(138,124,255,.14), transparent 22%),
+        linear-gradient(180deg, #040a13, #091524 46%, #0c1a2b 100%);
+      min-height: 100vh;
+    }
+    .page {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 32px 24px 56px;
+    }
+    .hero {
+      border-radius: 34px;
+      padding: 34px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(130deg, rgba(9,18,33,.92), rgba(20,39,68,.84)),
+        url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80') center/cover;
+      box-shadow: 0 28px 70px rgba(0,0,0,.32);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(5,11,20,.88), rgba(5,11,20,.42));
+    }
+    .hero-inner { position: relative; z-index: 2; max-width: 840px; }
+    .hero span {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(42,212,255,.24);
+      background: rgba(42,212,255,.12);
+      color: #9ce8ff;
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      margin: 16px 0 10px;
+      font-size: 50px;
+      line-height: 1.02;
+      letter-spacing: -.04em;
+    }
+    .hero p {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.62;
+      color: #dce8f3;
+    }
+    .grid {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .card {
+      border-radius: 28px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(160deg, rgba(255,255,255,.06), rgba(255,255,255,.02)),
+        rgba(12, 23, 41, .92);
+      padding: 22px;
+      box-shadow: 0 16px 34px rgba(0,0,0,.24);
+    }
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 28px;
+      letter-spacing: -.04em;
+    }
+    .card p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .btns {
+      display: grid;
+      gap: 10px;
+    }
+    a.btn {
+      display: block;
+      text-decoration: none;
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+      font-size: 14px;
+    }
+    a.btn:hover { background: rgba(255,255,255,.08); }
+    .strip {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    .mini {
+      padding: 16px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+    }
+    .mini strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+    .mini span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div class="hero-inner">
+        <span>Central do Ecossistema</span>
+        <h1>Centro Hermes + OpenClaw + CredPlus</h1>
+        <p>Entrada única para navegar no seu ecossistema sem mistura. Aqui você separa claramente o que é Hermes, o que é OpenClaw, o que é CredPlus e onde ficam os mapas visuais e a lógica operacional.</p>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>Hermes</h2>
+        <p>Assistente inteligente, memória, Google, agenda, Gmail, Drive, contexto e apoio pessoal/operacional.</p>
+        <div class="btns">
+          <a class="btn" href="./HERMES/COMANDO_CENTRAL_HERMES.md">Comando Central Hermes</a>
+          <a class="btn" href="./HERMES/00_ENTRADA_RAPIDA/IDENTIDADE_HERMES.md">Identidade Hermes</a>
+          <a class="btn" href="./HERMES/00_ENTRADA_RAPIDA/COMO_LER_HERMES.md">Como Ler Hermes</a>
+          <a class="btn" href="./HERMES/04_MAPAS_VISUAIS/">Mapas Visuais Hermes</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>OpenClaw</h2>
+        <p>Agentes, dispatcher, execução estruturada, operação CredPlus, bots e automação mais industrializada.</p>
+        <div class="btns">
+          <a class="btn" href="./OPENCLAW/COMANDO_CENTRAL_OPENCLAW.md">Comando Central OpenClaw</a>
+          <a class="btn" href="./OPENCLAW/00_ENTRADA_RAPIDA/IDENTIDADE_OPENCLAW.md">Identidade OpenClaw</a>
+          <a class="btn" href="./OPENCLAW/00_ENTRADA_RAPIDA/COMO_LER_OPENCLAW.md">Como Ler OpenClaw</a>
+          <a class="btn" href="./OPENCLAW/04_MAPAS_VISUAIS/">Mapas Visuais OpenClaw</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>CredPlus</h2>
+        <p>Regra oficial do negócio. Juros, amortização, comissão, contratos, cobrança, histórico e arquitetura do sistema.</p>
+        <div class="btns">
+          <a class="btn" href="./CREDPLUS/COMANDO_CENTRAL_CREDPLUS.md">Comando Central CredPlus</a>
+          <a class="btn" href="./CREDPLUS/00_ENTRADA_RAPIDA/CREDPLUS_E_OS_DOIS_MOTORES.md">CredPlus e os Dois Motores</a>
+          <a class="btn" href="./CREDPLUS/02_CEREBRO/Cerebro-CredPlus">Cérebro CredPlus</a>
+          <a class="btn" href="./CREDPLUS/05_MAPAS_E_ARQUITETURA/">Mapas e Arquitetura</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>Mapas Visuais</h2>
+        <p>Os HTMLs para entender a arquitetura sem se perder em texto longo.</p>
+        <div class="btns">
+          <a class="btn" href="./00_MAPAS_VISUAIS_GERAIS/MAPA-MENTAL-CIRCULAR-CREDPLUS-IA.html">Mapa Circular CredPlus IA</a>
+          <a class="btn" href="./00_MAPAS_VISUAIS_GERAIS/MAPA-MENTAL-HERMES-PODEROSO-ANTES-DEPOIS.html">Hermes Antes e Depois</a>
+          <a class="btn" href="./00_MAPAS_VISUAIS_GERAIS/MAPA-HERMES-OPENCLAW-JUNTOS.html">Hermes + OpenClaw Juntos</a>
+          <a class="btn" href="./00_MAPAS_VISUAIS_GERAIS/MAPA-HERMES-OPENCLAW-DEPENDENCIA-VISUAL.html">Dependência Mútua</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Bot e Operação</h2>
+        <p>Mapa curto de como os bots convivem sem misturar funções.</p>
+        <div class="btns">
+          <a class="btn" href="./MAPA_OPERACIONAL_BOTS.md">Mapa Operacional dos Bots</a>
+          <a class="btn" href="./INDICE_GERAL.md">Índice Geral</a>
+          <a class="btn" href="./README_MESTRE_VISUAL.md">README Mestre Visual</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Ícones e Apoio</h2>
+        <p>Biblioteca visual usada nos mapas e referência para novos diagramas.</p>
+        <div class="btns">
+          <a class="btn" href="./00_MAPAS_VISUAIS_GERAIS/ICONES/">Pasta de Ícones</a>
+          <a class="btn" href="./README.md">README do Centro</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="strip">
+      <div class="mini">
+        <strong>Hermes</strong>
+        <span>Pensa, lembra, aprende e personaliza.</span>
+      </div>
+      <div class="mini">
+        <strong>OpenClaw</strong>
+        <span>Despacha, automatiza, estrutura e executa.</span>
+      </div>
+      <div class="mini">
+        <strong>CredPlus</strong>
+        <span>Continua como a verdade do negócio.</span>
+      </div>
+      <div class="mini">
+        <strong>Composio + n8n</strong>
+        <span>Conectam apps e costuram automações.</span>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

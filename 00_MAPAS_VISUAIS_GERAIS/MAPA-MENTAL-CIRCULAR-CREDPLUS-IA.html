@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mapa Mental Circular CredPlus IA</title>
+  <style>
+    :root {
+      --bg: #07101d;
+      --bg2: #0c1b31;
+      --line: rgba(255,255,255,.18);
+      --text: #f5f8fc;
+      --muted: #a8bdd3;
+      --cyan: #29d3ff;
+      --green: #2ddf88;
+      --amber: #ffbf47;
+      --red: #ff7373;
+      --blue: #518dff;
+      --violet: #8a7dff;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(41,211,255,.16), transparent 22%),
+        radial-gradient(circle at 80% 18%, rgba(45,223,136,.14), transparent 20%),
+        radial-gradient(circle at 50% 80%, rgba(138,125,255,.14), transparent 24%),
+        linear-gradient(180deg, #040a14 0%, #091425 45%, #0d1a2d 100%);
+      overflow-x: auto;
+    }
+
+    .page {
+      min-width: 1650px;
+      padding: 28px 28px 60px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 26px;
+    }
+
+    .hero span {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(41,211,255,.12);
+      border: 1px solid rgba(41,211,255,.22);
+      color: #9ce8ff;
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      margin: 16px 0 10px;
+      font-size: 46px;
+      line-height: 1.05;
+      letter-spacing: -.04em;
+    }
+
+    .hero p {
+      margin: 0 auto;
+      max-width: 900px;
+      color: #dbe7f2;
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    .mindmap {
+      position: relative;
+      width: 1500px;
+      height: 1180px;
+      margin: 0 auto;
+      border-radius: 40px;
+      background:
+        radial-gradient(circle at center, rgba(81,141,255,.08), transparent 26%),
+        linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)),
+        rgba(8, 17, 30, .84);
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 30px 80px rgba(0,0,0,.32);
+      overflow: hidden;
+    }
+
+    .mindmap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,.06) 1px, transparent 1px);
+      background-size: 26px 26px;
+      opacity: .22;
+      pointer-events: none;
+    }
+
+    svg.lines {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .orbit {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px dashed rgba(255,255,255,.08);
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .orbit.one { width: 560px; height: 560px; }
+    .orbit.two { width: 860px; height: 860px; }
+    .orbit.three { width: 1120px; height: 1120px; }
+
+    .node {
+      position: absolute;
+      border-radius: 32px;
+      padding: 18px 18px 16px;
+      background:
+        linear-gradient(155deg, rgba(255,255,255,.08), rgba(255,255,255,.02)),
+        rgba(12, 23, 41, .95);
+      border: 1px solid rgba(255,255,255,.09);
+      box-shadow: 0 18px 36px rgba(0,0,0,.25);
+      backdrop-filter: blur(10px);
+    }
+
+    .node::after {
+      content: "";
+      position: absolute;
+      right: -30px;
+      bottom: -30px;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,.12), transparent 60%);
+      pointer-events: none;
+    }
+
+    .node .head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .node .head img {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,.22));
+    }
+
+    .node .head h2,
+    .node .head h3 {
+      margin: 0;
+      font-size: 21px;
+      letter-spacing: -.03em;
+    }
+
+    .node p {
+      margin: 0;
+      color: #d8e5f2;
+      font-size: 14px;
+      line-height: 1.52;
+    }
+
+    .mini-icons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .mini-icons span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: #ebf4fb;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .mini-icons img {
+      width: 16px;
+      height: 16px;
+      object-fit: contain;
+    }
+
+    .core {
+      width: 360px;
+      min-height: 300px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 42px;
+      background:
+        linear-gradient(160deg, rgba(81,141,255,.26), rgba(45,223,136,.08)),
+        rgba(14, 28, 51, .97);
+      border: 1px solid rgba(255,255,255,.12);
+      z-index: 4;
+      text-align: center;
+      padding-top: 24px;
+    }
+
+    .core .brand {
+      width: 78px;
+      height: 78px;
+      border-radius: 22px;
+      margin: 0 auto 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      font-size: 34px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -.04em;
+    }
+
+    .core h2 {
+      margin: 0 0 12px;
+      font-size: 34px;
+      letter-spacing: -.04em;
+    }
+
+    .core p {
+      max-width: 280px;
+      margin: 0 auto;
+      color: #dce7f4;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .core .mini-icons {
+      justify-content: center;
+      margin-top: 18px;
+    }
+
+    .n-telegram {
+      width: 260px;
+      left: 620px;
+      top: 52px;
+    }
+
+    .n-herminho {
+      width: 300px;
+      left: 220px;
+      top: 220px;
+    }
+
+    .n-boby {
+      width: 300px;
+      right: 220px;
+      top: 220px;
+    }
+
+    .n-hermes {
+      width: 290px;
+      left: 110px;
+      top: 505px;
+    }
+
+    .n-openclaw {
+      width: 290px;
+      right: 110px;
+      top: 505px;
+    }
+
+    .n-composio {
+      width: 290px;
+      left: 50%;
+      top: 860px;
+      transform: translateX(-50%);
+    }
+
+    .n-google {
+      width: 300px;
+      left: 160px;
+      bottom: 86px;
+    }
+
+    .n-n8n {
+      width: 290px;
+      right: 160px;
+      bottom: 86px;
+    }
+
+    .n-whatsapp {
+      width: 230px;
+      left: 92px;
+      top: 82px;
+    }
+
+    .n-ramos {
+      width: 240px;
+      right: 92px;
+      top: 82px;
+    }
+
+    .floating-note {
+      position: absolute;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      color: #d9e5f1;
+      font-size: 13px;
+      line-height: 1.45;
+      max-width: 230px;
+      backdrop-filter: blur(10px);
+    }
+
+    .note-left {
+      left: 370px;
+      top: 820px;
+    }
+
+    .note-right {
+      right: 365px;
+      top: 820px;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin: 22px auto 0;
+      width: 1500px;
+    }
+
+    .legend-card {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+    }
+
+    .legend-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .legend-card span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <span>Mapa Mental Circular</span>
+      <h1>Como Tudo Conversa no Seu Ecossistema</h1>
+      <p>Centro no CredPlus. Em volta ficam os agentes, integrações, canais e automações. A ideia aqui é você bater o olho, enxergar os cruzamentos e decidir a arquitetura sem se perder.</p>
+    </div>
+
+    <section class="mindmap">
+      <div class="orbit one"></div>
+      <div class="orbit two"></div>
+      <div class="orbit three"></div>
+
+      <svg class="lines" viewBox="0 0 1500 1180" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="g1" x1="0%" x2="100%">
+            <stop offset="0%" stop-color="#2ad3ff" stop-opacity=".75"/>
+            <stop offset="100%" stop-color="#518dff" stop-opacity=".4"/>
+          </linearGradient>
+          <linearGradient id="g2" x1="0%" x2="100%">
+            <stop offset="0%" stop-color="#2ddf88" stop-opacity=".75"/>
+            <stop offset="100%" stop-color="#8a7dff" stop-opacity=".4"/>
+          </linearGradient>
+          <linearGradient id="g3" x1="0%" x2="100%">
+            <stop offset="0%" stop-color="#ffbf47" stop-opacity=".75"/>
+            <stop offset="100%" stop-color="#ff7373" stop-opacity=".42"/>
+          </linearGradient>
+        </defs>
+
+        <line x1="750" y1="590" x2="750" y2="178" stroke="url(#g1)" stroke-width="3"/>
+        <line x1="750" y1="590" x2="370" y2="355" stroke="url(#g1)" stroke-width="3"/>
+        <line x1="750" y1="590" x2="1130" y2="355" stroke="url(#g1)" stroke-width="3"/>
+        <line x1="750" y1="590" x2="255" y2="650" stroke="url(#g2)" stroke-width="3"/>
+        <line x1="750" y1="590" x2="1245" y2="650" stroke="url(#g2)" stroke-width="3"/>
+        <line x1="750" y1="590" x2="750" y2="1005" stroke="url(#g3)" stroke-width="3"/>
+
+        <line x1="370" y1="355" x2="310" y2="985" stroke="rgba(41,211,255,.35)" stroke-width="2" stroke-dasharray="8 9"/>
+        <line x1="1130" y1="355" x2="1190" y2="985" stroke="rgba(45,223,136,.35)" stroke-width="2" stroke-dasharray="8 9"/>
+        <line x1="750" y1="1005" x2="310" y2="985" stroke="rgba(255,191,71,.28)" stroke-width="2" stroke-dasharray="8 9"/>
+        <line x1="750" y1="1005" x2="1190" y2="985" stroke="rgba(255,191,71,.28)" stroke-width="2" stroke-dasharray="8 9"/>
+        <line x1="230" y1="190" x2="370" y2="355" stroke="rgba(37,211,102,.28)" stroke-width="2"/>
+        <line x1="1270" y1="190" x2="1130" y2="355" stroke="rgba(81,141,255,.28)" stroke-width="2"/>
+      </svg>
+
+      <article class="node core">
+        <div class="brand">CP</div>
+        <h2>CredPlus</h2>
+        <p>É o centro da verdade do negócio. Aqui ficam juros, comissão, amortização, baixa, cobrança, contrato, cliente e regra financeira oficial.</p>
+        <div class="mini-icons">
+          <span><img src="https://cdn.simpleicons.org/postgresql/4169E1" alt=""> regra</span>
+          <span><img src="https://cdn.simpleicons.org/docker/2496ED" alt=""> operação</span>
+          <span><img src="https://cdn.simpleicons.org/googleanalytics/ff6b35" alt=""> histórico</span>
+        </div>
+      </article>
+
+      <article class="node n-telegram">
+        <div class="head">
+          <img src="https://cdn.simpleicons.org/telegram/26A5E4" alt="Telegram">
+          <h3>Telegram</h3>
+        </div>
+        <p>Porta de entrada. Você pede. O sistema decide quem responde.</p>
+        <div class="mini-icons">
+          <span><img src="https://cdn.simpleicons.org/telegram/26A5E4" alt=""> texto</span>
+          <span><img src="https://cdn.simpleicons.org/telegram/26A5E4" alt=""> áudio</span>
+          <span><img src="https://cdn.simpleicons.org/telegram/26A5E4" alt=""> comando</span>
+        </div>
+      </article>
+
+      <article class="node n-herminho">
+        <div class="head">
+          <img src="https://cdn.simpleicons.org/openai/ffffff" alt="Herminho">
+          <h3>Herminho</h3>
+        </div>
+        <p>Seu assistente pessoal no Hermes. Cuida do Google, agenda, histórico do mês, Gmail, Drive e respostas no Telegram.</p>
+        <div class="mini-icons">
+          <span><img src="https://cdn.simpleicons.org/googlecalendar/4285F4" alt=""> agenda</span>
+          <span><img src="https://cdn.simpleicons.org/gmail/EA4335" alt=""> Gmail</span>
+          <span><img src="https://cdn.simpleicons.org/googledrive/34A853" alt=""> Drive</span>
+        </div>
+      </article>
+
+      <article class="node n-boby">
+        <div class="head">
+          <img src="https://cdn.simpleicons.org/openai/ffffff" alt="BOBY">
+          <h3>BOBY</h3>
+        </div>
+        <p>Seu agente operacional no OpenClaw. Foca em comandos do CredPlus, automações, agentes e execução de negócio.</p>
+        <div class="mini-icons">
+          <span><img src="https://cdn.simpleicons.org/telegram/26A5E4" alt=""> bots</span>
+          <span><img src="https://cdn.simpleicons.org/docker/2496ED" alt=""> OpenClaw</span>
+          <span><img src="https://cdn.simpleicons.org/postgresql/4169E1" alt=""> operação</span>
+        </div>
+      </article>
+
+      <article class="node n-hermes">
+        <div class="head">
+          <img src="https://cdn.simpleicons.org/docker/2496ED" alt="Hermes">
+          <h3>Hermes</h3>
+        </div>
+        <p>Motor do Herminho na VPS. Sessões, memória, gateway, cron, contexto e evolução do assistente.</p>
+        <div class="mini-icons">
+          <span><img src="https://cdn.simpleicons.org/docker/2496ED" alt=""> container</span>
+          <span><img src="https://cdn.simpleicons.org/googlecloud/4285F4" alt=""> memória</span>
+          <span><img src="https://cdn.simpleicons.org/googlecalendar/4285F4" alt=""> agenda</span>
+        </div>
+      </article>
+
+      <article class="node n-openclaw">
+        <div class="head">
+          <img src="https://cdn.simpleicons.org/docker/2496ED" alt="OpenClaw">
+          <h3>OpenClaw</h3>
+        </div>
+        <p>Motor de agentes do BOBY. Dispatcher, agentes CredPlus, Telegram e automação mais pesada.</p>
+        <div class="mini-icons">
+          <span><img src="https://cdn.simpleicons.org/docker/2496ED" alt=""> dispatcher</span>
+          <span><img src="https://cdn.simpleicons.org/telegram/26A5E4" alt=""> Telegram</span>
+          <span><img src="https://cdn.simpleicons.org/openai/ffffff" alt=""> agentes</span>
+        </div>
+      </article>
+
+      <article class="node n-composio">
+        <div class="head">
+          <img src="https://cdn.simpleicons.org/composio/ffffff" alt="Composio">
+          <h3>Composio</h3>
+        </div>
+        <p>Ponte entre agentes e aplicativos reais. Não manda na regra do CredPlus. Ele conecta.</p>
+        <div class="mini-icons">
+          <span><img src="https://cdn.simpleicons.org/googlecalendar/4285F4" alt=""> Calendar</span>
+          <span><img src="https://cdn.simpleicons.org/gmail/EA4335" alt=""> Gmail</span>
+          <span><img src="https://cdn.simpleicons.org/googledrive/34A853" alt=""> Drive</span>
+          <span><img src="https://cdn.simpleicons.org/n8n/EA4B71" alt=""> webhook</span>
+        </div>
+      </article>
+
+      <article class="node n-google">
+        <div class="head">
+          <img src="https://cdn.simpleicons.org/google/ffffff" alt="Google">
+          <h3>Google Apps</h3>
+        </div>
+        <p>Onde estão agenda, e-mails, arquivos e planilhas que os agentes consultam.</p>
+        <div class="mini-icons">
+          <span><img src="https://cdn.simpleicons.org/googlecalendar/4285F4" alt=""> agenda pessoal</span>
+          <span><img src="https://cdn.simpleicons.org/gmail/EA4335" alt=""> pessoal + CredPlus</span>
+          <span><img src="https://cdn.simpleicons.org/googledrive/34A853" alt=""> Drive</span>
+        </div>
+      </article>
+
+      <article class="node n-n8n">
+        <div class="head">
+          <img src="https://cdn.simpleicons.org/n8n/EA4B71" alt="n8n">
+          <h3>n8n</h3>
+        </div>
+        <p>Costura tudo. Recebe evento, chama agente, salva log, aciona passo seguinte e organiza automações.</p>
+        <div class="mini-icons">
+          <span><img src="https://cdn.simpleicons.org/n8n/EA4B71" alt=""> workflow</span>
+          <span><img src="https://cdn.simpleicons.org/composio/ffffff" alt=""> integra</span>
+          <span><img src="https://cdn.simpleicons.org/telegram/26A5E4" alt=""> resposta</span>
+        </div>
+      </article>
+
+      <article class="node n-whatsapp">
+        <div class="head">
+          <img src="https://cdn.simpleicons.org/whatsapp/25D366" alt="WhatsApp">
+          <h3>WhatsApp</h3>
+        </div>
+        <p>Canal importante, mas fase 2. Mais sensível, mais humano e mais perigoso para automatizar cedo demais.</p>
+      </article>
+
+      <article class="node n-ramos">
+        <div class="head">
+          <img src="https://cdn.simpleicons.org/googlephotos/ffffff" alt="Ramos">
+          <h3>Conteúdo IA</h3>
+        </div>
+        <p>Ramos, posts, roteiros, avatar e produção visual usando Drive, agentes e automação.</p>
+      </article>
+
+      <div class="floating-note note-left">
+        <strong>Herminho usa</strong><br>
+        Composio + Google para responder agenda, e-mail, Drive e histórico com dados reais.
+      </div>
+
+      <div class="floating-note note-right">
+        <strong>BOBY usa</strong><br>
+        OpenClaw + CredPlus. Se precisar de apoio externo, encosta no Composio, mas a regra continua no CredPlus.
+      </div>
+    </section>
+
+    <section class="legend">
+      <div class="legend-card">
+        <strong>Centro</strong>
+        <span>CredPlus é a verdade do negócio. Tudo gira em volta dele.</span>
+      </div>
+      <div class="legend-card">
+        <strong>Lado Pessoal</strong>
+        <span>Herminho/Hermes atendem agenda, Gmail, Drive, Google e conversa natural no Telegram.</span>
+      </div>
+      <div class="legend-card">
+        <strong>Lado Operacional</strong>
+        <span>BOBY/OpenClaw executam automação, agentes e operação do CredPlus.</span>
+      </div>
+      <div class="legend-card">
+        <strong>Ponte</strong>
+        <span>Composio conecta agentes aos apps. n8n costura a automação entre tudo isso.</span>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

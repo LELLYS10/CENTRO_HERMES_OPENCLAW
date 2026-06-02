@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mapa Panorâmico CredPlus IA</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --bg2: #0d1d33;
+      --card: rgba(12, 23, 41, 0.82);
+      --line: rgba(255,255,255,0.11);
+      --text: #f3f7fb;
+      --muted: #9bb2ca;
+      --cyan: #2ad4ff;
+      --green: #2fdf84;
+      --amber: #ffbe3b;
+      --red: #ff6b6b;
+      --blue: #4e8cff;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(42,212,255,.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(47,223,132,.15), transparent 24%),
+        linear-gradient(180deg, #06101c 0%, #0a1628 34%, #0e1c31 100%);
+      min-height: 100vh;
+      overflow-x: auto;
+    }
+
+    .canvas {
+      min-width: 1680px;
+      padding: 28px 28px 44px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 30px;
+      padding: 34px 36px 32px;
+      background:
+        linear-gradient(130deg, rgba(7,17,31,.88), rgba(18,40,69,.82)),
+        url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1800&q=80") center/cover;
+      box-shadow: 0 30px 80px rgba(0,0,0,.35);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(5,11,20,.88), rgba(5,11,20,.42));
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 920px;
+    }
+
+    .kicker {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(42,212,255,.12);
+      color: #9ae7ff;
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      border: 1px solid rgba(42,212,255,.22);
+    }
+
+    h1 {
+      margin: 18px 0 10px;
+      font-size: 48px;
+      line-height: 1.02;
+      letter-spacing: -.04em;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      line-height: 1.55;
+      color: #d8e4f0;
+      max-width: 760px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .legend span {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      color: #d9e8f7;
+      font-size: 14px;
+    }
+
+    .board {
+      margin-top: 26px;
+      display: grid;
+      grid-template-columns: 320px 1fr 320px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .panel {
+      position: relative;
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 26px;
+      padding: 20px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.28);
+      backdrop-filter: blur(12px);
+    }
+
+    .panel h2 {
+      margin: 0 0 14px;
+      font-size: 22px;
+      letter-spacing: -.03em;
+    }
+
+    .mini {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-bottom: 14px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.07);
+    }
+
+    .app img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,.22));
+    }
+
+    .app-title {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .app-note {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+      line-height: 1.45;
+    }
+
+    .center-panel {
+      padding: 22px;
+      min-height: 950px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)),
+        rgba(10, 22, 39, .78);
+    }
+
+    .flow-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .flow-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .node {
+      position: relative;
+      min-height: 170px;
+      border-radius: 26px;
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,.09);
+      background:
+        linear-gradient(160deg, rgba(255,255,255,.06), rgba(255,255,255,.02)),
+        rgba(9, 18, 33, .92);
+      overflow: hidden;
+    }
+
+    .node::before {
+      content: "";
+      position: absolute;
+      inset: auto -10% -35% auto;
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,.16), transparent 60%);
+      pointer-events: none;
+    }
+
+    .node .top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .node .top img {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+    }
+
+    .node h3 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: -.03em;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .chip {
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.05);
+      color: #e6f0fa;
+    }
+
+    .tag-blue { background: rgba(78,140,255,.12); color: #bdd4ff; border-color: rgba(78,140,255,.24); }
+    .tag-cyan { background: rgba(42,212,255,.12); color: #a8ecff; border-color: rgba(42,212,255,.22); }
+    .tag-green { background: rgba(47,223,132,.12); color: #b2f3cf; border-color: rgba(47,223,132,.22); }
+    .tag-amber { background: rgba(255,190,59,.14); color: #ffe09b; border-color: rgba(255,190,59,.24); }
+    .tag-red { background: rgba(255,107,107,.12); color: #ffc2c2; border-color: rgba(255,107,107,.24); }
+
+    .node p {
+      margin: 0;
+      color: #d6e3ef;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .connector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: rgba(255,255,255,.5);
+      letter-spacing: .1em;
+      margin: 3px 0;
+    }
+
+    .river {
+      border-radius: 24px;
+      padding: 16px 18px;
+      border: 1px solid rgba(42,212,255,.14);
+      background: linear-gradient(90deg, rgba(42,212,255,.09), rgba(47,223,132,.08));
+    }
+
+    .river-title {
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: #98eaff;
+      margin-bottom: 8px;
+    }
+
+    .river p {
+      margin: 0;
+      color: #d8e6f4;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .footer-strip {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .footer-card {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .footer-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .footer-card span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .panorama {
+      margin-top: 22px;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.08);
+      position: relative;
+      min-height: 280px;
+      background:
+        linear-gradient(90deg, rgba(5,11,20,.84), rgba(5,11,20,.34)),
+        url("https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=2000&q=80") center/cover;
+      box-shadow: 0 18px 45px rgba(0,0,0,.28);
+    }
+
+    .panorama::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, rgba(4,10,18,.84), rgba(4,10,18,.24));
+    }
+
+    .panorama-content {
+      position: relative;
+      z-index: 2;
+      padding: 30px;
+      max-width: 940px;
+    }
+
+    .panorama h2 {
+      margin: 0 0 14px;
+      font-size: 34px;
+      letter-spacing: -.04em;
+    }
+
+    .panorama p {
+      margin: 0 0 16px;
+      font-size: 16px;
+      line-height: 1.65;
+      color: #deebf8;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas">
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="kicker">Mapa Mental Panorâmico</div>
+        <h1>Ecossistema CredPlus + Herminho + Hermes + OpenClaw + Composio</h1>
+        <div class="subtitle">
+          Visual para você decidir a arquitetura sem se perder em muito texto. Aqui está quem conversa com quem, o que cada sistema faz e onde entram integrações, automações e operação real.
+        </div>
+        <div class="legend">
+          <span>Telegram = entrada</span>
+          <span>Herminho/Hermes = assistente</span>
+          <span>BOBY/OpenClaw = operação</span>
+          <span>CredPlus = regra do negócio</span>
+          <span>Composio = ponte</span>
+          <span>n8n = orquestração</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="board">
+      <div class="column">
+        <div class="panel">
+          <h2>Entradas</h2>
+          <div class="mini">Canais que disparam pedidos, consultas e automações.</div>
+          <div class="stack">
+            <div class="app">
+              <img src="https://cdn.simpleicons.org/telegram/26A5E4" alt="Telegram">
+              <div>
+                <div class="app-title">Telegram</div>
+                <div class="app-note">@Credpainel_bot, @Robocredplus_bot e @Credplusemprestimo_Bot</div>
+              </div>
+            </div>
+            <div class="app">
+              <img src="https://cdn.simpleicons.org/googlecalendar/4285F4" alt="Google Calendar">
+              <div>
+                <div class="app-title">Agenda</div>
+                <div class="app-note">Agendar, adiar, desmarcar, apagar, histórico do mês</div>
+              </div>
+            </div>
+            <div class="app">
+              <img src="https://cdn.simpleicons.org/gmail/EA4335" alt="Gmail">
+              <div>
+                <div class="app-title">Gmail</div>
+                <div class="app-note">Conta pessoal + conta CredPlus separadas por alias</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Google / Conteúdo</h2>
+          <div class="stack">
+            <div class="app">
+              <img src="https://cdn.simpleicons.org/googledrive/34A853" alt="Google Drive">
+              <div>
+                <div class="app-title">Drive</div>
+                <div class="app-note">Contratos, comprovantes, pastas, materiais e ativos</div>
+              </div>
+            </div>
+            <div class="app">
+              <img src="https://cdn.simpleicons.org/googlesheets/34A853" alt="Google Sheets">
+              <div>
+                <div class="app-title">Sheets</div>
+                <div class="app-note">Leituras e apoio de relatórios via Drive</div>
+              </div>
+            </div>
+            <div class="app">
+              <img src="https://cdn.simpleicons.org/googlephotos/4285F4" alt="Arquivos">
+              <div>
+                <div class="app-title">Arquivos</div>
+                <div class="app-note">Fotos, comprovantes, PDFs e documentos de apoio</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel center-panel">
+        <div class="flow-grid">
+          <div class="flow-row">
+            <div class="node">
+              <div class="top">
+                <img src="https://cdn.simpleicons.org/telegram/26A5E4" alt="Telegram">
+                <h3>Telegram</h3>
+              </div>
+              <p>Entrada natural. Você fala. O bot entende. O fluxo começa aqui.</p>
+              <div class="chips">
+                <span class="chip tag-blue">comando</span>
+                <span class="chip tag-blue">texto</span>
+                <span class="chip tag-blue">áudio</span>
+              </div>
+            </div>
+
+            <div class="node">
+              <div class="top">
+                <img src="https://cdn.simpleicons.org/openai/ffffff" alt="Herminho">
+                <h3>Herminho</h3>
+              </div>
+              <p>Bot pessoal do Hermes. Faz agenda, Gmail, Drive, Sheets e apoio operacional do CredPlus.</p>
+              <div class="chips">
+                <span class="chip tag-cyan">@Credpainel_bot</span>
+                <span class="chip tag-cyan">Google</span>
+                <span class="chip tag-cyan">agenda completa</span>
+              </div>
+            </div>
+
+            <div class="node">
+              <div class="top">
+                <img src="https://cdn.simpleicons.org/docker/2496ED" alt="Hermes">
+                <h3>Hermes</h3>
+              </div>
+              <p>Motor do Herminho na VPS. Memória, sessões, gateway, cron, contexto e evolução futura.</p>
+              <div class="chips">
+                <span class="chip tag-green">memória</span>
+                <span class="chip tag-green">sessões</span>
+                <span class="chip tag-green">gateway</span>
+              </div>
+            </div>
+
+            <div class="node">
+              <div class="top">
+                <img src="https://cdn.simpleicons.org/composio/ffffff" alt="Composio">
+                <h3>Composio</h3>
+              </div>
+              <p>Ponte oficial entre os agentes e aplicativos externos. Não decide regra financeira.</p>
+              <div class="chips">
+                <span class="chip tag-amber">Calendar</span>
+                <span class="chip tag-amber">Gmail</span>
+                <span class="chip tag-amber">Drive</span>
+              </div>
+            </div>
+
+            <div class="node">
+              <div class="top">
+                <img src="https://cdn.simpleicons.org/google/ffffff" alt="Google Apps">
+                <h3>Apps Google</h3>
+              </div>
+              <p>Agenda, e-mails, arquivos e planilhas usados pelos agentes para buscar dados reais.</p>
+              <div class="chips">
+                <span class="chip tag-blue">pessoal</span>
+                <span class="chip tag-red">credplus</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="connector">↓ ↓ ↓ ↓ ↓</div>
+
+          <div class="river">
+            <div class="river-title">Fluxo Herminho / Assistência</div>
+            <p>Telegram → Herminho → Hermes → Composio → Google. O agente interpreta, usa a ferramenta certa, traz resposta real e devolve no Telegram sem inventar informação.</p>
+          </div>
+
+          <div class="flow-row">
+            <div class="node">
+              <div class="top">
+                <img src="https://cdn.simpleicons.org/telegram/26A5E4" alt="Telegram 2">
+                <h3>Telegram CredPlus</h3>
+              </div>
+              <p>Bots operacionais de cobrança, empréstimo, comando e consulta.</p>
+              <div class="chips">
+                <span class="chip tag-red">@Credplusemprestimo_Bot</span>
+                <span class="chip tag-red">@Robocredplus_bot</span>
+              </div>
+            </div>
+
+            <div class="node">
+              <div class="top">
+                <img src="https://cdn.simpleicons.org/openai/ffffff" alt="BOBY">
+                <h3>BOBY</h3>
+              </div>
+              <p>Estrutura do OpenClaw focada em operação CredPlus, agentes, rotinas e respostas de negócio.</p>
+              <div class="chips">
+                <span class="chip tag-cyan">OpenClaw</span>
+                <span class="chip tag-cyan">agentes</span>
+                <span class="chip tag-cyan">operação</span>
+              </div>
+            </div>
+
+            <div class="node">
+              <div class="top">
+                <img src="https://cdn.simpleicons.org/docker/2496ED" alt="OpenClaw">
+                <h3>OpenClaw</h3>
+              </div>
+              <p>Motor de agentes do CredPlus. Orquestra automação, dispatcher, Telegram e apoio de memória.</p>
+              <div class="chips">
+                <span class="chip tag-green">dispatcher</span>
+                <span class="chip tag-green">MCP</span>
+                <span class="chip tag-green">Telegram</span>
+              </div>
+            </div>
+
+            <div class="node">
+              <div class="top">
+                <img src="https://cdn.simpleicons.org/composio/ffffff" alt="Composio 2">
+                <h3>Composio no BOBY</h3>
+              </div>
+              <p>Serve como ponte externa: localizar arquivo, puxar e-mail, buscar apoio no Google e em outros apps.</p>
+              <div class="chips">
+                <span class="chip tag-amber">apoio externo</span>
+                <span class="chip tag-amber">não decide juros</span>
+              </div>
+            </div>
+
+            <div class="node">
+              <div class="top">
+                <img src="https://cdn.simpleicons.org/postgresql/4169E1" alt="CredPlus">
+                <h3>CredPlus</h3>
+              </div>
+              <p>Onde mora a verdade do negócio: juros, amortização, comissão, baixa, contrato, cobrança e histórico.</p>
+              <div class="chips">
+                <span class="chip tag-red">regra do negócio</span>
+                <span class="chip tag-red">financeiro</span>
+                <span class="chip tag-red">oficial</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="connector">↓ ↓ ↓ ↓ ↓</div>
+
+          <div class="river">
+            <div class="river-title">Fluxo Operacional CredPlus</div>
+            <p>Telegram CredPlus → BOBY → OpenClaw → CredPlus. Se precisar de arquivo, e-mail ou app externo, o fluxo encosta no Composio. A regra financeira continua no CredPlus.</p>
+          </div>
+
+          <div class="flow-row">
+            <div class="node">
+              <div class="top">
+                <img src="https://cdn.simpleicons.org/n8n/EA4B71" alt="n8n">
+                <h3>n8n</h3>
+              </div>
+              <p>Orquestração. Recebe evento, chama agente, dispara passos, salva log e responde no canal certo.</p>
+              <div class="chips">
+                <span class="chip tag-blue">webhook</span>
+                <span class="chip tag-blue">workflow</span>
+              </div>
+            </div>
+
+            <div class="node">
+              <div class="top">
+                <img src="https://cdn.simpleicons.org/github/ffffff" alt="Skills">
+                <h3>Skills / Docs</h3>
+              </div>
+              <p>Conhecimento local para não delirar: prompts, regras, skills, mapas, fluxos e organização modular.</p>
+              <div class="chips">
+                <span class="chip tag-cyan">skills</span>
+                <span class="chip tag-cyan">.md curtos</span>
+              </div>
+            </div>
+
+            <div class="node">
+              <div class="top">
+                <img src="https://cdn.simpleicons.org/hostinger/673DE6" alt="VPS">
+                <h3>VPS</h3>
+              </div>
+              <p>Casa de tudo: Hermes, OpenClaw, n8n, app CredPlus, banco, proxy, logs e automação.</p>
+              <div class="chips">
+                <span class="chip tag-green">docker</span>
+                <span class="chip tag-green">pm2</span>
+                <span class="chip tag-green">produção</span>
+              </div>
+            </div>
+
+            <div class="node">
+              <div class="top">
+                <img src="https://cdn.simpleicons.org/whatsapp/25D366" alt="WhatsApp">
+                <h3>WhatsApp</h3>
+              </div>
+              <p>Entra depois. Canal mais sensível, mais humano e mais perigoso para automatizar sem aprovação.</p>
+              <div class="chips">
+                <span class="chip tag-amber">fase 2</span>
+                <span class="chip tag-amber">aprovação</span>
+              </div>
+            </div>
+
+            <div class="node">
+              <div class="top">
+                <img src="https://cdn.simpleicons.org/googlephotos/ffffff" alt="Conteúdo IA">
+                <h3>Conteúdo IA</h3>
+              </div>
+              <p>Ramos, posts, roteiros, avatar, voz e produção futura apoiados por Herminho, Drive, n8n e Composio.</p>
+              <div class="chips">
+                <span class="chip tag-blue">Ramos</span>
+                <span class="chip tag-blue">Instagram</span>
+                <span class="chip tag-blue">Facebook</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-strip">
+          <div class="footer-card">
+            <strong>Herminho faz</strong>
+            <span>Agenda, Gmail, Drive, histórico, busca e apoio pessoal/operacional.</span>
+          </div>
+          <div class="footer-card">
+            <strong>BOBY faz</strong>
+            <span>Comandos CredPlus, agentes, rotina operacional e automação do negócio.</span>
+          </div>
+          <div class="footer-card">
+            <strong>Composio faz</strong>
+            <span>Conectar agentes aos apps reais sem você integrar tudo na mão.</span>
+          </div>
+          <div class="footer-card">
+            <strong>CredPlus manda</strong>
+            <span>Regra financeira, histórico oficial, juros, pagamento, comissão e cobrança.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="column">
+        <div class="panel">
+          <h2>Integrações Ativas</h2>
+          <div class="mini">Conexões já alinhadas no Composio para o seu ecossistema.</div>
+          <div class="stack">
+            <div class="app">
+              <img src="https://cdn.simpleicons.org/googlecalendar/4285F4" alt="Calendar">
+              <div>
+                <div class="app-title">calendar-pessoal</div>
+                <div class="app-note">Agenda principal do `lellisflavio@gmail.com`</div>
+              </div>
+            </div>
+            <div class="app">
+              <img src="https://cdn.simpleicons.org/gmail/EA4335" alt="Gmail pessoal">
+              <div>
+                <div class="app-title">gmail-pessoal</div>
+                <div class="app-note">Caixa do e-mail principal</div>
+              </div>
+            </div>
+            <div class="app">
+              <img src="https://cdn.simpleicons.org/gmail/EA4335" alt="Gmail CredPlus">
+              <div>
+                <div class="app-title">gmail-credplus</div>
+                <div class="app-note">Conta `credplusemp@gmail.com` sem agenda</div>
+              </div>
+            </div>
+            <div class="app">
+              <img src="https://cdn.simpleicons.org/googledrive/34A853" alt="Drive Lellis">
+              <div>
+                <div class="app-title">drive-lellis</div>
+                <div class="app-note">Drive certo da conta principal</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Decisão Certa</h2>
+          <div class="stack">
+            <div class="app">
+              <img src="https://cdn.simpleicons.org/checkmarx/2ad4ff" alt="Certo">
+              <div>
+                <div class="app-title">Composio</div>
+                <div class="app-note">Busca e-mail, agenda, arquivo, planilha, evento e apoio externo</div>
+              </div>
+            </div>
+            <div class="app">
+              <img src="https://cdn.simpleicons.org/bookstack/ffbe3b" alt="Regra">
+              <div>
+                <div class="app-title">CredPlus</div>
+                <div class="app-note">Decide juros, comissão, amortização, baixa e contrato</div>
+              </div>
+            </div>
+            <div class="app">
+              <img src="https://cdn.simpleicons.org/n8n/EA4B71" alt="n8n 2">
+              <div>
+                <div class="app-title">n8n</div>
+                <div class="app-note">Costura automações entre os sistemas</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panorama">
+      <div class="panorama-content">
+        <h2>Resumo Visual da Lógica</h2>
+        <p>
+          Você fala no Telegram. O agente certo assume. Se for agenda, e-mail, Drive ou planilha, ele usa o Composio como ponte oficial. Se for regra financeira, cobrança, juros, amortização ou comissão, a decisão continua no CredPlus.
+        </p>
+        <p>
+          O Herminho atende o lado pessoal e Google. O BOBY/OpenClaw atende o lado operacional do CredPlus. O n8n costura automações. A VPS segura a produção inteira.
+        </p>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
