@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telegram: Grupos, Tópicos & Agentes | Curso OpenClaw</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #0a0a0f;
+  --bg-elevated: #12121a;
+  --bg-card: #1a1a25;
+  --grape: #8b5cf6;
+  --grape-light: #a78bfa;
+  --grape-dim: rgba(139, 92, 246, 0.12);
+  --grape-border: rgba(139, 92, 246, 0.25);
+  --grape-glow: rgba(139, 92, 246, 0.06);
+  --emerald: #10b981;
+  --emerald-dim: rgba(16, 185, 129, 0.12);
+  --emerald-border: rgba(16, 185, 129, 0.25);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245, 158, 11, 0.12);
+  --amber-border: rgba(245, 158, 11, 0.25);
+  --rose: #f43f5e;
+  --rose-dim: rgba(244, 63, 94, 0.12);
+  --rose-border: rgba(244, 63, 94, 0.25);
+  --cyan: #22d3ee;
+  --cyan-dim: rgba(34, 211, 238, 0.12);
+  --cyan-border: rgba(34, 211, 238, 0.25);
+  --text: #f1f1f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --border: rgba(255,255,255,0.06);
+  --code-bg: #0d0d15;
+  --code-border: rgba(255,255,255,0.08);
+}
+
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 10.5pt;
+  line-height: 1.65;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 20mm 22mm 26mm;
+  position: relative;
+  page-break-after: always;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.page::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -20%;
+  width: 60%;
+  height: 70%;
+  background: radial-gradient(ellipse, var(--grape-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* COVER */
+.cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 297mm;
+  padding: 32mm 28mm;
+}
+.cover-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  background: var(--grape-dim);
+  border: 1px solid var(--grape-border);
+  border-radius: 100px;
+  font-size: 9pt;
+  font-weight: 600;
+  color: var(--grape-light);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  width: fit-content;
+}
+.cover-emoji { font-size: 64px; margin-bottom: 20px; display: block; line-height: 1; }
+.cover-title {
+  font-size: 38pt;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+  margin-bottom: 20px;
+}
+.cover-title em {
+  font-style: italic;
+  background: linear-gradient(135deg, var(--grape-light), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.cover-subtitle {
+  font-size: 13pt;
+  color: var(--text-secondary);
+  font-weight: 300;
+  line-height: 1.6;
+  max-width: 440px;
+  margin-bottom: 40px;
+}
+.cover-meta {
+  display: flex;
+  gap: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.meta-item { display: flex; flex-direction: column; gap: 3px; }
+.meta-label { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-weight: 600; }
+.meta-value { font-size: 11pt; font-weight: 600; color: var(--text); }
+
+/* PAGE HEADER */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 28px;
+}
+.ph-left { font-size: 8.5pt; color: var(--grape-light); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+.ph-right { font-family: 'JetBrains Mono', monospace; font-size: 8pt; color: var(--text-muted); }
+
+/* PAGE FOOTER */
+.page-footer {
+  position: absolute;
+  bottom: 10mm;
+  left: 22mm; right: 22mm;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.pf-left { font-size: 7.5pt; color: var(--text-muted); }
+.pf-right { font-family: 'JetBrains Mono', monospace; font-size: 7.5pt; color: var(--text-muted); }
+
+/* SECTION HEADING */
+.section-head { margin-bottom: 20px; }
+.section-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+  font-weight: 600;
+  color: var(--grape);
+  background: var(--grape-dim);
+  border-radius: 6px;
+  padding: 3px 9px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+.section-num.emerald { color: var(--emerald); background: var(--emerald-dim); }
+.section-title { font-size: 20pt; font-weight: 700; letter-spacing: -0.5px; line-height: 1.1; }
+.section-sub { font-size: 11pt; color: var(--text-secondary); font-weight: 300; margin-top: 6px; }
+
+h3 { font-size: 12pt; font-weight: 600; color: var(--grape-light); margin: 20px 0 8px; display: flex; align-items: center; gap: 6px; }
+h4 { font-size: 10.5pt; font-weight: 600; color: var(--text); margin: 14px 0 6px; }
+p { margin-bottom: 10px; color: var(--text-secondary); font-size: 10.5pt; }
+strong { color: var(--text); }
+ul, ol { margin: 6px 0 12px 18px; }
+li { margin-bottom: 4px; font-size: 10pt; color: var(--text-secondary); line-height: 1.5; }
+
+/* CODE */
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 12px 0 18px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+  line-height: 1.7;
+  color: #c9d1d9;
+  white-space: pre;
+  position: relative;
+}
+.code-block .lang-tag {
+  position: absolute;
+  top: 8px; right: 12px;
+  font-size: 7.5pt;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+code {
+  background: var(--grape-dim);
+  color: var(--grape-light);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+}
+
+/* CALLOUTS */
+.callout {
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 12px 0 18px;
+  display: flex;
+  gap: 12px;
+  font-size: 10pt;
+  line-height: 1.55;
+}
+.callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.callout.tip { background: var(--grape-dim); border: 1px solid var(--grape-border); color: var(--grape-light); }
+.callout.warning { background: var(--amber-dim); border: 1px solid var(--amber-border); color: #fcd34d; }
+.callout.danger { background: var(--rose-dim); border: 1px solid var(--rose-border); color: #fda4af; }
+.callout.success { background: var(--emerald-dim); border: 1px solid var(--emerald-border); color: #6ee7b7; }
+.callout.info { background: var(--cyan-dim); border: 1px solid var(--cyan-border); color: var(--cyan); }
+
+/* STEPS */
+.steps { margin: 12px 0 20px; }
+.step { display: flex; gap: 14px; margin-bottom: 16px; align-items: flex-start; }
+.step-num {
+  display: flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--grape);
+  color: white;
+  font-size: 11pt;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.step-num.em { background: var(--emerald); }
+.step-content { flex: 1; }
+.step-title { font-weight: 600; font-size: 11pt; color: var(--text); margin-bottom: 3px; }
+.step-desc { font-size: 10pt; color: var(--text-secondary); line-height: 1.55; }
+
+/* PROS/CONS */
+.pc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 12px 0 20px; }
+.pc-box { border-radius: 10px; padding: 16px; }
+.pc-pro { background: var(--emerald-dim); border: 1px solid var(--emerald-border); }
+.pc-con { background: var(--rose-dim); border: 1px solid var(--rose-border); }
+.pc-title { font-size: 9pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+.pc-pro .pc-title { color: var(--emerald); }
+.pc-con .pc-title { color: var(--rose); }
+.pc-item { font-size: 9.5pt; color: var(--text-secondary); margin-bottom: 6px; display: flex; gap: 7px; align-items: flex-start; line-height: 1.4; }
+.pc-pro .pc-item::before { content: '✓'; color: var(--emerald); font-weight: 700; flex-shrink: 0; }
+.pc-con .pc-item::before { content: '✗'; color: var(--rose); font-weight: 700; flex-shrink: 0; }
+
+/* TABLE */
+table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 9.5pt; }
+th { background: var(--bg-elevated); padding: 9px 12px; text-align: left; font-size: 8pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+td { padding: 9px 12px; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+
+/* ARCH CARDS */
+.arch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 12px 0 20px; }
+.arch-card { border-radius: 12px; padding: 18px; border: 1px solid; }
+.arch-blue { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.25); }
+.arch-green { background: var(--emerald-dim); border-color: var(--emerald-border); }
+.arch-title { font-size: 12pt; font-weight: 700; margin-bottom: 4px; }
+.arch-blue .arch-title { color: #93c5fd; }
+.arch-green .arch-title { color: var(--emerald); }
+.arch-sub { font-size: 9pt; color: var(--text-muted); margin-bottom: 12px; }
+.arch-item { font-size: 9.5pt; color: var(--text-secondary); margin-bottom: 5px; display: flex; gap: 6px; line-height: 1.45; }
+
+/* SCENARIO */
+.scenario { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 12px; }
+.scenario-title { font-size: 11pt; font-weight: 700; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 7px; }
+.scenario-body { font-size: 10pt; color: var(--text-secondary); line-height: 1.55; }
+
+/* CHECKLIST */
+.checklist { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin: 12px 0 20px; }
+.check-item { display: flex; align-items: flex-start; gap: 10px; font-size: 10pt; color: var(--text-secondary); margin-bottom: 9px; line-height: 1.45; }
+.check-item:last-child { margin-bottom: 0; }
+.check-box { width: 17px; height: 17px; border: 2px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 1px; }
+
+/* TAGS */
+.tag { display: inline-flex; align-items: center; padding: 1px 8px; border-radius: 100px; font-size: 8.5pt; font-weight: 600; }
+.tag.grape { background: var(--grape-dim); color: var(--grape-light); }
+.tag.emerald { background: var(--emerald-dim); color: var(--emerald); }
+.tag.rose { background: var(--rose-dim); color: var(--rose); }
+.tag.amber { background: var(--amber-dim); color: var(--amber); }
+.tag.cyan { background: var(--cyan-dim); color: var(--cyan); }
+
+/* DIVIDER */
+.divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+/* HIGHLIGHT BOX */
+.highlight { background: var(--bg-card); border-left: 3px solid var(--grape); border-radius: 0 10px 10px 0; padding: 14px 16px; margin: 12px 0 20px; font-size: 10.5pt; color: var(--text-secondary); line-height: 1.55; }
+.highlight strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- ======== CAPA ======== -->
+<div class="page">
+  <div class="cover">
+    <div class="cover-badge">Módulo Multiagentes · Configuração</div>
+    <span class="cover-emoji">📱</span>
+    <div class="cover-title">Telegram:<br><em>Grupos, Tópicos</em><br>& Agentes</div>
+    <div class="cover-subtitle">Como organizar seu Telegram com tópicos e configurar sua IA para responder automaticamente em cada um deles — sem precisar marcar o bot toda hora.</div>
+    <div class="cover-meta">
+      <div class="meta-item">
+        <span class="meta-label">Duração</span>
+        <span class="meta-value">~20 min</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Nível</span>
+        <span class="meta-value">Intermediário</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Pré-requisito</span>
+        <span class="meta-value">Agente configurado</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== PÁGINA 2 — O que são tópicos ======== -->
+<div class="page">
+  <div class="page-header">
+    <span class="ph-left">📱 Telegram: Grupos, Tópicos & Agentes</span>
+    <span class="ph-right">curso openclaw</span>
+  </div>
+
+  <div class="section-head">
+    <div class="section-num">01</div>
+    <div class="section-title">O que são tópicos?</div>
+    <div class="section-sub">Entendendo a estrutura antes de configurar</div>
+  </div>
+
+  <p>Imagine um grupo do Telegram como um prédio. <strong>Tópicos são os andares</strong> — cada andar tem sua própria conversa, mas todo mundo mora no mesmo prédio.</p>
+
+  <p>Com tópicos, você pode ter no mesmo grupo:</p>
+  <ul>
+    <li>Um tópico para o <strong>curso</strong> — onde seu agente tira dúvidas dos alunos</li>
+    <li>Um tópico de <strong>suporte técnico</strong> — sem misturar com o restante</li>
+    <li>Um tópico para <strong>ideias e projetos</strong></li>
+    <li>Um tópico de uso <strong>pessoal</strong>, só pra você</li>
+  </ul>
+
+  <div class="callout tip">
+    <span class="callout-icon">💡</span>
+    <div>A grande vantagem é que você pode ter <strong>o mesmo agente se comportando diferente em cada tópico</strong> — ou até usar agentes completamente separados por tópico.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-head">
+    <div class="section-num">02</div>
+    <div class="section-title">Criando seu grupo com tópicos</div>
+    <div class="section-sub">Passo a passo do zero</div>
+  </div>
+
+  <div class="callout warning">
+    <span class="callout-icon">⚠️</span>
+    <div><strong>Atenção:</strong> Só <strong>supergrupos</strong> suportam tópicos. Um grupo normal não tem essa opção. O passo 3 abaixo transforma seu grupo em supergrupo automaticamente.</div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Crie um novo grupo no Telegram</div>
+        <div class="step-desc">Menu (☰) → <strong>Novo Grupo</strong> → escolha o nome (ex: <em>Meu HQ</em>) → adicione pelo menos uma pessoa → confirme.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Abra as configurações do grupo</div>
+        <div class="step-desc">Toque no nome do grupo no topo da tela → ícone de lápis (editar).</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Torne-o um Supergrupo</div>
+        <div class="step-desc">Vá em <strong>Tipo do Grupo</strong> → defina um <code>@username</code> público (ex: <code>@meuhq_2025</code>). O Telegram converte automaticamente para supergrupo.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Ative os tópicos</div>
+        <div class="step-desc">Nas configurações → <strong>Tópicos</strong> → ligue o toggle. O Telegram cria o tópico <em>Geral</em> automaticamente (ID: 1).</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Crie seus tópicos</div>
+        <div class="step-desc">Na tela do grupo → ícone de tópicos → <strong>"Criar Tópico"</strong> → nome + emoji. Cada tópico terá um ID único (ex: <code>2638</code>).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span class="pf-left">Curso OpenClaw — Material do Aluno</span>
+    <span class="pf-right">2</span>
+  </div>
+</div>
+
+<!-- ======== PÁGINA 3 — Adicionando o agente ======== -->
+<div class="page">
+  <div class="page-header">
+    <span class="ph-left">📱 Telegram: Grupos, Tópicos & Agentes</span>
+    <span class="ph-right">curso openclaw</span>
+  </div>
+
+  <div class="section-head">
+    <div class="section-num">03</div>
+    <div class="section-title">Adicionando seu agente ao grupo</div>
+    <div class="section-sub">Duas configurações essenciais antes de tudo</div>
+  </div>
+
+  <h3>Passo 1 — Desligar o Privacy Mode no BotFather</h3>
+
+  <p>Por padrão, bots só enxergam mensagens onde são <strong>marcados diretamente</strong> (<code>@nomedo​bot mensagem</code>). Para o agente ler tudo sem precisar ser marcado, você precisa desligar o Privacy Mode:</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num em">1</div>
+      <div class="step-content">
+        <div class="step-title">Abra o @BotFather no Telegram</div>
+        <div class="step-desc">Digite <code>/mybots</code> → escolha seu bot → <strong>Bot Settings</strong> → <strong>Group Privacy</strong> → <strong>Turn off</strong>.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num em">2</div>
+      <div class="step-content">
+        <div class="step-title">Confirme que está desligado</div>
+        <div class="step-desc">O BotFather vai mostrar: <em>"Privacy mode is disabled for [seu bot]"</em>. Pronto.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Passo 2 — Adicionar como Administrador</h3>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num em">1</div>
+      <div class="step-content">
+        <div class="step-title">Adicione o bot ao grupo</div>
+        <div class="step-desc">Configurações do grupo → <strong>Administradores</strong> → <strong>Adicionar Administrador</strong> → busque pelo @username do seu bot → adicione.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num em">2</div>
+      <div class="step-content">
+        <div class="step-title">Ative a permissão de tópicos</div>
+        <div class="step-desc">Na tela de permissões do bot, ative <strong>"Gerenciar Tópicos"</strong>. Sem isso, ele não consegue agir dentro dos tópicos.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout danger">
+    <span class="callout-icon">🚨</span>
+    <div><strong>Erro clássico:</strong> Adicionar o bot ao grupo mas esquecer de torná-lo admin. Resultado: ele não lê as mensagens dos tópicos, só do "Geral". Sempre torne-o administrador.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-head">
+    <div class="section-num">04</div>
+    <div class="section-title">Descobrindo o ID de cada tópico</div>
+    <div class="section-sub">A forma mais fácil: peça pra sua própria IA!</div>
+  </div>
+
+  <p>Cada tópico tem um ID único que você vai precisar para a configuração. Não precisa de terminal — basta pedir ao seu agente:</p>
+
+  <div class="highlight">
+    <strong>No chat privado com seu agente, mande:</strong><br><br>
+    <em>"Amora, entra no grupo X, manda uma mensagem qualquer no tópico Y e me diz qual é o chat ID completo desse tópico."</em><br><br>
+    Ela vai responder algo como: <code>telegram:-1003873964847:topic:2638</code>
+  </div>
+
+  <p>Anote o ID de cada tópico que você quer configurar. Você vai precisar deles no próximo passo.</p>
+
+  <div class="page-footer">
+    <span class="pf-left">Curso OpenClaw — Material do Aluno</span>
+    <span class="pf-right">3</span>
+  </div>
+</div>
+
+<!-- ======== PÁGINA 4 — Configurando o modo de resposta ======== -->
+<div class="page">
+  <div class="page-header">
+    <span class="ph-left">📱 Telegram: Grupos, Tópicos & Agentes</span>
+    <span class="ph-right">curso openclaw</span>
+  </div>
+
+  <div class="section-head">
+    <div class="section-num">05</div>
+    <div class="section-title">Configurando como o agente responde</div>
+    <div class="section-sub">Definindo em quais tópicos ele fala livremente e em quais só quando chamado</div>
+  </div>
+
+  <p>Existem dois modos de ativação:</p>
+  <ul>
+    <li><strong><code>mention</code></strong> — o agente só responde quando alguém digita <code>@nomedo​bot mensagem</code></li>
+    <li><strong><code>all</code></strong> — o agente responde a <em>qualquer</em> mensagem no tópico, mesmo sem ser marcado</li>
+  </ul>
+
+  <p>Você define isso por tópico no seu <code>config.yaml</code>:</p>
+
+  <div class="code-block"><span class="lang-tag">yaml</span>agents:
+  - id: amora-main
+    model: anthropic/claude-sonnet-4-6
+    workspaceDir: /root/.openclaw/workspace-amora
+
+    activation:
+      surfaces:
+        - surface: telegram
+          mode: mention  # padrão: só quando marcada
+
+          overrides:
+            # Tópico "Curso" — responde tudo, sem precisar marcar
+            - chat: "telegram:-1003873964847:topic:2638"
+              mode: all
+
+            # Tópico "Suporte" — também responde tudo
+            - chat: "telegram:-1003873964847:topic:2640"
+              mode: all
+
+            # Tópico "Geral" — só quando marcada
+            - chat: "telegram:-1003873964847:topic:1"
+              mode: mention</div>
+
+  <div class="callout warning">
+    <span class="callout-icon">⚠️</span>
+    <div><strong>Cuidado com o Chat ID:</strong> use sempre o ID com <code>:topic:XXXX</code> no final. Se usar só o ID do grupo (<code>telegram:-1003873964847</code> sem o tópico), o agente vai responder em <strong>todos</strong> os tópicos do grupo.</div>
+  </div>
+
+  <p>Depois de editar o config, reinicie o gateway para as mudanças entrarem em vigor:</p>
+  <div class="code-block"><span class="lang-tag">bash</span>openclaw gateway restart</div>
+
+  <div class="callout success">
+    <span class="callout-icon">✅</span>
+    <div><strong>Testando:</strong> mande uma mensagem num tópico configurado com <code>mode: all</code> sem marcar o bot. Se ele responder, funcionou!</div>
+  </div>
+
+  <div class="page-footer">
+    <span class="pf-left">Curso OpenClaw — Material do Aluno</span>
+    <span class="pf-right">4</span>
+  </div>
+</div>
+
+<!-- ======== PÁGINA 5 — Arquitetura ======== -->
+<div class="page">
+  <div class="page-header">
+    <span class="ph-left">📱 Telegram: Grupos, Tópicos & Agentes</span>
+    <span class="ph-right">curso openclaw</span>
+  </div>
+
+  <div class="section-head">
+    <div class="section-num">06</div>
+    <div class="section-title">Um agente ou vários?</div>
+    <div class="section-sub">A decisão mais importante ao trabalhar com múltiplos tópicos</div>
+  </div>
+
+  <p>Quando você tem vários tópicos, precisa decidir: <strong>um único agente responde em todos, ou cada tópico tem o seu próprio agente?</strong></p>
+
+  <div class="arch-grid">
+    <div class="arch-card arch-blue">
+      <div class="arch-title">🔵 Um agente para tudo</div>
+      <div class="arch-sub">(MAIN compartilhado)</div>
+      <div class="arch-item">📁 <span>1 workspace compartilhado</span></div>
+      <div class="arch-item">🧠 <span>Lembra de tudo de todos os tópicos</span></div>
+      <div class="arch-item">⏰ <span>1 conjunto de crons e heartbeats</span></div>
+      <div class="arch-item">💰 <span>Mais barato (1 processo)</span></div>
+      <div class="arch-item">⚙️ <span>Setup simples</span></div>
+    </div>
+    <div class="arch-card arch-green">
+      <div class="arch-title">🟢 Um agente por tópico</div>
+      <div class="arch-sub">(Agentes isolados)</div>
+      <div class="arch-item">📁 <span>Workspace separado por agente</span></div>
+      <div class="arch-item">🔒 <span>Contexto isolado por tópico</span></div>
+      <div class="arch-item">⏰ <span>Crons independentes</span></div>
+      <div class="arch-item">💰 <span>Mais caro (N processos)</span></div>
+      <div class="arch-item">⚙️ <span>Setup mais complexo</span></div>
+    </div>
+  </div>
+
+  <div class="pc-grid">
+    <div class="pc-box pc-pro">
+      <div class="pc-title">✅ Um agente — Vantagens</div>
+      <div class="pc-item">Memória cruzada ("lembra daquela ideia do outro tópico?")</div>
+      <div class="pc-item">Setup rápido — 1 config, 1 workspace</div>
+      <div class="pc-item">1 heartbeat faz tudo</div>
+      <div class="pc-item">Econômico</div>
+    </div>
+    <div class="pc-box pc-con">
+      <div class="pc-title">✗ Um agente — Riscos</div>
+      <div class="pc-item">Contexto de tópicos diferentes se mistura</div>
+      <div class="pc-item">Sem privacidade entre tópicos</div>
+      <div class="pc-item">Contexto cresce muito rápido</div>
+    </div>
+  </div>
+
+  <div class="pc-grid">
+    <div class="pc-box pc-pro">
+      <div class="pc-title">✅ Agentes isolados — Vantagens</div>
+      <div class="pc-item">Privacidade total (tópico A não vaza no B)</div>
+      <div class="pc-item">SOUL.md diferente por tópico</div>
+      <div class="pc-item">Modelo diferente por tópico (Haiku no suporte, Opus no dev)</div>
+      <div class="pc-item">Contexto limpo e focado</div>
+    </div>
+    <div class="pc-box pc-con">
+      <div class="pc-title">✗ Agentes isolados — Riscos</div>
+      <div class="pc-item">Agentes não se "lembram" de outros tópicos</div>
+      <div class="pc-item">Múltiplos crons e heartbeats para manter</div>
+      <div class="pc-item">Mais configuração inicial</div>
+    </div>
+  </div>
+
+  <div class="callout success">
+    <span class="callout-icon">🎯</span>
+    <div><strong>Recomendação para quem está começando:</strong> comece com <strong>um único agente</strong>. É mais simples, funciona muito bem para uso pessoal, e você pode migrar para agentes isolados quando sentir a necessidade real.</div>
+  </div>
+
+  <div class="page-footer">
+    <span class="pf-left">Curso OpenClaw — Material do Aluno</span>
+    <span class="pf-right">5</span>
+  </div>
+</div>
+
+<!-- ======== PÁGINA 6 — Quando usar cada um ======== -->
+<div class="page">
+  <div class="page-header">
+    <span class="ph-left">📱 Telegram: Grupos, Tópicos & Agentes</span>
+    <span class="ph-right">curso openclaw</span>
+  </div>
+
+  <div class="section-head">
+    <div class="section-num">07</div>
+    <div class="section-title">Qual arquitetura é pra mim?</div>
+    <div class="section-sub">Cenários reais para te ajudar a decidir</div>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-title">🔵 Use um agente para tudo quando...</div>
+    <div class="scenario-body">
+      Você é o único usuário dos tópicos. Os tópicos são projetos seus relacionados (blog, curso, app). Você quer que o agente lembre de conversas entre tópicos. Quer manter as coisas simples no começo.
+    </div>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-title">🟢 Use agentes isolados quando...</div>
+    <div class="scenario-body">
+      Você tem múltiplos clientes e precisa que os dados de um <strong>nunca</strong> apareçam para o outro. Quer comportamentos muito diferentes por tópico (professora em um, suporte técnico em outro). Precisa de modelos diferentes por contexto para controlar custo.
+    </div>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-title">⚡ Use híbrido quando...</div>
+    <div class="scenario-body">
+      Quer um agente principal para uso pessoal (chat privado com você) e agentes isolados para outros contextos — como um tópico compartilhado com clientes ou uma comunidade.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-head">
+    <div class="section-num">08</div>
+    <div class="section-title">Checklist de configuração</div>
+    <div class="section-sub">Antes de dar como pronto, confirme esses pontos</div>
+  </div>
+
+  <div class="checklist">
+    <div class="check-item"><span class="check-box"></span> Grupo criado e convertido para supergrupo (tem @username)</div>
+    <div class="check-item"><span class="check-box"></span> Tópicos criados com nomes e emojis</div>
+    <div class="check-item"><span class="check-box"></span> Privacy Mode desligado no BotFather</div>
+    <div class="check-item"><span class="check-box"></span> Bot adicionado como administrador com permissão "Gerenciar Tópicos"</div>
+    <div class="check-item"><span class="check-box"></span> Chat IDs dos tópicos anotados</div>
+    <div class="check-item"><span class="check-box"></span> config.yaml atualizado com os overrides por tópico</div>
+    <div class="check-item"><span class="check-box"></span> <code>openclaw gateway restart</code> executado</div>
+    <div class="check-item"><span class="check-box"></span> Teste feito: mensagem sem marcar o bot → resposta recebida ✅</div>
+  </div>
+
+  <div class="callout tip">
+    <span class="callout-icon">💡</span>
+    <div><strong>Dica final:</strong> não existe arquitetura errada. Existe a que funciona <strong>para o seu momento</strong>. Comece simples, observe onde dói, e ajuste. É assim que todo mundo aprende.</div>
+  </div>
+
+  <div class="page-footer">
+    <span class="pf-left">Curso OpenClaw — Material do Aluno</span>
+    <span class="pf-right">6</span>
+  </div>
+</div>
+
+</body>
+</html>

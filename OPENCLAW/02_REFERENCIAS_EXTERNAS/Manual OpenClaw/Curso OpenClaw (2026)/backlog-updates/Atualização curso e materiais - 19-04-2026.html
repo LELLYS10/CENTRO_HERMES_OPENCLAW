@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atualização Curso OpenClaw — 19/04/2026</title>
+<style>
+:root{--bg:#0a0a0f;--surface:#14141d;--border:#2a2a3a;--text:#e5e7eb;--muted:#94a3b8;--accent:#8b5cf6;--green:#22c55e;--yellow:#eab308;--red:#ef4444;--blue:#3b82f6}
+*{box-sizing:border-box;margin:0;padding:0} body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:14px}
+.container{max-width:920px;margin:0 auto;padding:32px 20px} h1{font-size:28px;margin-bottom:6px;background:linear-gradient(90deg,#8b5cf6,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{color:var(--muted);margin-bottom:24px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:20px 0 28px}
+.kpi,.card{background:var(--surface);border:1px solid var(--border);border-radius:12px}.kpi{padding:16px;text-align:center}.kpi .val{font-size:28px;font-weight:800;color:var(--accent)}.kpi .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:6px}
+.card{padding:16px;margin:14px 0} h2{font-size:18px;margin:28px 0 12px;color:#c4b5fd} table{width:100%;border-collapse:collapse;font-size:13px} th,td{padding:10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top} th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+ul{padding-left:18px;margin-top:8px} li{margin:6px 0}.badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:700}.ok{background:#16351f;color:#86efac}.warn{background:#4a3b10;color:#fde68a}.stop{background:#4a1717;color:#fca5a5}.info{background:#14263f;color:#93c5fd} code{background:#1d1d2b;padding:2px 6px;border-radius:6px;color:#c4b5fd}
+.footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--border);color:var(--muted);font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Atualização do Curso OpenClaw</h1>
+  <p class="subtitle">19 de abril de 2026 — fechamento seguro de N1/N7, auditoria real do Drive e recuperação da trilha da aula de fallback</p>
+
+  <div class="grid">
+    <div class="kpi"><div class="val">9</div><div class="lbl">artefatos publicados</div></div>
+    <div class="kpi"><div class="val">12</div><div class="lbl">arquivos locais validados</div></div>
+    <div class="kpi"><div class="val">3</div><div class="lbl">PDFs regenerados</div></div>
+    <div class="kpi"><div class="val">261</div><div class="lbl">itens no inventário do Drive</div></div>
+  </div>
+
+  <h2>O que foi feito</h2>
+  <div class="card">
+    <ul>
+      <li>Inventário recursivo do Drive congelado e mapas atualizados para refletir a raiz ativa de skills em <code>aula-12-Skills, API e ferramentas (avançado)</code>.</li>
+      <li>Narrativa do curso alinhada para <strong>ChatGPT/OpenAI OAuth como padrão</strong>, <strong>OpenAI API key como fallback de controle</strong> e <strong>OpenRouter como camada de experimentação</strong>.</li>
+      <li>N-7 atualizado sem referências antigas de Claude 4.5/4.6 no PRD, prompt, HTML v1 e HTML v2.</li>
+      <li>Rollback local + Drive criado por arquivo, com checksum e compare-after-upload.</li>
+    </ul>
+  </div>
+
+  <h2>Publicações concluídas em 19/04</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Arquivo</th><th>Tipo</th><th>Status</th><th>Verificação</th></tr></thead>
+      <tbody>
+        <tr><td>modulo-05-integracoes.md</td><td>Prompt</td><td><span class="badge ok">Publicado</span></td><td>download-back + diff sem diferença</td></tr>
+        <tr><td>aula-n1-oauth-config-prompt-aluno.md</td><td>Prompt</td><td><span class="badge ok">Publicado</span></td><td>download-back + diff sem diferença</td></tr>
+        <tr><td>aula-n1-oauth-config.html</td><td>HTML</td><td><span class="badge ok">Publicado</span></td><td>download-back + diff sem diferença</td></tr>
+        <tr><td>aula-n1-oauth-config.pdf</td><td>PDF</td><td><span class="badge ok">Publicado</span></td><td>checksum + <code>cmp</code> PASS</td></tr>
+        <tr><td>aula-n7-custos-modelos-prompt-aluno.md</td><td>Prompt</td><td><span class="badge ok">Publicado</span></td><td>download-back + diff sem diferença</td></tr>
+        <tr><td>aula-n7-custos-modelos.html</td><td>HTML</td><td><span class="badge ok">Publicado</span></td><td>download-back + diff sem diferença</td></tr>
+        <tr><td>aula-n7-custos-modelos.pdf</td><td>PDF</td><td><span class="badge ok">Publicado</span></td><td>checksum + <code>cmp</code> PASS</td></tr>
+        <tr><td>aula-n7-custos-modelos-v2.html</td><td>HTML</td><td><span class="badge ok">Publicado</span></td><td>download-back + diff sem diferença</td></tr>
+        <tr><td>aula-n7-custos-modelos-v2.pdf</td><td>PDF</td><td><span class="badge ok">Publicado</span></td><td>checksum + <code>cmp</code> PASS</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Fallback LLMs</h2>
+  <div class="card">
+    <p><strong>Achado novo:</strong> a trilha da aula existe no conjunto de transcrições e foi recuperada em <code>memory/curso-openclaw/transcricoes/08-extra-mude-llm.md</code>.</p>
+    <ul>
+      <li>Isso resolve o problema de “fonte totalmente perdida”.</li>
+      <li>Ainda <strong>não</strong> publiquei por cima de <code>fallback-llms.html|pdf</code>, porque falta transformar essa transcrição em um HTML canônico confiável.</li>
+      <li>Ou seja, agora o item saiu de “órfão total” para <span class="badge info">fonte candidata encontrada</span>.</li>
+    </ul>
+  </div>
+
+  <h2>O que ficou pendente por segurança</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Item</th><th>Motivo</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>fallback-llms.html / fallback-llms.pdf</td><td>Transcrição encontrada, mas HTML canônico ainda não foi reconstruído</td><td><span class="badge warn">Aguardando reconstrução</span></td></tr>
+        <tr><td>Duplicatas de 30/03 no backlog</td><td>Artefatos históricos duplicados, sem limpeza explícita ainda</td><td><span class="badge warn">Documentado, sem mexer</span></td></tr>
+        <tr><td>M12 / itens sem fonte forte</td><td>Sem base confiável suficiente para refresh automático</td><td><span class="badge stop">Bloqueado</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Próximo passo sugerido</h2>
+  <div class="card">
+    <p>Reconstruir a aula <strong>Fallback LLMs</strong> a partir da transcrição <code>08-extra-mude-llm.md</code>, gerar o HTML canônico local, revisar a narrativa para OpenRouter como hub multi-LLM e só então republicar o par HTML/PDF com compare-after-upload.</p>
+  </div>
+
+  <div class="footer">
+    Curso OpenClaw · backlog update 19/04/2026<br>
+    Feito com auditoria do Drive, rollback por arquivo e validação de publish item por item.
+  </div>
+</div>
+</body>
+</html>

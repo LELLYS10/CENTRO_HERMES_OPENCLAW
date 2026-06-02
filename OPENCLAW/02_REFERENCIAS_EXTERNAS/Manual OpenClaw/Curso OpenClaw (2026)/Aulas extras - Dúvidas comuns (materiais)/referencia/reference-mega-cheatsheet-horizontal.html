@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEGA CHEATSHEET — MICRO-SAAS PRO × OPENCLAW</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<style>
+  :root {
+    --bg: #0d0d1a;
+    --bg2: #111124;
+    --card: #1a1a2e;
+    --card2: #1f1f35;
+    --border: #2a2a4a;
+    --purple: #7c3aed;
+    --purple-light: #9d65f5;
+    --purple-dim: rgba(124, 58, 237, 0.15);
+    --green: #10b981;
+    --green-dim: rgba(16, 185, 129, 0.15);
+    --yellow: #f59e0b;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+    --code-bg: #0f0f1e;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #0d0d1a 0%, #1a0a2e 50%, #0d1a2e 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .logo-badge {
+    background: linear-gradient(135deg, var(--purple), #5b21b6);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-weight: 900;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: white;
+    line-height: 1.3;
+  }
+  .logo-badge span {
+    display: block;
+    font-size: 14px;
+    letter-spacing: -0.02em;
+  }
+  .header-divider {
+    width: 1px;
+    height: 40px;
+    background: var(--border);
+  }
+  .header-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .header-title strong {
+    display: block;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    text-transform: none;
+  }
+  .header-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--purple-dim);
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--purple-light);
+  }
+  .pill.green {
+    background: var(--green-dim);
+    border-color: rgba(16,185,129,0.3);
+    color: var(--green);
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── NAV TABS ── */
+  .nav-wrap {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+    position: sticky;
+    top: 81px;
+    z-index: 99;
+  }
+  .nav-wrap::-webkit-scrollbar { display: none; }
+  .nav-tabs {
+    display: flex;
+    gap: 2px;
+    padding: 8px 16px;
+    min-width: max-content;
+  }
+  .tab-btn {
+    background: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 11.5px;
+    font-weight: 500;
+    padding: 5px 12px;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .tab-btn:hover {
+    color: var(--text);
+    background: var(--card);
+    border-color: var(--border);
+  }
+  .tab-btn.active {
+    background: var(--purple);
+    border-color: var(--purple);
+    color: white;
+    font-weight: 600;
+  }
+
+  /* ── CONTENT ── */
+  .content {
+    padding: 20px 24px 40px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── GRID LAYOUTS ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .grid-auto { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+  .col-span-2 { grid-column: span 2; }
+  .col-span-3 { grid-column: span 3; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 10px 14px 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-header h3 {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .card-icon {
+    font-size: 14px;
+  }
+  .card-body { padding: 12px 14px; }
+
+  /* ── CARD VARIANTS ── */
+  .card.purple { border-color: rgba(124,58,237,0.4); }
+  .card.purple .card-header { background: var(--purple-dim); }
+  .card.purple .card-header h3 { color: var(--purple-light); }
+  .card.green { border-color: rgba(16,185,129,0.4); }
+  .card.green .card-header { background: var(--green-dim); }
+  .card.green .card-header h3 { color: var(--green); }
+  .card.yellow { border-color: rgba(245,158,11,0.4); }
+  .card.yellow .card-header { background: rgba(245,158,11,0.1); }
+  .card.yellow .card-header h3 { color: var(--yellow); }
+  .card.red { border-color: rgba(239,68,68,0.4); }
+  .card.red .card-header { background: rgba(239,68,68,0.1); }
+  .card.red .card-header h3 { color: var(--red); }
+
+  /* ── BADGE ── */
+  .badge {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .badge-purple { background: var(--purple-dim); color: var(--purple-light); border: 1px solid rgba(124,58,237,0.3); }
+  .badge-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+  .badge-yellow { background: rgba(245,158,11,0.15); color: var(--yellow); border: 1px solid rgba(245,158,11,0.3); }
+  .badge-red { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+  .badge-blue { background: rgba(59,130,246,0.15); color: var(--blue); border: 1px solid rgba(59,130,246,0.3); }
+
+  /* ── CODE INLINE ── */
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 11.5px;
+    color: #a5f3c6;
+  }
+
+  /* ── CODE BLOCKS ── */
+  pre {
+    background: var(--code-bg) !important;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.6;
+    margin: 8px 0;
+    overflow-x: auto;
+    padding: 10px 12px !important;
+  }
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+  }
+  .hljs { background: transparent !important; }
+
+  /* ── LIST STYLES ── */
+  .list { list-style: none; }
+  .list li {
+    padding: 4px 0;
+    padding-left: 14px;
+    position: relative;
+    color: var(--text-muted);
+    font-size: 12.5px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  .list li:last-child { border-bottom: none; }
+  .list li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--purple);
+    font-weight: 700;
+  }
+  .list li strong { color: var(--text); }
+  .list li code { font-size: 10.5px; }
+
+  .list.green li::before { color: var(--green); }
+
+  /* ── KEY-VALUE ── */
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: start; }
+  .kv-key {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--purple-light);
+    white-space: nowrap;
+    padding: 2px 0;
+  }
+  .kv-val {
+    font-size: 12px;
+    color: var(--text-muted);
+    padding: 2px 0;
+  }
+
+  /* ── ALERT BOX ── */
+  .alert {
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    margin: 8px 0;
+    font-size: 12px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .alert-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .alert-purple { background: var(--purple-dim); border: 1px solid rgba(124,58,237,0.3); color: var(--purple-light); }
+  .alert-green { background: var(--green-dim); border: 1px solid rgba(16,185,129,0.3); color: var(--green); }
+  .alert-yellow { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: var(--yellow); }
+  .alert-red { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--red); }
+
+  /* ── TABLE ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-top: 6px;
+  }
+  .data-table th {
+    background: rgba(124,58,237,0.2);
+    color: var(--purple-light);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    padding: 6px 10px;
+    text-align: left;
+    text-transform: uppercase;
+  }
+  .data-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text-muted);
+    vertical-align: top;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── TIMELINE ── */
+  .timeline { list-style: none; }
+  .timeline li {
+    display: flex;
+    gap: 10px;
+    padding: 5px 0;
+    align-items: flex-start;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  .timeline li:last-child { border-bottom: none; }
+  .tl-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--purple-light);
+    min-width: 45px;
+    padding-top: 1px;
+  }
+  .tl-content { flex: 1; }
+
+  /* ── SEPARATOR ── */
+  .sep {
+    height: 1px;
+    background: var(--border);
+    margin: 12px 0;
+  }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .section-title h2 {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .section-title .stag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding-top: 4px;
+  }
+
+  /* ── SLASH COMMANDS GRID ── */
+  .cmd-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .cmd-chip {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    color: var(--green);
+  }
+
+  /* ── FLOW DIAGRAM ── */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 8px 0;
+  }
+  .flow-node {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+  }
+  .flow-arrow {
+    color: var(--purple-light);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 12px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 20px;
+  }
+  .footer-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .footer-brand {
+    font-weight: 800;
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: -0.01em;
+  }
+  .footer a {
+    color: var(--purple-light);
+    text-decoration: none;
+  }
+  .footer a:hover { color: var(--purple); }
+
+  /* ── PRINT ── */
+  @media print {
+    @page { size: A4 landscape; margin: 8mm; }
+    body { background: var(--bg); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .header, .nav-wrap { position: static; }
+    .section { display: block !important; page-break-after: always; }
+    .section:last-of-type { page-break-after: avoid; }
+    .nav-wrap { display: none; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════ HEADER -->
+<header class="header">
+  <div class="header-left">
+    <div class="logo-badge">
+      OpenClaw<br>
+      <span>Pixel Educação</span>
+    </div>
+    <div class="header-divider"></div>
+    <div class="header-title">
+      Referência Completa
+      <strong>MEGA CHEATSHEET</strong>
+    </div>
+  </div>
+  <div class="header-meta">
+    <div class="pill"><span class="dot"></span> 22 Crons Ativos</div>
+    <div class="pill green"><span class="dot"></span> 15+ Integrações</div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════════ NAV -->
+<nav class="nav-wrap">
+  <div class="nav-tabs" id="navTabs">
+    <button class="tab-btn active" onclick="showTab('quickstart', this)">⚡ Quick Start</button>
+    <button class="tab-btn" onclick="showTab('channels', this)">📡 Channels</button>
+    <button class="tab-btn" onclick="showTab('workspace', this)">📂 Workspace</button>
+    <button class="tab-btn" onclick="showTab('memory', this)">🧠 Memory</button>
+    <button class="tab-btn" onclick="showTab('models', this)">🤖 Models</button>
+    <button class="tab-btn" onclick="showTab('sessions', this)">💬 Sessions</button>
+    <button class="tab-btn" onclick="showTab('crons', this)">⏰ Crons</button>
+    <button class="tab-btn" onclick="showTab('browser', this)">🌐 Browser/Hooks</button>
+    <button class="tab-btn" onclick="showTab('skills', this)">🧩 Skills/Multi-Agent</button>
+    <button class="tab-btn" onclick="showTab('heartbeat', this)">💓 Heartbeat</button>
+    <button class="tab-btn" onclick="showTab('sandbox', this)">📦 Sandbox</button>
+    <button class="tab-btn" onclick="showTab('security', this)">🔒 Security</button>
+    <button class="tab-btn" onclick="showTab('troubleshooting', this)">🩺 Troubleshooting</button>
+    <button class="tab-btn" onclick="showTab('tts', this)">🔊 TTS</button>
+    <button class="tab-btn" onclick="showTab('prompts', this)">✨ Prompts Reais</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════ CONTENT -->
+<main class="content">
+
+<!-- ─── QUICK START ─────────────────────────────────────────── -->
+<section class="section active" id="quickstart">
+  <div class="section-title">
+    <h2>⚡ Quick Start & Installation</h2>
+    <span class="stag">Começando do zero</span>
+  </div>
+  <div class="grid-3">
+
+    <div class="card purple">
+      <div class="card-header">
+        <span class="card-icon">📦</span>
+        <h3>Instalação</h3>
+      </div>
+      <div class="card-body">
+        <ul class="list">
+          <li><code>npm install -g openclaw@latest</code> — Global install</li>
+          <li><code>openclaw onboard --install-daemon</code> — Setup guiado</li>
+          <li><code>openclaw channels login</code> — Conectar canal</li>
+          <li><code>openclaw gateway start</code> — Subir gateway</li>
+        </ul>
+        <div class="sep"></div>
+        <p style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Flags úteis</p>
+        <ul class="list">
+          <li><code>--mode remote</code> — gateway remoto</li>
+          <li><code>--mode local</code> — local</li>
+          <li><code>--skip-channels</code> — pular canal</li>
+          <li><code>--flow quickstart</code> — setup mínimo</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card green col-span-2">
+      <div class="card-header">
+        <span class="card-icon">🚀</span>
+        <h3>Meu Stack em Produção</h3>
+        <span class="badge badge-green" style="margin-left:auto;">BATTLE-TESTED</span>
+      </div>
+      <div class="card-body">
+        <div class="grid-2" style="gap:12px;">
+          <div>
+            <div class="kv">
+              <span class="kv-key">VPS</span>
+              <span class="kv-val">Hostinger KVM 2 — Ubuntu 24.04 (2 vCPU, 8GB RAM, 100GB NVMe, R$39/mês)</span>
+              <span class="kv-key">Canal</span>
+              <span class="kv-val">Telegram (grupo com tópicos por área)</span>
+              <span class="kv-key">Modelo</span>
+              <span class="kv-val">Claude Opus 4 (main) + Sonnet (crons)</span>
+              <span class="kv-key">Heartbeat</span>
+              <span class="kv-val">A cada 30 min | Crons: 22 automações ativas</span>
+            </div>
+          </div>
+          <div>
+            <div class="kv">
+              <span class="kv-key">Credenciais</span>
+              <span class="kv-val">1Password CLI (zero hardcode)</span>
+              <span class="kv-key">Agentes</span>
+              <span class="kv-val">6 (COO, Planner, Dev, Scraper...)</span>
+              <span class="kv-key">Integrações</span>
+              <span class="kv-val">15+ APIs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── CHANNELS ─────────────────────────────────────────────── -->
+<section class="section" id="channels">
+  <div class="section-title">
+    <h2>📡 Channel Setup</h2>
+    <span class="stag">8 canais suportados</span>
+  </div>
+  <div class="grid-3">
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🔌</span>
+        <h3>Canais Disponíveis</h3>
+      </div>
+      <div class="card-body">
+        <ul class="list">
+          <li><strong>📱 WhatsApp</strong> — QR Scan · <code>openclaw channels login</code></li>
+          <li><strong>✈️ Telegram</strong> — Bot Token · <code>channels add --channel telegram --token $T</code></li>
+          <li><strong>🎮 Discord</strong> — Bot Token · <code>channels add --channel discord --token $T</code></li>
+          <li><strong>💬 iMessage</strong> — macOS Native</li>
+          <li><strong>🏢 Slack</strong> — Bot Token</li>
+          <li><strong>💬 Google Chat</strong> — Service Account</li>
+          <li><strong>🔒 Signal</strong> — Linked Device</li>
+          <li><strong>📎 MS Teams</strong> — Bot Registration</li>
+        </ul>
+        <div class="sep"></div>
+        <code style="display:block;padding:6px;font-size:10.5px;">openclaw channels status --probe</code>
+        <code style="display:block;padding:6px;font-size:10.5px;margin-top:4px;">openclaw channels logs --channel [id]</code>
+      </div>
+    </div>
+
+    <div class="card purple col-span-2">
+      <div class="card-header">
+        <span class="card-icon">✈️</span>
+        <h3>Dica de Produção — Telegram com Tópicos como Hub Central</h3>
+        <span class="badge badge-purple" style="margin-left:auto;">PRO TIP</span>
+      </div>
+      <div class="card-body">
+        <div class="grid-2" style="gap:12px;">
+          <div>
+            <p style="font-size:11.5px;color:var(--text-muted);margin-bottom:8px;">Organize por áreas usando tópicos do grupo:</p>
+            <table class="data-table">
+              <thead>
+                <tr><th>Topic ID</th><th>Função</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>11</code></td><td>Produção de conteúdo</td></tr>
+                <tr><td><code>37</code></td><td>Métricas (ChartMogul, Crisp)</td></tr>
+                <tr><td><code>40</code></td><td>Operacional (crons, config)</td></tr>
+                <tr><td><code>204</code></td><td>Projetos &amp; Planning</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div class="alert alert-purple">
+              <span class="alert-icon">💡</span>
+              <span>Telegram com tópicos é o hub perfeito: cada área tem seu canal separado, notificações segmentadas e histórico organizado. Sem ruído entre áreas.</span>
+            </div>
+            <div class="alert alert-green" style="margin-top:8px;">
+              <span class="alert-icon">✅</span>
+              <span>Use <code>threadId</code> nas configurações de delivery dos crons para enviar cada output pro tópico certo.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── WORKSPACE ─────────────────────────────────────────────── -->
+<section class="section" id="workspace">
+  <div class="section-title">
+    <h2>📂 Workspace Files</h2>
+    <span class="stag">A alma do seu agente</span>
+  </div>
+  <div class="grid-3">
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📁</span>
+        <h3>Arquivos do Workspace</h3>
+      </div>
+      <div class="card-body">
+        <ul class="list">
+          <li><strong>📄 AGENTS.md</strong> — Instruções operacionais, protocolos, regras de segurança</li>
+          <li><strong>🧠 SOUL.md</strong> — Personalidade, tom de voz, valores, boundaries</li>
+          <li><strong>👤 USER.md</strong> — Tudo sobre você: negócios, rotina, TDAH, equipe</li>
+          <li><strong>🆔 IDENTITY.md</strong> — Nome, emoji, avatar, background do agente</li>
+          <li><strong>🧠 MEMORY.md</strong> — Índice de memória curada (só DM session)</li>
+          <li><strong>📅 memory/YYYY-MM-DD.md</strong> — Log diário append-only</li>
+          <li><strong>🔧 TOOLS.md</strong> — Integrações, APIs, scripts disponíveis</li>
+          <li><strong>💓 HEARTBEAT.md</strong> — Checklist periódico (a cada 30min)</li>
+          <li><strong>BOOT.md</strong> — Checklist de startup</li>
+        </ul>
+        <div class="sep"></div>
+        <div class="alert alert-yellow">
+          <span class="alert-icon">⚠️</span>
+          <span>Root: <code>~/.openclaw/workspace</code> — todos os arquivos vivem aqui.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card purple">
+      <div class="card-header">
+        <span class="card-icon">👤</span>
+        <h3>USER.md É Tudo</h3>
+        <span class="badge badge-purple" style="margin-left:auto;">SEGREDO</span>
+      </div>
+      <div class="card-body">
+        <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:10px;">Inclua TUDO sobre você:</p>
+        <ul class="list">
+          <li><strong>Tom de voz</strong> — 129 posts LinkedIn analisados</li>
+          <li><strong>Estrutura de vídeos</strong> — 106 YouTube analisados</li>
+          <li><strong>Análise de reels</strong> — 97 reels estudados</li>
+          <li><strong>Horários de foco</strong> — 13h–16h</li>
+          <li><strong>Contexto pessoal</strong> — TDAH, equipe, família</li>
+        </ul>
+        <div class="alert alert-purple" style="margin-top:10px;">
+          <span class="alert-icon">💡</span>
+          <span>O meu USER.md tem <strong>400+ linhas</strong>. Quanto mais contexto, mais preciso.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card green">
+      <div class="card-header">
+        <span class="card-icon">🧠</span>
+        <h3>SOUL.md — O Diferencial</h3>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-green">
+          <span class="alert-icon">✨</span>
+          <span><strong>Sem SOUL.md:</strong> chatbot genérico.<br><strong>Com SOUL.md:</strong> opinião + antecipação + personalidade.</span>
+        </div>
+        <div class="sep"></div>
+        <pre><code class="language-markdown"># SOUL.md
+*Não sou chatbot. Sou COO.*
+**Proativa.** Antecipo problemas.
+**Estratégica.** Penso junto.
+**Direto ao ponto.** Bullets > §
+**Tenho opinião.** Posso discordar.</code></pre>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── MEMORY ─────────────────────────────────────────────────── -->
+<section class="section" id="memory">
+  <div class="section-title">
+    <h2>🧠 Memory System</h2>
+    <span class="stag">Continuidade entre sessões</span>
+  </div>
+  <div class="grid-3">
+
+    <div class="card purple">
+      <div class="card-header">
+        <span class="card-icon">💾</span>
+        <h3>Comandos & Config</h3>
+      </div>
+      <div class="card-body">
+        <ul class="list">
+          <li><code>memory/YYYY-MM-DD.md</code> — Daily Logs (append-only)</li>
+          <li><code>MEMORY.md</code> — Long-Term (curado, só main DM)</li>
+          <li><code>memory_search</code> — Vector Search semântica (~400 tokens/chunk)</li>
+          <li><code>memorySearch.provider</code> — Auto: GGUF→OpenAI→Gemini→Voyage</li>
+          <li><code>memory.backend = "qmd"</code> — BM25 + vectors + reranking</li>
+          <li><code>openclaw memory index --all</code> — Reindexar arquivos</li>
+          <li><code>openclaw memory search "X"</code> — Buscar via CLI</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🔄</span>
+        <h3>Meu Sistema de Memória</h3>
+      </div>
+      <div class="card-body">
+        <div class="flow">
+          <div class="flow-node">💬 Conversa</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node">📅 Nota Diária</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node">📂 Topic Files</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node">🧠 MEMORY.md</div>
+        </div>
+        <div class="sep"></div>
+        <p style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Topic Files</p>
+        <div class="cmd-grid">
+          <span class="cmd-chip">projects.md</span>
+          <span class="cmd-chip">decisions.md</span>
+          <span class="cmd-chip">lessons.md</span>
+          <span class="cmd-chip">people.md</span>
+          <span class="cmd-chip">pending.md</span>
+          <span class="cmd-chip">feedback/*.json</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card green">
+      <div class="card-header">
+        <span class="card-icon">📐</span>
+        <h3>Regra de Ouro</h3>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-green">
+          <span class="alert-icon">💡</span>
+          <span><strong>Texto &gt; Cérebro.</strong> Se quer lembrar, ESCREVE no arquivo. "Notas mentais" não sobrevivem ao restart da sessão. Arquivos sim.</span>
+        </div>
+        <div class="sep"></div>
+        <div class="kv">
+          <span class="kv-key">Daily</span><span class="kv-val">Logs brutos, append-only</span>
+          <span class="kv-key">Memory.md</span><span class="kv-val">Sabedoria curada, destilada</span>
+          <span class="kv-key">GGUF local</span><span class="kv-val">Primeiro na cadeia de busca</span>
+          <span class="kv-key">qmd backend</span><span class="kv-val">Experimental, máx precisão</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── MODELS ─────────────────────────────────────────────────── -->
+<section class="section" id="models">
+  <div class="section-title">
+    <h2>🤖 Models & Auth</h2>
+    <span class="stag">Gerenciamento de modelos e autenticação</span>
+  </div>
+  <div class="grid-3">
+
+    <div class="card purple">
+      <div class="card-header">
+        <span class="card-icon">⚙️</span>
+        <h3>Comandos</h3>
+      </div>
+      <div class="card-body">
+        <ul class="list">
+          <li><code>openclaw models list --all</code> — Ver todos os modelos</li>
+          <li><code>openclaw models set &lt;model&gt;</code> — Definir modelo principal</li>
+          <li><code>openclaw models set-image &lt;model&gt;</code> — Modelo de imagem</li>
+          <li><code>openclaw models fallbacks add &lt;m&gt;</code> — Cadeia de fallback</li>
+          <li><code>openclaw models auth setup-token</code> — Auth Anthropic (preferido)</li>
+          <li><code>models auth add --provider &lt;p&gt;</code> — Adicionar API key</li>
+          <li><code>openclaw models status --probe</code> — Probe live</li>
+          <li><code>models aliases add &lt;alias&gt; &lt;m&gt;</code> — Criar alias</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card green">
+      <div class="card-header">
+        <span class="card-icon">💡</span>
+        <h3>Sonnet vs Opus — ~90% economia</h3>
+        <span class="badge badge-green" style="margin-left:auto;">PRO TIP</span>
+      </div>
+      <div class="card-body">
+        <table class="data-table">
+          <thead>
+            <tr><th>Modelo</th><th>Quando usar</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="badge badge-purple">SONNET</span></td><td>Execução, sync, watchdog, publish</td></tr>
+            <tr><td><span class="badge badge-yellow">OPUS</span></td><td>Análise, digest, métricas, estratégia</td></tr>
+          </tbody>
+        </table>
+        <div class="sep"></div>
+        <p style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Failover Chain</p>
+        <div class="flow">
+          <div class="flow-node">Opus 4</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node">Sonnet 4</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node">1m</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node">5m</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node">1h</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🔑</span>
+        <h3>Sessions — Slash Commands</h3>
+      </div>
+      <div class="card-body">
+        <div class="cmd-grid">
+          <span class="cmd-chip">/status</span>
+          <span class="cmd-chip">/context list</span>
+          <span class="cmd-chip">/reset</span>
+          <span class="cmd-chip">/send on|off|inherit</span>
+          <span class="cmd-chip">/context detail</span>
+          <span class="cmd-chip">/tts on|off</span>
+          <span class="cmd-chip">/model &lt;model&gt;</span>
+          <span class="cmd-chip">/think</span>
+          <span class="cmd-chip">/compact [msg]</span>
+          <span class="cmd-chip">/verbose</span>
+          <span class="cmd-chip">/new [model]</span>
+          <span class="cmd-chip">/config</span>
+          <span class="cmd-chip">/stop</span>
+          <span class="cmd-chip">/debug</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── SESSIONS ──────────────────────────────────────────────── -->
+<section class="section" id="sessions">
+  <div class="section-title">
+    <h2>💬 Sessions</h2>
+    <span class="stag">Gerenciamento de contexto e segurança</span>
+  </div>
+  <div class="grid-2">
+
+    <div class="card purple">
+      <div class="card-header">
+        <span class="card-icon">⚙️</span>
+        <h3>Configurações de Sessão</h3>
+      </div>
+      <div class="card-body">
+        <div class="kv">
+          <span class="kv-key">session.dmScope</span><span class="kv-val">main | per-peer | per-channel-peer</span>
+          <span class="kv-key">session.reset.mode</span><span class="kv-val">daily (4am) | idle</span>
+          <span class="kv-key">session.reset.idleMinutes</span><span class="kv-val">Sliding idle window</span>
+          <span class="kv-key">session.resetByType</span><span class="kv-val">Override por tipo</span>
+          <span class="kv-key">session.resetByChannel</span><span class="kv-val">Override por canal</span>
+          <span class="kv-key">session.identityLinks</span><span class="kv-val">Cross-channel identity mapping</span>
+          <span class="kv-key">session.sendPolicy</span><span class="kv-val">Block delivery por tipo</span>
+        </div>
+        <div class="sep"></div>
+        <div class="alert alert-red">
+          <span class="alert-icon">🔒</span>
+          <span><strong>Segurança:</strong> <code>per-channel-peer</code> previne vazamento de contexto entre usuários.</span>
+        </div>
+        <p style="font-size:11px;color:var(--text-dim);margin-top:8px;">Store: <code>~/.openclaw/agents/{id}/sessions/sessions.json</code></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">⌨️</span>
+        <h3>Slash Commands — Referência Completa</h3>
+      </div>
+      <div class="card-body">
+        <div class="cmd-grid">
+          <span class="cmd-chip">/status</span>
+          <span class="cmd-chip">/context list</span>
+          <span class="cmd-chip">/reset</span>
+          <span class="cmd-chip">/send on|off|inherit</span>
+          <span class="cmd-chip">/context detail</span>
+          <span class="cmd-chip">/tts on|off</span>
+          <span class="cmd-chip">/model &lt;model&gt;</span>
+          <span class="cmd-chip">/think</span>
+          <span class="cmd-chip">/compact [msg]</span>
+          <span class="cmd-chip">/verbose</span>
+          <span class="cmd-chip">/new [model]</span>
+          <span class="cmd-chip">/config</span>
+          <span class="cmd-chip">/stop</span>
+          <span class="cmd-chip">/debug</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── CRONS ──────────────────────────────────────────────────── -->
+<section class="section" id="crons">
+  <div class="section-title">
+    <h2>⏰ Cron Jobs</h2>
+    <span class="stag">Automação total — 22 crons ativos</span>
+  </div>
+  <div class="grid-3">
+
+    <div class="card purple">
+      <div class="card-header">
+        <span class="card-icon">⚙️</span>
+        <h3>CLI & Estrutura</h3>
+      </div>
+      <div class="card-body">
+        <p style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Comandos</p>
+        <ul class="list">
+          <li><code>openclaw cron list</code></li>
+          <li><code>openclaw cron add</code></li>
+          <li><code>openclaw cron edit &lt;id&gt;</code></li>
+          <li><code>openclaw cron enable|disable &lt;id&gt;</code></li>
+          <li><code>openclaw cron run &lt;id&gt;</code></li>
+          <li><code>openclaw cron runs</code></li>
+        </ul>
+        <div class="sep"></div>
+        <div class="alert alert-red">
+          <span class="alert-icon">⚠️</span>
+          <span><strong>REGRA #1:</strong> SEMPRE <code>sessionTarget: "isolated"</code> + <code>payload.kind: "agentTurn"</code>. Modo main não executa. Custou 3 dias de debug.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card red">
+      <div class="card-header">
+        <span class="card-icon">📋</span>
+        <h3>Estrutura Correta</h3>
+        <span class="badge badge-red" style="margin-left:auto;">OBRIGATÓRIO</span>
+      </div>
+      <div class="card-body">
+        <pre><code class="language-json">{
+  "schedule": {
+    "kind": "cron",
+    "expr": "0 9 * * 1"
+  },
+  "sessionTarget": "isolated",
+  "payload": {
+    "kind": "agentTurn",
+    "message": "..."
+  },
+  "delivery": {
+    "mode": "announce"
+  }
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="card green">
+      <div class="card-header">
+        <span class="card-icon">🗓️</span>
+        <h3>22 Crons em Produção</h3>
+        <span class="badge badge-green" style="margin-left:auto;">LIVE</span>
+      </div>
+      <div class="card-body">
+        <ul class="timeline">
+          <li><span class="tl-time">07:00</span><span class="tl-content">🧠 Strategic Intel Collector</span></li>
+          <li><span class="tl-time">08:00</span><span class="tl-content">📱 Social Media Sync + 🚨 Watchdog + 🏥 Health Check</span></li>
+          <li><span class="tl-time">09:00</span><span class="tl-content">📋 Daily Tracker + 📈 ChartMogul (seg) + 📊 Suporte (seg)</span></li>
+          <li><span class="tl-time">10:00</span><span class="tl-content">📰 Digest + 🔒 Security Check</span></li>
+          <li><span class="tl-time">12:00</span><span class="tl-content">📬 Peças Aguardando Aprovação</span></li>
+          <li><span class="tl-time">13:00</span><span class="tl-content">🔴 REC — Conteúdo pra Gravar</span></li>
+          <li><span class="tl-time">1-2h</span><span class="tl-content">🎬 Content Waterfall + 📤 Auto-Publish + 🎥 Tella Sync</span></li>
+          <li><span class="tl-time">22:00</span><span class="tl-content">🔄 Auto-Update + 🔍 Config Review + Memory Safety Net</span></li>
+          <li><span class="tl-time">Semanal</span><span class="tl-content">📊 Métricas + Reports + Revisão de Projetos</span></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── BROWSER/HOOKS ─────────────────────────────────────────── -->
+<section class="section" id="browser">
+  <div class="section-title">
+    <h2>🌐 Browser & Hooks</h2>
+    <span class="stag">Automação web e eventos</span>
+  </div>
+  <div class="grid-2">
+
+    <div class="card purple">
+      <div class="card-header">
+        <span class="card-icon">🌐</span>
+        <h3>Browser Control</h3>
+      </div>
+      <div class="card-body">
+        <div class="cmd-grid">
+          <span class="cmd-chip">openclaw browser start</span>
+          <span class="cmd-chip">browser stop</span>
+          <span class="cmd-chip">browser tabs</span>
+          <span class="cmd-chip">browser open &lt;url&gt;</span>
+          <span class="cmd-chip">browser screenshot</span>
+          <span class="cmd-chip">browser navigate &lt;url&gt;</span>
+          <span class="cmd-chip">browser click</span>
+          <span class="cmd-chip">browser type</span>
+          <span class="cmd-chip">browser press</span>
+          <span class="cmd-chip">browser evaluate &lt;js&gt;</span>
+          <span class="cmd-chip">browser pdf</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card green">
+      <div class="card-header">
+        <span class="card-icon">🪝</span>
+        <h3>Hooks & Eventos</h3>
+      </div>
+      <div class="card-body">
+        <p style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">CLI</p>
+        <div class="cmd-grid" style="margin-bottom:10px;">
+          <span class="cmd-chip">openclaw hooks list</span>
+          <span class="cmd-chip">hooks enable &lt;name&gt;</span>
+          <span class="cmd-chip">hooks disable &lt;name&gt;</span>
+          <span class="cmd-chip">hooks info &lt;name&gt;</span>
+        </div>
+        <div class="sep"></div>
+        <p style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Hooks Bundled</p>
+        <ul class="list green">
+          <li><strong>💾 session-memory</strong></li>
+          <li><strong>📝 command-logger</strong></li>
+          <li><strong>boot-md</strong></li>
+        </ul>
+        <div class="sep"></div>
+        <p style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Event Types</p>
+        <div class="cmd-grid">
+          <span class="cmd-chip">command:new</span>
+          <span class="cmd-chip">command:reset</span>
+          <span class="cmd-chip">command:stop</span>
+          <span class="cmd-chip">gateway:startup</span>
+          <span class="cmd-chip">agent:bootstrap</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── SKILLS / MULTI-AGENT ──────────────────────────────────── -->
+<section class="section" id="skills">
+  <div class="section-title">
+    <h2>🧩 Skills & Multi-Agent</h2>
+    <span class="stag">Ecossistema de agentes</span>
+  </div>
+  <div class="grid-3">
+
+    <div class="card purple">
+      <div class="card-header">
+        <span class="card-icon">🧩</span>
+        <h3>Skills & Routing</h3>
+      </div>
+      <div class="card-body">
+        <p style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Precedência</p>
+        <div class="flow" style="margin-bottom:10px;">
+          <div class="flow-node">workspace/skills/</div>
+          <div class="flow-arrow">&gt;</div>
+          <div class="flow-node">~/.openclaw/skills/</div>
+          <div class="flow-arrow">&gt;</div>
+          <div class="flow-node">Bundled</div>
+        </div>
+        <div class="sep"></div>
+        <p style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">ClawHub</p>
+        <ul class="list">
+          <li><code>clawhub install &lt;slug&gt;</code></li>
+          <li><code>clawhub update --all</code></li>
+          <li><code>clawhub sync --all</code></li>
+        </ul>
+        <div class="sep"></div>
+        <p style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Routing Order</p>
+        <div class="flow" style="flex-wrap:wrap;">
+          <div class="flow-node" style="font-size:10px;">peer</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node" style="font-size:10px;">guildId</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node" style="font-size:10px;">teamId</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node" style="font-size:10px;">accountId</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node" style="font-size:10px;">channel</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node" style="font-size:10px;">default</div>
+        </div>
+        <div class="sep"></div>
+        <code style="display:block;padding:5px;font-size:10px;margin-top:4px;">openclaw agents add &lt;name&gt;</code>
+        <code style="display:block;padding:5px;font-size:10px;margin-top:4px;">openclaw agents list --bindings</code>
+      </div>
+    </div>
+
+    <div class="card col-span-2">
+      <div class="card-header">
+        <span class="card-icon">🍇</span>
+        <h3>Time de Agentes em Produção</h3>
+        <span class="badge badge-green" style="margin-left:auto;">6 AGENTES</span>
+      </div>
+      <div class="card-body">
+        <table class="data-table">
+          <thead>
+            <tr><th>Agente</th><th>Função</th><th>Modelo</th><th>Nível</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>🍇 Amora</strong></td>
+              <td>COO — coordena tudo</td>
+              <td><span class="badge badge-yellow">OPUS</span></td>
+              <td><span class="badge badge-purple">L4</span></td>
+            </tr>
+            <tr>
+              <td><strong>📋 Planner</strong></td>
+              <td>Planejamento de conteúdo</td>
+              <td><span class="badge badge-blue">SONNET</span></td>
+              <td><span class="badge badge-purple">L3</span></td>
+            </tr>
+            <tr>
+              <td><strong>🎯 Orchestrator</strong></td>
+              <td>Orquestração de sprints</td>
+              <td><span class="badge badge-blue">SONNET</span></td>
+              <td><span class="badge badge-blue">L2</span></td>
+            </tr>
+            <tr>
+              <td><strong>⚡ ZoM</strong></td>
+              <td>Desenvolvimento rápido</td>
+              <td><span class="badge badge-blue">SONNET</span></td>
+              <td><span class="badge badge-blue">L2</span></td>
+            </tr>
+            <tr>
+              <td><strong>🔍 Scraper</strong></td>
+              <td>Coleta de dados</td>
+              <td><span class="badge badge-blue">SONNET</span></td>
+              <td><span class="badge badge-green">L1</span></td>
+            </tr>
+            <tr>
+              <td><strong>✍️ Content</strong></td>
+              <td>Produção de conteúdo</td>
+              <td><span class="badge badge-blue">SONNET</span></td>
+              <td><span class="badge badge-green">L1</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── HEARTBEAT ──────────────────────────────────────────────── -->
+<section class="section" id="heartbeat">
+  <div class="section-title">
+    <h2>💓 Heartbeat System</h2>
+    <span class="stag">Monitoramento proativo</span>
+  </div>
+  <div class="grid-2">
+
+    <div class="card purple">
+      <div class="card-header">
+        <span class="card-icon">⚙️</span>
+        <h3>Configuração</h3>
+      </div>
+      <div class="card-body">
+        <div class="cmd-grid" style="margin-bottom:10px;">
+          <span class="cmd-chip">heartbeat.every</span>
+          <span class="cmd-chip">heartbeat.target</span>
+          <span class="cmd-chip">heartbeat.to</span>
+          <span class="cmd-chip">heartbeat.model</span>
+          <span class="cmd-chip">heartbeat.prompt</span>
+          <span class="cmd-chip">heartbeat.activeHours</span>
+        </div>
+        <div class="sep"></div>
+        <div class="alert alert-green">
+          <span class="alert-icon">📋</span>
+          <span><strong>Contrato:</strong> nada urgente → <code>HEARTBEAT_OK</code> | algo importante → alerta imediato</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card green">
+      <div class="card-header">
+        <span class="card-icon">📋</span>
+        <h3>Meu HEARTBEAT.md</h3>
+      </div>
+      <div class="card-body">
+        <pre><code class="language-markdown"># Checklist (a cada heartbeat)
+- [ ] Compromissos próximos (24-48h)
+- [ ] Tarefas pendentes / follow-ups
+- [ ] Crons saudáveis
+
+# Semanal (domingos)
+- [ ] Performance review dos agentes
+- [ ] Consolidar lições no KNOWLEDGE_BASE</code></pre>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── SANDBOX ──────────────────────────────────────────────────── -->
+<section class="section" id="sandbox">
+  <div class="section-title">
+    <h2>📦 Sandboxing & Sub-Agents</h2>
+    <span class="stag">Isolamento e paralelização</span>
+  </div>
+  <div class="grid-3">
+
+    <div class="card purple">
+      <div class="card-header">
+        <span class="card-icon">🔒</span>
+        <h3>Sandbox Config</h3>
+      </div>
+      <div class="card-body">
+        <div class="kv">
+          <span class="kv-key">off</span><span class="kv-val">Executa no host</span>
+          <span class="kv-key">non-main</span><span class="kv-val">Default — sessões não-main</span>
+          <span class="kv-key">all</span><span class="kv-val">Todas as sessões</span>
+        </div>
+        <div class="sep"></div>
+        <p style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Scope</p>
+        <div class="kv">
+          <span class="kv-key">session</span><span class="kv-val">1 sandbox por sessão</span>
+          <span class="kv-key">agent</span><span class="kv-val">1 por agente</span>
+          <span class="kv-key">shared</span><span class="kv-val">Todos compartilham</span>
+        </div>
+        <div class="sep"></div>
+        <p style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Workspace Access</p>
+        <div class="kv">
+          <span class="kv-key">none</span><span class="kv-val">Sem acesso</span>
+          <span class="kv-key">ro</span><span class="kv-val">Read-only (/agent)</span>
+          <span class="kv-key">rw</span><span class="kv-val">Read-write (/workspace)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🤝</span>
+        <h3>Sub-Agents</h3>
+      </div>
+      <div class="card-body">
+        <div class="cmd-grid" style="margin-bottom:10px;">
+          <span class="cmd-chip">/subagents list</span>
+          <span class="cmd-chip">/subagents stop &lt;id|all&gt;</span>
+          <span class="cmd-chip">/subagents log &lt;id&gt;</span>
+          <span class="cmd-chip">/subagents send &lt;id&gt; &lt;msg&gt;</span>
+        </div>
+        <div class="sep"></div>
+        <ul class="list">
+          <li><strong>Parallel Work</strong> — múltiplas tarefas em paralelo</li>
+          <li><strong>Session Isolation</strong> — contexto separado</li>
+          <li><strong>Auto-Announce</strong> — resultado volta automaticamente</li>
+          <li><strong>Auto-Archive (60m)</strong> — limpeza automática</li>
+        </ul>
+        <div class="alert alert-red" style="margin-top:8px;">
+          <span class="alert-icon">🚫</span>
+          <span>Todo sub-agent DEVE ter follow-up. Crie cron oneshot em 15-30 min.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card green">
+      <div class="card-header">
+        <span class="card-icon">🎥</span>
+        <h3>Content Waterfall</h3>
+      </div>
+      <div class="card-body">
+        <div class="flow" style="flex-direction:column;align-items:flex-start;gap:6px;">
+          <div style="display:flex;align-items:center;gap:8px;width:100%;">
+            <div class="flow-node" style="white-space:nowrap;">🎥 Tella</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node" style="white-space:nowrap;">📡 Sync (6h)</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node" style="white-space:nowrap;">🎬 Waterfall (2h)</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;width:100%;">
+            <div class="flow-arrow" style="margin-left:6px;">↓</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;width:100%;">
+            <div class="flow-node" style="white-space:nowrap;">✅ Aprovo</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node" style="white-space:nowrap;">📤 Auto-Publish (1h)</div>
+          </div>
+        </div>
+        <div class="sep"></div>
+        <p style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600;">1 Vídeo → 6-8 Peças:</p>
+        <div class="cmd-grid">
+          <span class="cmd-chip">Newsletter</span>
+          <span class="cmd-chip">LinkedIn carousel</span>
+          <span class="cmd-chip">X thread</span>
+          <span class="cmd-chip">3-5 Reels scripts</span>
+          <span class="cmd-chip">Podcast</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── SECURITY ───────────────────────────────────────────────── -->
+<section class="section" id="security">
+  <div class="section-title">
+    <h2>🔒 Security</h2>
+    <span class="stag">Proteção em produção</span>
+  </div>
+  <div class="grid-2">
+
+    <div class="card red">
+      <div class="card-header">
+        <span class="card-icon">🛡️</span>
+        <h3>Configurações de Segurança</h3>
+      </div>
+      <div class="card-body">
+        <ul class="list">
+          <li><code>dmPolicy: "allowlist"</code> — só peers autorizados</li>
+          <li><code>groupPolicy: "allowlist"</code> — só grupos autorizados</li>
+          <li><code>gateway bind: "loopback"</code> — não expõe na rede</li>
+          <li><code>exec security: "allowlist"</code> — comandos permitidos</li>
+          <li><strong>1Password obrigatório</strong> — zero hardcode</li>
+          <li><strong>UFW + Fail2ban</strong> — firewall e brute-force</li>
+          <li><strong>SSH key-only</strong> — sem senha</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card purple">
+      <div class="card-header">
+        <span class="card-icon">🔑</span>
+        <h3>1Password — Regra Inviolável</h3>
+        <span class="badge badge-red" style="margin-left:auto;">NUNCA VIOLAR</span>
+      </div>
+      <div class="card-body">
+        <pre><code class="language-bash"># ❌ NUNCA fazer isso:
+export API_KEY="sk-abc123..."
+
+# ✅ SEMPRE assim:
+op item get "Minha API" \
+  --field credential \
+  --reveal</code></pre>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── TROUBLESHOOTING ───────────────────────────────────────── -->
+<section class="section" id="troubleshooting">
+  <div class="section-title">
+    <h2>🩺 Troubleshooting & Key Paths</h2>
+    <span class="stag">Diagnóstico e resolução</span>
+  </div>
+  <div class="grid-3">
+
+    <div class="card red">
+      <div class="card-header">
+        <span class="card-icon">🚨</span>
+        <h3>Problemas Comuns</h3>
+      </div>
+      <div class="card-body">
+        <table class="data-table">
+          <thead>
+            <tr><th>Problema</th><th>Solução</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Sem resposta DM</td><td>pairing approve</td></tr>
+            <tr><td>Silêncio grupo</td><td>mentionPatterns</td></tr>
+            <tr><td>Auth expirado</td><td>setup-token</td></tr>
+            <tr><td>Gateway down</td><td>doctor --deep</td></tr>
+            <tr><td>Memória quebrada</td><td>index --all</td></tr>
+            <tr><td>Contexto cheio</td><td>/compact</td></tr>
+          </tbody>
+        </table>
+        <div class="sep"></div>
+        <div class="alert alert-green">
+          <span class="alert-icon">🩺</span>
+          <span><strong>Fix universal:</strong> <code>openclaw doctor --deep --yes</code></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📂</span>
+        <h3>Key Paths</h3>
+      </div>
+      <div class="card-body">
+        <ul class="list">
+          <li><code>~/.openclaw/openclaw.json</code></li>
+          <li><code>~/.openclaw/workspace/</code></li>
+          <li><code>~/.openclaw/agents/&lt;id&gt;/</code></li>
+          <li><code>~/.openclaw/credentials/</code></li>
+          <li><code>~/.openclaw/memory/&lt;id&gt;.sqlite</code></li>
+          <li><code>/tmp/openclaw/*.log</code></li>
+        </ul>
+        <div class="sep"></div>
+        <p style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Logging</p>
+        <ul class="list">
+          <li><code>openclaw logs --follow</code></li>
+          <li><code>openclaw logs --json</code></li>
+          <li><code>openclaw logs --limit 200</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card purple">
+      <div class="card-header">
+        <span class="card-icon">🔊</span>
+        <h3>Text-to-Speech</h3>
+      </div>
+      <div class="card-body">
+        <table class="data-table">
+          <thead>
+            <tr><th>Provider</th><th>Tier</th><th>Detalhe</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>ElevenLabs</td><td><span class="badge badge-yellow">PREMIUM</span></td><td>Ultra-realístico</td></tr>
+            <tr><td>OpenAI</td><td><span class="badge badge-blue">STANDARD</span></td><td>Rápido</td></tr>
+            <tr><td>Edge TTS</td><td><span class="badge badge-green">FREE</span></td><td>Sem API key</td></tr>
+          </tbody>
+        </table>
+        <div class="sep"></div>
+        <pre><code class="language-yaml">messages:
+  tts:
+    auto: "always"</code></pre>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── TTS ───────────────────────────────────────────────────── -->
+<section class="section" id="tts">
+  <div class="section-title">
+    <h2>🔊 Text-to-Speech</h2>
+    <span class="stag">Voz para o seu agente</span>
+  </div>
+  <div class="grid-2">
+    <div class="card purple">
+      <div class="card-header">
+        <span class="card-icon">🎙️</span>
+        <h3>Provedores de TTS</h3>
+      </div>
+      <div class="card-body">
+        <table class="data-table">
+          <thead>
+            <tr><th>Provider</th><th>Tier</th><th>Característica</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>ElevenLabs</strong></td><td><span class="badge badge-yellow">PREMIUM</span></td><td>Ultra-realístico, vozes clonadas</td></tr>
+            <tr><td><strong>OpenAI</strong></td><td><span class="badge badge-blue">STANDARD</span></td><td>Rápido, boa qualidade</td></tr>
+            <tr><td><strong>Edge TTS</strong></td><td><span class="badge badge-green">FREE</span></td><td>Sem API key, pt-BR nativo</td></tr>
+          </tbody>
+        </table>
+        <div class="sep"></div>
+        <div class="alert alert-purple">
+          <span class="alert-icon">💡</span>
+          <span>Para habilitar TTS automático em todas as mensagens:</span>
+        </div>
+        <pre style="margin-top:8px;"><code class="language-yaml">messages:
+  tts:
+    auto: "always"</code></pre>
+      </div>
+    </div>
+    <div class="card green">
+      <div class="card-header">
+        <span class="card-icon">🌍</span>
+        <h3>Boas Práticas</h3>
+      </div>
+      <div class="card-body">
+        <ul class="list">
+          <li>Idioma padrão: <strong>Português do Brasil (pt-BR)</strong></li>
+          <li>Use TTS para stories, resumos e conteúdo educacional</li>
+          <li>ElevenLabs para conteúdo de alta qualidade (curso, podcast)</li>
+          <li>Edge TTS para alertas e heartbeats (zero custo)</li>
+          <li>OpenAI para respostas conversacionais rápidas</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PROMPTS REAIS ──────────────────────────────────────────── -->
+<section class="section" id="prompts">
+  <div class="section-title">
+    <h2>✨ Prompts Reais — O Molho Secreto</h2>
+    <span class="stag">Os arquivos que fazem a diferença</span>
+  </div>
+  <div class="grid-3">
+
+    <div class="card purple">
+      <div class="card-header">
+        <span class="card-icon">🧠</span>
+        <h3>SOUL.md — Amora</h3>
+      </div>
+      <div class="card-body">
+        <pre><code class="language-markdown"># SOUL.md - Quem é a Amora 🍇
+*Não sou uma chatbot. Sou a COO
+ do Bruno Okamoto.*
+
+**Proativa, não reativa.**
+Antecipo problemas, sugiro soluções.
+
+**Estratégica.**
+Penso junto, questiono quando
+faz sentido.
+
+**Direto ao ponto.**
+Bullet points > parágrafos.
+
+**Tenho opinião.** Posso discordar.
+
+Tom: Informal, direta. Sem "Ótima
+pergunta!" ou elogios vazios.</code></pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🆔</span>
+        <h3>IDENTITY.md & AGENTS.md</h3>
+      </div>
+      <div class="card-body">
+        <pre><code class="language-markdown"># IDENTITY.md
+- Nome: Amora 🍇
+- Gênero: Mulher | Idade: 37 anos
+- Aniversário: 31 jan (1989) 🎂
+- Background: Empreendedora.
+  Superpoder: grandes operações.</code></pre>
+        <div class="sep"></div>
+        <pre><code class="language-markdown"># AGENTS.md — Toda Sessão
+1. SOUL.md
+2. USER.md
+3. memory/hoje+ontem
+4. MEMORY.md (main)
+
+Regras:
+- MEMORY.md = índice
+- Texto > Cérebro
+- Sub-agent → follow-up
+- Nunca "fire and forget"</code></pre>
+      </div>
+    </div>
+
+    <div class="card green">
+      <div class="card-header">
+        <span class="card-icon">📰</span>
+        <h3>Crons Reais</h3>
+      </div>
+      <div class="card-body">
+        <p style="font-size:10px;color:var(--text-dim);font-weight:700;text-transform:uppercase;margin-bottom:4px;">Digest Diário</p>
+        <pre style="margin-bottom:8px;"><code class="language-markdown">📰 DIGEST DIÁRIO
+1. REDDIT (r/SaaS, r/microsaas)
+   — Top 5 posts
+2. YOUTUBE (Greg Isenberg, Marc Lou)
+   — Top 3 por VPH
+3. NEWSLETTERS — Ideias relevantes
+FORMATO: 📰 DIGEST — [DATA]</code></pre>
+
+        <p style="font-size:10px;color:var(--text-dim);font-weight:700;text-transform:uppercase;margin-bottom:4px;">Watchdog</p>
+        <pre style="margin-bottom:8px;"><code class="language-markdown">🚨 WATCHDOG (auto-retry)
+FASE 1: durationMs < 1000 = FALHOU
+        lastStatus != ok = FALHOU
+FASE 2: Auto-retry (máx 3)
+FASE 3: TODOS OK → silêncio
+        FALHOU → alertar Bruno</code></pre>
+
+        <p style="font-size:10px;color:var(--text-dim);font-weight:700;text-transform:uppercase;margin-bottom:4px;">Content Waterfall</p>
+        <pre style="margin-bottom:8px;"><code class="language-bash">🎬 CONTENT WATERFALL
+node scripts/content/auto-waterfall.mjs
+# gerou: resumo Topic 11 + aprovação
+# não gerou: silêncio</code></pre>
+
+        <p style="font-size:10px;color:var(--text-dim);font-weight:700;text-transform:uppercase;margin-bottom:4px;">REC Conteúdo (13h)</p>
+        <pre><code class="language-markdown">🔴 CONTEÚDO PRA GRAVAR
+1. Notion: "Roteirização"/"Gravação"
+2. Se tiver: Calendar 13h-16h
+   + lembrete Telegram
+3. Se NÃO: silêncio</code></pre>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:16px;">
+    <div class="alert alert-purple" style="max-width:600px;">
+      <span class="alert-icon">💡</span>
+      <span style="font-size:13px;font-weight:600;">PRO TIP: O segredo não é o código. É o CONTEXTO.</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ══════════════════════════════════════════════════════ FOOTER -->
+<footer class="footer">
+  <div class="footer-left">
+    <div class="footer-brand">OpenClaw / Pixel Educação</div>
+    <span>Feito por Bruno Okamoto</span>
+  </div>
+  <div>
+    <a href="https://docs.openclaw.ai">docs.openclaw.ai</a>
+    <span style="color:var(--border);margin:0 8px;">·</span>
+    <span>Março 2026</span>
+  </div>
+</footer>
+
+<script>
+  // Tab navigation
+  function showTab(id, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+    // Scroll tab into view
+    btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+
+  // Initialize highlight.js
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('pre code').forEach(block => {
+      hljs.highlightElement(block);
+    });
+  });
+
+  // Also highlight after tab switch
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setTimeout(() => {
+        document.querySelectorAll('pre code').forEach(block => {
+          if (!block.classList.contains('hljs')) {
+            hljs.highlightElement(block);
+          }
+        });
+      }, 50);
+    });
+  });
+</script>
+</body>
+</html>

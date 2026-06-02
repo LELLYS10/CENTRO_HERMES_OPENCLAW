@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo 2 — Segurança e Hardening | Curso OpenClaw</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #0a0a0f;
+  --bg-elevated: #12121a;
+  --bg-card: #1a1a25;
+  --grape: #8b5cf6;
+  --grape-light: #a78bfa;
+  --grape-dim: rgba(139, 92, 246, 0.12);
+  --grape-border: rgba(139, 92, 246, 0.25);
+  --grape-glow: rgba(139, 92, 246, 0.08);
+  --emerald: #10b981;
+  --emerald-dim: rgba(16, 185, 129, 0.12);
+  --emerald-border: rgba(16, 185, 129, 0.25);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245, 158, 11, 0.12);
+  --amber-border: rgba(245, 158, 11, 0.25);
+  --rose: #f43f5e;
+  --rose-dim: rgba(244, 63, 94, 0.12);
+  --rose-border: rgba(244, 63, 94, 0.25);
+  --cyan: #22d3ee;
+  --cyan-dim: rgba(34, 211, 238, 0.12);
+  --text: #f1f1f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --border: rgba(255,255,255,0.06);
+  --code-bg: #0d0d15;
+  --code-border: rgba(255,255,255,0.08);
+}
+
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 10.5pt;
+  line-height: 1.6;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 22mm 24mm 28mm;
+  position: relative;
+  overflow: hidden;
+  page-break-after: always;
+  background: var(--bg);
+}
+
+.page::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -25%;
+  width: 70%;
+  height: 70%;
+  background: radial-gradient(ellipse, var(--grape-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 297mm;
+  padding: 36mm 28mm;
+  position: relative;
+}
+
+.cover-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  background: var(--grape-dim);
+  border: 1px solid var(--grape-border);
+  border-radius: 100px;
+  font-size: 10pt;
+  font-weight: 500;
+  color: var(--grape-light);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.cover-star {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  background: var(--rose-dim);
+  border: 1px solid var(--rose-border);
+  border-radius: 100px;
+  font-size: 9pt;
+  font-weight: 500;
+  color: var(--rose);
+  margin-bottom: 16px;
+}
+
+.cover-title {
+  font-size: 44pt;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+  color: var(--text);
+  margin-bottom: 18px;
+  max-width: 500px;
+}
+
+.cover-title em {
+  font-style: italic;
+  background: linear-gradient(135deg, var(--grape), var(--grape-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cover-subtitle {
+  font-size: 14pt;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 440px;
+  margin-bottom: 44px;
+}
+
+.cover-meta {
+  display: flex;
+  gap: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.cover-meta-item { display: flex; flex-direction: column; gap: 4px; }
+.cover-meta-label { font-size: 8pt; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-weight: 500; }
+.cover-meta-value { font-size: 12pt; font-weight: 600; color: var(--text); }
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.page-header-left { font-size: 9pt; color: var(--grape-light); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+.page-header-right { font-family: 'JetBrains Mono', monospace; font-size: 8pt; color: var(--text-muted); }
+
+.page-footer {
+  position: absolute;
+  bottom: 12mm;
+  left: 24mm; right: 24mm;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.page-footer-left { font-size: 8pt; color: var(--text-muted); }
+.page-footer-right { font-family: 'JetBrains Mono', monospace; font-size: 8pt; color: var(--text-muted); }
+
+.section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.section-number { font-family: 'JetBrains Mono', monospace; font-size: 9pt; font-weight: 600; color: var(--grape); padding: 4px 10px; background: var(--grape-dim); border-radius: 6px; }
+.section-title { font-size: 22pt; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
+.section-subtitle { font-size: 11pt; color: var(--text-secondary); margin-top: -12px; margin-bottom: 22px; font-weight: 300; }
+
+h3 { font-size: 13pt; font-weight: 600; color: var(--grape-light); margin: 22px 0 10px; display: flex; align-items: center; gap: 8px; }
+h4 { font-size: 11pt; font-weight: 600; color: var(--text); margin: 16px 0 8px; }
+p { margin-bottom: 10px; color: var(--text-secondary); font-size: 10.5pt; }
+strong { color: var(--text); }
+ul, ol { margin: 8px 0 12px 18px; }
+li { margin-bottom: 3px; font-size: 10pt; color: var(--text-secondary); }
+
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 12px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  position: relative;
+  white-space: pre;
+}
+.code-block::before { content: attr(data-lang); position: absolute; top: 8px; right: 12px; font-size: 7.5pt; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+code { background: var(--grape-dim); color: var(--grape-light); padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 9pt; }
+
+table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 14px 0; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+thead th { background: var(--bg-card); padding: 10px 14px; text-align: left; font-size: 9pt; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+tbody td { padding: 9px 14px; font-size: 10pt; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+tbody tr:last-child td { border-bottom: none; }
+tbody td:first-child { font-weight: 500; color: var(--text); }
+
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin: 12px 0; }
+.card.grape { border-color: var(--grape-border); background: linear-gradient(135deg, rgba(139,92,246,0.06), var(--bg-card)); }
+.card.emerald { border-color: var(--emerald-border); background: linear-gradient(135deg, rgba(16,185,129,0.06), var(--bg-card)); }
+.card.amber { border-color: var(--amber-border); background: linear-gradient(135deg, rgba(245,158,11,0.06), var(--bg-card)); }
+.card.rose { border-color: var(--rose-border); background: linear-gradient(135deg, rgba(244,63,94,0.06), var(--bg-card)); }
+.card-title { font-size: 12pt; font-weight: 600; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.card-desc { font-size: 10pt; color: var(--text-secondary); line-height: 1.5; }
+
+.step { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px 16px 56px; margin: 12px 0; position: relative; }
+.step-num { position: absolute; left: 16px; top: 16px; width: 28px; height: 28px; background: var(--grape-dim); border: 1px solid var(--grape-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 12pt; font-weight: 700; color: var(--grape-light); }
+.step-title { font-size: 12pt; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.step-badge { font-family: 'JetBrains Mono', monospace; font-size: 8.5pt; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 6px; }
+.step-badge.critical { color: var(--rose); background: var(--rose-dim); }
+.step-badge.time { color: var(--emerald); background: var(--emerald-dim); }
+
+.callout { border-radius: 10px; padding: 14px 16px; margin: 14px 0; display: flex; gap: 10px; align-items: flex-start; }
+.callout-icon { font-size: 16pt; flex-shrink: 0; line-height: 1; }
+.callout-content { flex: 1; }
+.callout-content strong { display: block; margin-bottom: 3px; color: var(--text); }
+.callout-content p { margin-bottom: 4px; }
+.callout.tip { background: var(--emerald-dim); border: 1px solid var(--emerald-border); }
+.callout.warning { background: var(--amber-dim); border: 1px solid var(--amber-border); }
+.callout.danger { background: var(--rose-dim); border: 1px solid var(--rose-border); }
+.callout.info { background: var(--grape-dim); border: 1px solid var(--grape-border); }
+
+.checklist { background: var(--bg-card); border: 1px solid var(--emerald-border); border-radius: 12px; padding: 18px 20px; margin: 18px 0; }
+.checklist-title { font-size: 13pt; font-weight: 700; color: var(--emerald); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.checklist-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 10pt; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+.checklist-item:last-child { border-bottom: none; }
+.check-box { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 5px; flex-shrink: 0; }
+
+.inviolable { background: linear-gradient(135deg, rgba(244,63,94,0.15), rgba(244,63,94,0.05)); border: 2px solid var(--rose); border-radius: 12px; padding: 18px 20px; margin: 18px 0; }
+.inviolable h3 { color: var(--rose); margin: 0 0 8px; }
+.inviolable p { color: var(--text-secondary); }
+.inviolable ol { color: var(--text-secondary); margin-left: 18px; }
+.inviolable li { margin-bottom: 3px; }
+
+.troubleshoot { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin: 8px 0; }
+.troubleshoot-problem { font-weight: 600; color: var(--rose); font-size: 10pt; margin-bottom: 4px; }
+.troubleshoot-solution { font-size: 9.5pt; color: var(--text-secondary); }
+
+.layers-stack { display: flex; flex-direction: column; gap: 6px; margin: 14px 0; }
+.layer-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 14px; border-radius: 10px; border: 1px solid;
+}
+.layer-item.rose { background: var(--rose-dim); border-color: var(--rose-border); }
+.layer-item.amber { background: var(--amber-dim); border-color: var(--amber-border); }
+.layer-item.grape { background: var(--grape-dim); border-color: var(--grape-border); }
+.layer-item.emerald { background: var(--emerald-dim); border-color: var(--emerald-border); }
+.layer-item.cyan { background: var(--cyan-dim); border-color: rgba(34,211,238,0.25); }
+.layer-num { font-family: 'JetBrains Mono', monospace; font-size: 11pt; font-weight: 700; width: 28px; flex-shrink: 0; text-align: center; }
+.layer-info { flex: 1; }
+.layer-name { font-weight: 600; font-size: 10.5pt; color: var(--text); }
+.layer-desc { font-size: 9pt; color: var(--text-secondary); }
+.layer-tag { font-family: 'JetBrains Mono', monospace; font-size: 8pt; font-weight: 600; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+.rose .layer-num { color: var(--rose); }
+.amber .layer-num { color: var(--amber); }
+.grape .layer-num { color: var(--grape-light); }
+.emerald .layer-num { color: var(--emerald); }
+.cyan .layer-num { color: var(--cyan); }
+
+.next-module { background: var(--bg-card); border: 1px solid var(--grape-border); border-radius: 12px; padding: 16px 18px; margin-top: 20px; display: flex; align-items: center; gap: 12px; }
+.next-module .next-icon { font-size: 20pt; }
+.next-module .next-text { flex: 1; }
+.next-module .next-label { font-size: 8.5pt; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.next-module .next-title { font-size: 12pt; font-weight: 600; color: var(--text); }
+
+.stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0; }
+.stat-item { text-align: center; padding: 14px 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; position: relative; overflow: hidden; }
+.stat-item::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--rose), var(--grape)); }
+.stat-value { font-family: 'JetBrains Mono', monospace; font-size: 20pt; font-weight: 700; color: var(--text); line-height: 1; margin-bottom: 4px; }
+.stat-label { font-size: 8pt; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="page cover">
+  <div class="cover-badge">🍇 Curso OpenClaw</div>
+  <div class="cover-star">🔴 CVE 2026.2.12 — Leitura Obrigatória</div>
+  <div class="cover-title">Módulo 2<br><em>Segurança</em><br>&amp; Hardening</div>
+  <div class="cover-subtitle">Blindar seu servidor OpenClaw contra os ataques mais comuns — 9 camadas de proteção, da mais crítica à mais avançada.</div>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Duração</div>
+      <div class="cover-meta-value">30–45 min</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Nível</div>
+      <div class="cover-meta-value">Iniciante</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Versão</div>
+      <div class="cover-meta-value">v2026.3.2</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: POR QUE É URGENTE + CAMADAS -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">Módulo 2 — Segurança &amp; Hardening</div>
+    <div class="page-header-right">openclaw.ai/curso</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-number">01</div>
+    <div class="section-title">Por Que Isso É Urgente</div>
+  </div>
+  <p class="section-subtitle">Em fevereiro de 2026, uma CVE com CVSS 8.8 comprometeu 30.000+ instâncias. Sem proteção, seu servidor está sob ataque agora.</p>
+
+  <div class="inviolable">
+    <h3>🔴 CVE 2026.2.12 — O que aconteceu</h3>
+    <p>Uma vulnerabilidade crítica foi descoberta em instâncias OpenClaw expostas na internet. Mais de <strong>30.000 instâncias</strong> foram identificadas como vulneráveis antes do patch v2026.2.12. Servidores comprometidos tiveram <strong>dados exfiltrados, API keys roubadas</strong> e agentes usados para spam.</p>
+    <p style="margin-top: 8px;">Além disso: servidores OpenClaw expostos recebem <strong>1.000+ tentativas de brute force por dia</strong>. Sem proteção, qualquer pessoa pode acessar seu agente e seus dados.</p>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-value">30k+</div>
+      <div class="stat-label">Instâncias comprometidas</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">8.8</div>
+      <div class="stat-label">CVSS Score (crítico)</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">9</div>
+      <div class="stat-label">Camadas de proteção</div>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top: 24px;">
+    <div class="section-number">02</div>
+    <div class="section-title">As 9 Camadas</div>
+  </div>
+  <p class="section-subtitle">Execute na ordem — cada camada protege contra um vetor de ataque diferente.</p>
+
+  <div class="layers-stack">
+    <div class="layer-item rose">
+      <div class="layer-num">1</div>
+      <div class="layer-info">
+        <div class="layer-name">🔐 Telegram Allowlist (dmPolicy)</div>
+        <div class="layer-desc">CRÍTICO — fazer PRIMEIRO. Bloqueia comandos de usuários não autorizados via Telegram</div>
+      </div>
+      <span class="layer-tag" style="background: var(--rose-dim); color: var(--rose);">URGENTE</span>
+    </div>
+    <div class="layer-item amber">
+      <div class="layer-num">2</div>
+      <div class="layer-info">
+        <div class="layer-name">🧱 Firewall UFW</div>
+        <div class="layer-desc">Bloqueia todo tráfego de entrada não autorizado nas portas do servidor</div>
+      </div>
+      <span class="layer-tag" style="background: var(--amber-dim); color: var(--amber);">ALTO</span>
+    </div>
+    <div class="layer-item amber">
+      <div class="layer-num">3</div>
+      <div class="layer-info">
+        <div class="layer-name">🛡️ Fail2ban</div>
+        <div class="layer-desc">Bane automaticamente IPs que tentam brute force no SSH</div>
+      </div>
+      <span class="layer-tag" style="background: var(--amber-dim); color: var(--amber);">ALTO</span>
+    </div>
+    <div class="layer-item grape">
+      <div class="layer-num">4</div>
+      <div class="layer-info">
+        <div class="layer-name">☁️ Cloudflare Tunnel</div>
+        <div class="layer-desc">Acesso remoto seguro ao painel sem expor portas (obrigatório na v2026.3.2)</div>
+      </div>
+      <span class="layer-tag" style="background: var(--grape-dim); color: var(--grape-light);">NOVO v2026</span>
+    </div>
+    <div class="layer-item emerald">
+      <div class="layer-num">5</div>
+      <div class="layer-info">
+        <div class="layer-name">🔒 Portas em 127.0.0.1</div>
+        <div class="layer-desc">Apps web só aceitam conexões locais — nunca 0.0.0.0</div>
+      </div>
+      <span class="layer-tag" style="background: var(--emerald-dim); color: var(--emerald);">MÉDIO</span>
+    </div>
+    <div class="layer-item emerald">
+      <div class="layer-num">6</div>
+      <div class="layer-info">
+        <div class="layer-name">🗝️ SSH Hardening</div>
+        <div class="layer-desc">SSH key-only, sem login por senha, sem root remoto</div>
+      </div>
+      <span class="layer-tag" style="background: var(--emerald-dim); color: var(--emerald);">MÉDIO</span>
+    </div>
+    <div class="layer-item grape">
+      <div class="layer-num">7</div>
+      <div class="layer-info">
+        <div class="layer-name">🔑 openclaw secrets audit</div>
+        <div class="layer-desc">Detecta e remove API keys hardcodadas nos arquivos</div>
+      </div>
+      <span class="layer-tag" style="background: var(--grape-dim); color: var(--grape-light);">CRÍTICO</span>
+    </div>
+    <div class="layer-item emerald">
+      <div class="layer-num">8</div>
+      <div class="layer-info">
+        <div class="layer-name">🔐 openclaw secrets apply</div>
+        <div class="layer-desc">Migra credenciais para cofre criptografado do OpenClaw</div>
+      </div>
+      <span class="layer-tag" style="background: var(--emerald-dim); color: var(--emerald);">MÉDIO</span>
+    </div>
+    <div class="layer-item cyan">
+      <div class="layer-num">9</div>
+      <div class="layer-info">
+        <div class="layer-name">🔄 Systemd + Secrets Sync</div>
+        <div class="layer-desc">Garantir que rotação de credenciais é aplicada ao daemon</div>
+      </div>
+      <span class="layer-tag" style="background: var(--cyan-dim); color: var(--cyan);">ROTINA</span>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-left">© Curso OpenClaw</div>
+    <div class="page-footer-right">pág. 2</div>
+  </div>
+</div>
+
+<!-- PAGE 3: CAMADAS 1-3 — COMANDOS -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">Módulo 2 — Segurança &amp; Hardening</div>
+    <div class="page-header-right">openclaw.ai/curso</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-number">03</div>
+    <div class="section-title">Camadas 1–3: Base</div>
+  </div>
+
+  <!-- CAMADA 1 -->
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-title">🔐 Telegram Allowlist — PRIMEIRO!</div>
+    <span class="step-badge critical">CRÍTICO — FAZER ANTES DO UFW</span>
+    <p>Configure o <code>dmPolicy</code> para <strong>allowlist</strong> antes de qualquer outra coisa. O UFW protege portas do servidor, mas o Telegram é conexão de SAÍDA — sem allowlist, qualquer pessoa que descobrir seu bot pode comandar seu agente.</p>
+    <div class="code-block" data-lang="bash">
+<span style="color: var(--text-muted)"># Verificar config atual</span>
+cat /root/.openclaw/openclaw.json | grep -A5 dmPolicy</div>
+    <div class="callout danger">
+      <div class="callout-icon">🚨</div>
+      <div class="callout-content">
+        <strong>Se estiver "open", mude IMEDIATAMENTE para "allowlist"</strong>
+        <p>Adicione APENAS os IDs dos usuários autorizados. Sem isso, o UFW não ajuda — o Telegram chega por conexão de saída, não por porta aberta.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMADA 2 -->
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-title">🧱 Firewall UFW</div>
+    <span class="step-badge time">~5 min</span>
+    <div class="code-block" data-lang="bash">
+sudo apt install -y ufw
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow ssh
+sudo ufw --force enable
+sudo ufw status</div>
+  </div>
+
+  <!-- CAMADA 3 -->
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-title">🛡️ Fail2ban — Proteção SSH</div>
+    <span class="step-badge time">~10 min</span>
+    <div class="code-block" data-lang="bash">
+sudo apt install -y fail2ban
+
+<span style="color: var(--text-muted)"># Criar configuração customizada</span>
+sudo cat &gt; /etc/fail2ban/jail.local &lt;&lt; 'EOF'
+[sshd]
+enabled = true
+port = ssh
+filter = sshd
+logpath = /var/log/auth.log
+maxretry = 5
+bantime = 3600
+findtime = 600
+EOF
+
+sudo systemctl enable fail2ban
+sudo systemctl restart fail2ban
+
+<span style="color: var(--text-muted)"># Verificar status</span>
+sudo fail2ban-client status sshd</div>
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-content">
+        <strong>O que o Fail2ban faz</strong>
+        <p><code>maxretry = 5</code> — após 5 tentativas erradas em 10 min, bane o IP por 1 hora. Elimina 99% dos ataques de brute force automatizados.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-left">© Curso OpenClaw</div>
+    <div class="page-footer-right">pág. 3</div>
+  </div>
+</div>
+
+<!-- PAGE 4: CAMADAS 4-6 -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">Módulo 2 — Segurança &amp; Hardening</div>
+    <div class="page-header-right">openclaw.ai/curso</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-number">04</div>
+    <div class="section-title">Camadas 4–6: Acesso Remoto</div>
+  </div>
+
+  <!-- CAMADA 4 -->
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-title">☁️ Cloudflare Tunnel</div>
+    <span class="step-badge" style="background: var(--grape-dim); color: var(--grape-light);">OBRIGATÓRIO na v2026.3.2</span>
+    <p>O WebSocket do painel OpenClaw agora só aceita conexões de <code>127.0.0.1</code> (loopback). Para acessar remotamente, <strong>você precisa do Cloudflare Tunnel</strong>. Não tem atalho.</p>
+    <div class="code-block" data-lang="bash">
+<span style="color: var(--text-muted"># Instalar cloudflared</span>
+curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb \
+  -o cloudflared.deb
+sudo dpkg -i cloudflared.deb
+
+<span style="color: var(--text-muted)"># Autenticar e criar tunnel</span>
+cloudflared tunnel login
+cloudflared tunnel create meu-tunnel
+
+<span style="color: var(--text-muted)"># Configurar (porta 18789 = painel OpenClaw)</span>
+cat &gt; ~/.cloudflared/config.yml &lt;&lt; 'EOF'
+tunnel: meu-tunnel
+credentials-file: /root/.cloudflared/&lt;TUNNEL_ID&gt;.json
+
+ingress:
+  - hostname: painel.meudominio.com
+    service: http://127.0.0.1:18789
+  - service: http_status:404
+EOF
+
+cloudflared service install
+systemctl enable cloudflared
+systemctl start cloudflared</div>
+    <div class="callout info">
+      <div class="callout-icon">🔒</div>
+      <div class="callout-content">
+        <strong>Por que Cloudflare Tunnel é melhor que abrir porta</strong>
+        <p>Zero portas expostas na internet. Conexão de SAÍDA — servidor fica "invisível". SSL/TLS automático. Proteção DDoS gratuita inclusa. <strong>NUNCA use 0.0.0.0 — sempre 127.0.0.1 + tunnel.</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMADA 5 -->
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-title">🔒 Portas em 127.0.0.1</div>
+    <p>Toda aplicação web deve escutar apenas em localhost. Se tiver apps rodando:</p>
+    <ul>
+      <li>Mude binding de <code>0.0.0.0</code> para <code>127.0.0.1</code></li>
+      <li>Use Cloudflare Tunnel para acesso externo</li>
+      <li>Nunca exponha portas direto na internet</li>
+    </ul>
+  </div>
+
+  <!-- CAMADA 6 -->
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="step-title">🗝️ SSH Hardening</div>
+    <div class="code-block" data-lang="bash">
+<span style="color: var(--text-muted)"># Verificar se root login com senha está ativo</span>
+grep "PermitRootLogin" /etc/ssh/sshd_config
+
+<span style="color: var(--text-muted)"># Ideal: chave SSH apenas (sem senha)</span>
+<span style="color: var(--text-muted)"># PermitRootLogin prohibit-password</span></div>
+    <div class="callout warning">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-content">
+        <strong>Configure chaves SSH antes de desabilitar senha</strong>
+        <p>Certifique-se de que sua chave SSH funciona antes de desabilitar login por senha — caso contrário você pode se trancar para fora do servidor.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-left">© Curso OpenClaw</div>
+    <div class="page-footer-right">pág. 4</div>
+  </div>
+</div>
+
+<!-- PAGE 5: CAMADAS 7-9 — SECRETS -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">Módulo 2 — Segurança &amp; Hardening</div>
+    <div class="page-header-right">openclaw.ai/curso</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-number">05</div>
+    <div class="section-title">Camadas 7–9: Credenciais</div>
+  </div>
+
+  <div class="callout danger">
+    <div class="callout-icon">💀</div>
+    <div class="callout-content">
+      <strong>A CVE 2026.2.12 explorou exatamente isso</strong>
+      <p>API keys hardcodadas em arquivos de configuração. Se alguém acessa seu servidor, pega TODAS as chaves de uma vez. O comando <code>openclaw secrets</code> resolve isso.</p>
+    </div>
+  </div>
+
+  <!-- CAMADA 7 -->
+  <div class="step">
+    <div class="step-num">7</div>
+    <div class="step-title">🔑 Auditar Credenciais Expostas</div>
+    <p>Escaneia todos os arquivos do workspace procurando API keys hardcodadas:</p>
+    <div class="code-block" data-lang="bash">
+<span style="color: var(--text-muted)"># Detectar chaves expostas</span>
+openclaw secrets audit
+
+<span style="color: var(--text-muted)"># Se encontrar algo, vai listar caminho e linha exata</span>
+<span style="color: var(--text-muted)"># Exemplo de output preocupante:</span>
+<span style="color: var(--rose)">⚠️ Found: ANTHROPIC_API_KEY in /root/.openclaw/openclaw.json:45</span>
+<span style="color: var(--rose)">⚠️ Found: OPENAI_API_KEY in /root/.openclaw/workspace/config.js:12</span></div>
+  </div>
+
+  <!-- CAMADA 8 -->
+  <div class="step">
+    <div class="step-num">8</div>
+    <div class="step-title">🔐 Migrar para Cofre Seguro</div>
+    <div class="code-block" data-lang="bash">
+<span style="color: var(--text-muted)"># Migrar credenciais para cofre criptografado</span>
+openclaw secrets apply
+
+<span style="color: var(--text-muted)"># Verificar que tudo foi migrado (deve retornar limpo)</span>
+openclaw secrets audit
+<span style="color: var(--emerald)">✅ No exposed credentials found</span>
+
+<span style="color: var(--text-muted)"># Rotação trimestral — atualizar uma chave</span>
+openclaw secrets set ANTHROPIC_API_KEY=sk-ant-nova-chave-aqui</div>
+    <div class="callout tip">
+      <div class="callout-icon">✅</div>
+      <div class="callout-content">
+        <strong>Compatibilidade com .env manual</strong>
+        <p>Se você tem um <code>.env</code> com chaves, o <code>openclaw secrets apply</code> lê de lá também e migra pro sistema seguro. Após migração, o <code>.env</code> manual pode ser removido.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMADA 9 -->
+  <div class="step">
+    <div class="step-num">9</div>
+    <div class="step-title">🔄 Systemd + Secrets Sync</div>
+    <p>Quando trocar qualquer credencial, o systemd precisa saber — caso contrário continua usando o valor antigo:</p>
+    <div class="code-block" data-lang="bash">
+<span style="color: var(--text-muted)"># 1. Atualizar o secret</span>
+openclaw secrets set NOME_DA_CHAVE=novo-valor
+
+<span style="color: var(--text-muted)"># 2. Atualizar override do systemd (se necessário)</span>
+sudo systemctl edit openclaw
+
+<span style="color: var(--text-muted)"># 3. Recarregar e reiniciar</span>
+sudo systemctl daemon-reload
+sudo systemctl restart openclaw</div>
+    <div class="callout warning">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-content">
+        <strong>Armadilha comum — horas de debug perdidas</strong>
+        <p>O systemd override tem prioridade sobre o sistema de secrets. Se trocar só o secret mas o override tiver o valor antigo, vai continuar usando o antigo. Sempre sincronize os dois.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-left">© Curso OpenClaw</div>
+    <div class="page-footer-right">pág. 5</div>
+  </div>
+</div>
+
+<!-- PAGE 6: CHECKLIST FINAL -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">Módulo 2 — Segurança &amp; Hardening</div>
+    <div class="page-header-right">openclaw.ai/curso</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-number">06</div>
+    <div class="section-title">Checklist Final</div>
+  </div>
+  <p class="section-subtitle">Execute cada item na ordem. Um servidor blindado contra os ataques mais comuns.</p>
+
+  <div class="checklist">
+    <div class="checklist-title">✅ 9 Camadas de Proteção</div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div><strong>dmPolicy = allowlist</strong> — PRIMEIRO, antes do UFW</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div><strong>UFW ativo</strong> — deny incoming, allow ssh</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div><strong>Fail2ban ativo</strong> — maxretry=5, bantime=3600</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div><strong>Cloudflare Tunnel configurado</strong> — painel via 127.0.0.1:18789</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div><strong>Portas em 127.0.0.1</strong> — nunca 0.0.0.0</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div><strong>SSH hardened</strong> — key-only, PermitRootLogin prohibit-password</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div><strong>openclaw secrets audit</strong> — zero resultados</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div><strong>openclaw secrets apply</strong> — credenciais no cofre seguro</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div><strong>Rotação trimestral agendada</strong> — lembrete recorrente criado</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div><strong>Systemd + secrets sincronizados</strong> — testado após rotação</div>
+    </div>
+  </div>
+
+  <div class="card rose" style="margin-top: 16px;">
+    <div class="card-title">🎯 Resultado Esperado</div>
+    <div class="card-desc">Servidor blindado contra todos os vetores de ataque conhecidos, incluindo o da CVE 2026.2.12. Reporte o status de cada item ao seu agente OpenClaw para confirmação.</div>
+  </div>
+
+  <div class="card amber" style="margin-top: 12px;">
+    <div class="card-title">🔄 Rotação Trimestral</div>
+    <div class="card-desc">A cada 3 meses, gere novas chaves nos painéis (Anthropic, OpenAI, Telegram) e atualize com <code>openclaw secrets set</code>. Chaves antigas que vazam ficam inúteis após a rotação.</div>
+  </div>
+
+  <div class="next-module">
+    <div class="next-icon">➡️</div>
+    <div class="next-text">
+      <div class="next-label">Próxima Aula</div>
+      <div class="next-title">N-1 — Configurar Credenciais: API Key Anthropic + OpenAI</div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-left">© Curso OpenClaw</div>
+    <div class="page-footer-right">pág. 6</div>
+  </div>
+</div>
+
+</body>
+</html>

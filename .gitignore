@@ -1,0 +1,11 @@
+.DS_Store
+.env
+.env.*
+*.log
+*.sqlite
+*.sqlite3
+node_modules/
+.obsidian/
+client_secret*.json
+token*.json
+credentials*.json

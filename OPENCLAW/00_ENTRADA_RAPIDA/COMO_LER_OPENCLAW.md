@@ -1,0 +1,7 @@
+# Como Ler OpenClaw
+
+1. `COMANDO_CENTRAL_OPENCLAW.md`
+2. `01_DOCUMENTACAO_ATIVA`
+3. `02_REFERENCIAS_EXTERNAS/Manual OpenClaw`
+4. `03_SECOES/skills-openclaw`
+5. `04_MAPAS_VISUAIS`

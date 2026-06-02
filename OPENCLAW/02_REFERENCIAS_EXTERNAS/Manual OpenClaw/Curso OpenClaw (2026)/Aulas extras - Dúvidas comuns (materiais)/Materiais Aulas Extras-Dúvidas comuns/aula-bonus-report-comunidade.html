@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula Bônus — Report de Comunidade com IA · Curso OpenClaw</title>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --surface2: #1a1a26;
+  --border: #2a2a3a;
+  --accent: #7c3aed;
+  --accent2: #a78bfa;
+  --text: #e2e2f0;
+  --muted: #6b7280;
+  --green: #22c55e;
+  --yellow: #eab308;
+  --orange: #f97316;
+  --red: #ef4444;
+  --blue: #3b82f6;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; }
+
+.wrap { max-width: 860px; margin: 0 auto; padding: 40px 24px; }
+
+/* HEADER */
+.hero { background: linear-gradient(135deg, #1a0a2e 0%, #13131a 60%, #0a0a0f 100%); border: 1px solid var(--border); border-radius: 16px; padding: 48px 40px; margin-bottom: 40px; position: relative; overflow: hidden; }
+.hero::before { content: ''; position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%); pointer-events: none; }
+.hero-tag { display: inline-flex; align-items: center; gap: 8px; background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3); border-radius: 20px; padding: 6px 16px; font-size: 12px; font-weight: 600; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px; }
+.hero h1 { font-size: 32px; font-weight: 800; line-height: 1.2; margin-bottom: 16px; }
+.hero h1 span { background: linear-gradient(90deg, #a78bfa, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: 17px; color: #9ca3af; margin-bottom: 28px; max-width: 600px; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 20px; }
+.hero-meta-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.hero-meta-item strong { color: var(--text); }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+.badge-green { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+.badge-purple { background: rgba(124,58,237,0.15); color: var(--accent2); border: 1px solid rgba(124,58,237,0.2); }
+.badge-blue { background: rgba(59,130,246,0.15); color: var(--blue); border: 1px solid rgba(59,130,246,0.2); }
+.badge-orange { background: rgba(249,115,22,0.15); color: var(--orange); border: 1px solid rgba(249,115,22,0.2); }
+
+/* NAV */
+.nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 36px; }
+.nav a { display: inline-block; padding: 8px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--muted); text-decoration: none; transition: all 0.2s; }
+.nav a:hover { border-color: var(--accent); color: var(--accent2); }
+
+/* SECTIONS */
+.section { margin-bottom: 48px; }
+.section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent2); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* CARDS */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+.card-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.card-sub { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+
+/* OBJETIVOS */
+.obj-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.obj-list li { display: flex; align-items: flex-start; gap: 12px; background: var(--surface2); border-radius: 8px; padding: 14px 16px; }
+.obj-num { width: 28px; height: 28px; min-width: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #818cf8); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: #fff; }
+.obj-text strong { display: block; margin-bottom: 2px; font-size: 14px; }
+.obj-text span { font-size: 13px; color: var(--muted); }
+
+/* FLOW */
+.flow { display: flex; flex-direction: column; gap: 0; }
+.flow-step { display: flex; gap: 20px; }
+.flow-left { display: flex; flex-direction: column; align-items: center; }
+.flow-dot { width: 40px; height: 40px; min-width: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; }
+.flow-line { width: 2px; flex: 1; min-height: 24px; background: var(--border); margin: 4px 0; }
+.flow-step:last-child .flow-line { display: none; }
+.flow-body { padding-bottom: 28px; flex: 1; }
+.flow-body h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; margin-top: 8px; }
+.flow-body p { font-size: 14px; color: var(--muted); margin-bottom: 10px; }
+.flow-body .detail { background: var(--surface2); border-radius: 8px; padding: 14px 16px; font-size: 13px; border-left: 3px solid; }
+
+/* CODE */
+pre { background: #0d0d14; border: 1px solid var(--border); border-radius: 10px; padding: 20px; overflow-x: auto; font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace; font-size: 13px; line-height: 1.6; margin: 12px 0; }
+code { font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace; font-size: 12px; background: rgba(124,58,237,0.1); padding: 2px 6px; border-radius: 4px; color: var(--accent2); }
+.code-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.kw-purple { color: #c084fc; }
+.kw-blue { color: #60a5fa; }
+.kw-green { color: #4ade80; }
+.kw-yellow { color: #fbbf24; }
+.kw-orange { color: #fb923c; }
+.kw-red { color: #f87171; }
+.kw-gray { color: #6b7280; }
+
+/* TIMELINE */
+.timeline { display: flex; flex-direction: column; gap: 2px; }
+.tl-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 8px; }
+.tl-row:nth-child(odd) { background: var(--surface2); }
+.tl-time { font-size: 12px; font-weight: 700; color: var(--accent2); min-width: 60px; }
+.tl-bar { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.tl-fill { height: 100%; border-radius: 3px; }
+.tl-label { font-size: 13px; color: var(--text); min-width: 200px; }
+
+/* INSIGHT BOXES */
+.insight { border-radius: 10px; padding: 16px 18px; margin: 12px 0; display: flex; gap: 12px; align-items: flex-start; }
+.insight-icon { font-size: 20px; min-width: 28px; margin-top: 1px; }
+.insight-text { font-size: 13px; line-height: 1.6; }
+.insight-text strong { display: block; font-size: 14px; margin-bottom: 4px; }
+.insight-green { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); }
+.insight-purple { background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.2); }
+.insight-yellow { background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.2); }
+.insight-blue { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); }
+.insight-red { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); }
+
+/* CHECKLIST */
+.checklist { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.checklist li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; padding: 10px 14px; background: var(--surface2); border-radius: 8px; }
+.checklist li::before { content: '☐'; font-size: 16px; color: var(--accent2); min-width: 20px; margin-top: 1px; }
+
+/* SCRIPT BOX */
+.script-box { background: #080c14; border: 1px solid #1e3a5f; border-radius: 10px; padding: 20px 24px; margin: 12px 0; position: relative; }
+.script-box::before { content: '🎬 Script'; position: absolute; top: -10px; left: 16px; background: #1e3a5f; color: #60a5fa; font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+.script-box p { font-size: 14px; color: #cbd5e1; font-style: italic; margin: 6px 0; }
+.script-box p strong { color: #fff; font-style: normal; }
+
+/* GRID */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media(max-width: 640px) { .grid2 { grid-template-columns: 1fr; } .hero { padding: 28px 20px; } .hero h1 { font-size: 24px; } }
+
+/* DIVIDER */
+.divider { height: 1px; background: var(--border); margin: 32px 0; }
+
+/* TAGS */
+.tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.tag { padding: 4px 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; font-size: 12px; color: var(--muted); }
+
+/* RESULT EXAMPLE */
+.result-example { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 16px 0; }
+.result-header { background: var(--surface2); padding: 10px 16px; font-size: 12px; color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+.result-body { padding: 16px; font-size: 13px; line-height: 1.7; }
+.result-kpi-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+.result-kpi { text-align: center; background: var(--surface2); border-radius: 8px; padding: 10px 16px; min-width: 80px; }
+.result-kpi .n { font-size: 22px; font-weight: 800; color: var(--accent2); }
+.result-kpi .l { font-size: 11px; color: var(--muted); }
+
+/* ALERT */
+.alert { border-radius: 10px; padding: 14px 18px; font-size: 13px; margin: 12px 0; display: flex; gap: 10px; align-items: flex-start; }
+.alert-icon { font-size: 16px; min-width: 20px; }
+.alert-warn { background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.25); color: #fde68a; }
+.alert-info { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.25); color: #bfdbfe; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">⭐ Aula Bônus · Curso OpenClaw</div>
+  <h1>Report de Comunidade<br><span>com IA, do zero ao automático</span></h1>
+  <p class="hero-sub">Como construir um relatório semanal completo dos seus grupos de WhatsApp usando OpenClaw — da conexão ao banco de dados até o PDF entregue automaticamente toda segunda-feira.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">⏱️ <strong>~20 min</strong></div>
+    <div class="hero-meta-item">🎯 <span class="badge badge-purple">Intermediário</span></div>
+    <div class="hero-meta-item">🔧 <span class="badge badge-blue">Skill · Cron · Supabase</span></div>
+    <div class="hero-meta-item">📦 <span class="badge badge-green">Case Real</span></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <a href="#contexto">Contexto</a>
+  <a href="#objetivos">Objetivos</a>
+  <a href="#como-funciona">Como Funciona</a>
+  <a href="#passo-a-passo">Passo a Passo</a>
+  <a href="#skill">A Skill</a>
+  <a href="#cron">O Cron</a>
+  <a href="#resultado">Resultado</a>
+  <a href="#adapte">Adapte ao Seu Caso</a>
+  <a href="#exercicio">Exercício</a>
+</div>
+
+<!-- CONTEXTO -->
+<div class="section" id="contexto">
+  <div class="section-title">O Problema Real</div>
+  <div class="card">
+    <div class="card-title">Por que isso importa?</div>
+    <div class="card-sub">Toda comunidade online gera dados. A maioria dos criadores não usa esses dados para nada.</div>
+    <div class="grid2">
+      <div>
+        <div class="insight insight-red">
+          <div class="insight-icon">😰</div>
+          <div class="insight-text">
+            <strong>Sem análise</strong>
+            Você sabe que tem 500 alunos no grupo. Não sabe quem está travado, qual dúvida aparece toda semana, nem qual horário o grupo mais engaja.
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="insight insight-green">
+          <div class="insight-icon">✅</div>
+          <div class="insight-text">
+            <strong>Com análise automatizada</strong>
+            Toda segunda-feira às 9h chega um PDF com: sentimento da semana, dúvidas mais frequentes, alunos com sucesso, horário de pico e recomendações concretas.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <p style="font-size:14px;color:var(--muted);">Nesta aula você vai ver o <strong style="color:var(--text);">case real</strong> da Amora fazendo isso para o Curso OpenClaw — 4 grupos de WhatsApp, 14.725 mensagens, 30 dias de dados. E depois vai aprender a adaptar para o seu contexto.</p>
+  </div>
+</div>
+
+<!-- OBJETIVOS -->
+<div class="section" id="objetivos">
+  <div class="section-title">O que você vai aprender</div>
+  <ul class="obj-list">
+    <li>
+      <div class="obj-num">1</div>
+      <div class="obj-text">
+        <strong>Conectar ao Supabase via API REST</strong>
+        <span>Sem biblioteca — só requests Python. Funciona com qualquer banco Supabase, seja seu produto SaaS ou qualquer projeto.</span>
+      </div>
+    </li>
+    <li>
+      <div class="obj-num">2</div>
+      <div class="obj-text">
+        <strong>Paginar dados corretamente</strong>
+        <span>Supabase retorna max 1.000 rows por request. Quem não pagina perde dados. Você vai aprender o padrão offset que funciona sempre.</span>
+      </div>
+    </li>
+    <li>
+      <div class="obj-num">3</div>
+      <div class="obj-text">
+        <strong>Fazer NLP básico sem biblioteca pesada</strong>
+        <span>Análise de sentimento, extração de tópicos e detecção de padrões usando só Python puro — sem NLTK, sem spaCy, sem dependência externa.</span>
+      </div>
+    </li>
+    <li>
+      <div class="obj-num">4</div>
+      <div class="obj-text">
+        <strong>Gerar HTML profissional com charts CSS</strong>
+        <span>Relatório visual completo, dark theme, sem JavaScript — funciona em qualquer visualizador, pode ser convertido em PDF.</span>
+      </div>
+    </li>
+    <li>
+      <div class="obj-num">5</div>
+      <div class="obj-text">
+        <strong>Encapsular tudo em uma Skill OpenClaw</strong>
+        <span>A skill vira a "memória" do processo — documentada, reproduzível, reutilizável. Qualquer agente pode executar sem reinventar a roda.</span>
+      </div>
+    </li>
+    <li>
+      <div class="obj-num">6</div>
+      <div class="obj-text">
+        <strong>Automatizar com Cron</strong>
+        <span>Um cron que roda todo segunda às 9h, gera o HTML, converte em PDF e entrega direto no Telegram — zero interação manual.</span>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<!-- COMO FUNCIONA -->
+<div class="section" id="como-funciona">
+  <div class="section-title">Visão Geral — O Fluxo Completo</div>
+
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-left">
+        <div class="flow-dot" style="background:linear-gradient(135deg,#1d4ed8,#60a5fa);color:#fff;font-size:14px;">🗓️</div>
+        <div class="flow-line"></div>
+      </div>
+      <div class="flow-body">
+        <h3>1 · Cron dispara toda segunda às 9h</h3>
+        <p>O OpenClaw tem um scheduler interno. Você define <code>0 9 * * 1</code> e ele acorda o agente automaticamente no horário certo.</p>
+        <div class="detail" style="border-color:#3b82f6;">
+          <strong>Cron expression:</strong> <code>0 9 * * 1</code> = toda segunda-feira às 9h00 (fuso: America/Sao_Paulo)<br>
+          O agente recebe a instrução: <em>"Leia a skill e gere o relatório."</em>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="flow-left">
+        <div class="flow-dot" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;font-size:14px;">🔑</div>
+        <div class="flow-line"></div>
+      </div>
+      <div class="flow-body">
+        <h3>2 · Busca credenciais no 1Password</h3>
+        <p>Nunca hardcoda senha. O agente usa o CLI <code>op</code> para buscar a URL e a secret key do Supabase em runtime.</p>
+        <pre><span class="kw-blue">SUPABASE_URL</span>=<span class="kw-green">$(op item get "Supabase MGM" --vault "Amora Vault" \
+  --field "Project URL" --reveal)</span>
+<span class="kw-blue">SUPABASE_KEY</span>=<span class="kw-green">$(op item get "Supabase MGM" --vault "Amora Vault" \
+  --field "secret_key" --reveal)</span></pre>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="flow-left">
+        <div class="flow-dot" style="background:linear-gradient(135deg,#0891b2,#38bdf8);color:#fff;font-size:14px;">📦</div>
+        <div class="flow-line"></div>
+      </div>
+      <div class="flow-body">
+        <h3>3 · Coleta dados do Supabase (com paginação)</h3>
+        <p>Faz GET na tabela <code>interactions</code> filtrando pelos IDs dos grupos e pelo período (últimos 30 dias). Pagina de 1.000 em 1.000.</p>
+        <div class="detail" style="border-color:#0891b2;">
+          <strong>⚠️ Armadilha comum:</strong> fazer o fetch sem paginação e achar que tem todos os dados. Na nossa análise eram 14.725 mensagens — sem paginação, só as 1.000 primeiras apareceriam. Os dados estariam 93% errados.
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="flow-left">
+        <div class="flow-dot" style="background:linear-gradient(135deg,#065f46,#34d399);color:#fff;font-size:14px;">🧠</div>
+        <div class="flow-line"></div>
+      </div>
+      <div class="flow-body">
+        <h3>4 · Analisa os dados (NLP sem biblioteca)</h3>
+        <p>Com os dados em memória, o agente aplica análises por semana: sentimento, tópicos, horários de pico, top membros, retenção.</p>
+        <div class="grid2" style="margin-top:10px;">
+          <div class="detail" style="border-color:#34d399;">
+            <strong>Sentimento</strong><br>
+            Palavras-gatilho positivas e negativas. Exemplos reais de mensagens para ancorar os percentuais.
+          </div>
+          <div class="detail" style="border-color:#34d399;">
+            <strong>Tópicos</strong><br>
+            Dicionário de keywords por categoria: Telegram, API Keys, Erros, Cases de Uso, Windows, etc.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="flow-left">
+        <div class="flow-dot" style="background:linear-gradient(135deg,#92400e,#fbbf24);color:#fff;font-size:14px;">🎨</div>
+        <div class="flow-line"></div>
+      </div>
+      <div class="flow-body">
+        <h3>5 · Gera HTML com charts CSS</h3>
+        <p>O agente monta o HTML diretamente — sem template engine, sem JS, sem dependência. Dark theme, responsivo, bars em CSS puro.</p>
+        <div class="detail" style="border-color:#fbbf24;">
+          <strong>Por que sem JS?</strong> O arquivo precisa funcionar offline, ser convertido em PDF pelo Chrome headless e ser aberto em qualquer browser — inclusive visualizadores simples. CSS puro é a escolha mais robusta.
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="flow-left">
+        <div class="flow-dot" style="background:linear-gradient(135deg,#be123c,#f43f5e);color:#fff;font-size:14px;">📄</div>
+        <div class="flow-line"></div>
+      </div>
+      <div class="flow-body">
+        <h3>6 · Converte em PDF e envia no Telegram</h3>
+        <p>O Chrome headless converte o HTML em PDF. O agente usa o <code>message tool</code> do OpenClaw para enviar o arquivo direto no topic do Telegram.</p>
+        <pre><span class="kw-gray"># Conversão HTML → PDF</span>
+<span class="kw-blue">google-chrome</span> --headless --no-sandbox --disable-gpu \
+  --print-to-pdf=<span class="kw-green">output.pdf</span> \
+  --print-to-pdf-no-header \
+  <span class="kw-yellow">"file:///caminho/para/report.html"</span></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PASSO A PASSO -->
+<div class="section" id="passo-a-passo">
+  <div class="section-title">Passo a Passo — O Código</div>
+
+  <!-- STEP 1: Período -->
+  <div class="card">
+    <div class="card-title">📅 Passo 1 — Definir o Período Dinâmico</div>
+    <p class="card-sub">Nunca hardcode datas. O relatório deve sempre cobrir os últimos 30 dias a partir de hoje.</p>
+    <div class="code-label">Python</div>
+    <pre><span class="kw-purple">from</span> <span class="kw-blue">datetime</span> <span class="kw-purple">import</span> datetime, timedelta, timezone
+
+<span class="kw-gray"># Fim = hoje (meia-noite UTC)</span>
+END = datetime.now(timezone.utc).replace(
+    hour=<span class="kw-orange">0</span>, minute=<span class="kw-orange">0</span>, second=<span class="kw-orange">0</span>, microsecond=<span class="kw-orange">0</span>
+)
+START = END - timedelta(days=<span class="kw-orange">30</span>)
+
+<span class="kw-gray"># Dividir em 4 semanas</span>
+WEEKS = []
+<span class="kw-purple">for</span> i <span class="kw-purple">in</span> range(<span class="kw-orange">4</span>):
+    ws = START + timedelta(days=<span class="kw-orange">7</span>*i)
+    we = START + timedelta(days=<span class="kw-orange">7</span>*(i+<span class="kw-orange">1</span>))
+    WEEKS.append((f<span class="kw-green">"S{i+1}"</span>, ws.isoformat(), we.isoformat()))</pre>
+  </div>
+
+  <!-- STEP 2: Fetch -->
+  <div class="card">
+    <div class="card-title">📦 Passo 2 — Buscar Dados com Paginação</div>
+    <p class="card-sub">O padrão correto para não perder nenhuma mensagem.</p>
+    <div class="alert alert-warn">
+      <span class="alert-icon">⚠️</span>
+      <span>Supabase retorna <strong>máximo 1.000 rows por request</strong>. Se o seu grupo tem mais mensagens no período e você não paginar, os dados estarão incompletos. Este foi o erro mais comum que encontramos testando.</span>
+    </div>
+    <div class="code-label">Python</div>
+    <pre>all_msgs = []
+
+<span class="kw-purple">for</span> chat_id <span class="kw-purple">in</span> CHAT_IDS:
+    offset = <span class="kw-orange">0</span>
+    <span class="kw-purple">while True</span>:
+        params = {
+            <span class="kw-green">"select"</span>: <span class="kw-green">"created_at,message,user_name,response_to,reaction"</span>,
+            <span class="kw-green">"chat_id"</span>: f<span class="kw-green">"eq.{chat_id}"</span>,
+            <span class="kw-green">"created_at"</span>: f<span class="kw-green">"gte.{START.isoformat()}"</span>,
+            <span class="kw-green">"order"</span>: <span class="kw-green">"created_at.asc"</span>,
+            <span class="kw-green">"limit"</span>: <span class="kw-orange">1000</span>,
+            <span class="kw-green">"offset"</span>: offset
+        }
+        r = requests.get(
+            f<span class="kw-green">"{SUPABASE_URL}/rest/v1/interactions"</span>,
+            headers=headers, params=params
+        )
+        batch = r.json()
+        all_msgs.extend(batch)
+
+        <span class="kw-gray"># Condição de saída: batch menor que 1.000 = última página</span>
+        <span class="kw-purple">if</span> len(batch) < <span class="kw-orange">1000</span>:
+            <span class="kw-purple">break</span>
+        offset += <span class="kw-orange">1000</span>
+
+<span class="kw-blue">print</span>(f<span class="kw-green">"Total: {len(all_msgs)} mensagens"</span>)
+<span class="kw-gray"># → Total: 14.725 mensagens</span></pre>
+  </div>
+
+  <!-- STEP 3: NLP -->
+  <div class="card">
+    <div class="card-title">🧠 Passo 3 — Análise de Sentimento (sem biblioteca)</div>
+    <p class="card-sub">Python puro. Dicionário de palavras-gatilho calibrado para português e contexto de comunidade tech.</p>
+    <div class="code-label">Python</div>
+    <pre>POS = [<span class="kw-green">"consegui"</span>, <span class="kw-green">"funcionou"</span>, <span class="kw-green">"resolveu"</span>, <span class="kw-green">"top"</span>,
+       <span class="kw-green">"incrível"</span>, <span class="kw-green">"deu certo"</span>, <span class="kw-green">"show"</span>, <span class="kw-green">"obrigado"</span>,
+       <span class="kw-green">"perfeito"</span>, <span class="kw-green">"excelente"</span>, <span class="kw-green">"🎉"</span>, <span class="kw-green">"✅"</span>, <span class="kw-green">"🙌"</span>]
+
+NEG = [<span class="kw-red">"erro"</span>, <span class="kw-red">"não funciona"</span>, <span class="kw-red">"bug"</span>, <span class="kw-red">"travou"</span>,
+       <span class="kw-red">"problema"</span>, <span class="kw-red">"não consigo"</span>, <span class="kw-red">"deu errado"</span>,
+       <span class="kw-red">"frustrado"</span>, <span class="kw-red">"horas tentando"</span>, <span class="kw-red">"impossível"</span>]
+
+<span class="kw-purple">def</span> <span class="kw-blue">classify</span>(msg):
+    m = msg.lower()
+    <span class="kw-purple">if</span> any(p <span class="kw-purple">in</span> m <span class="kw-purple">for</span> p <span class="kw-purple">in</span> POS): <span class="kw-purple">return</span> <span class="kw-green">"pos"</span>
+    <span class="kw-purple">if</span> any(n <span class="kw-purple">in</span> m <span class="kw-purple">for</span> n <span class="kw-purple">in</span> NEG): <span class="kw-purple">return</span> <span class="kw-red">"neg"</span>
+    <span class="kw-purple">return</span> <span class="kw-yellow">"neutral"</span>
+
+<span class="kw-gray"># Aplicar em todos os dados da semana</span>
+results = [classify(m[<span class="kw-green">"message"</span>] <span class="kw-purple">or</span> <span class="kw-green">""</span>) <span class="kw-purple">for</span> m <span class="kw-purple">in</span> week_msgs]
+pos_pct = results.count(<span class="kw-green">"pos"</span>) / len(results) * <span class="kw-orange">100</span></pre>
+    <div class="insight insight-purple" style="margin-top:12px;">
+      <div class="insight-icon">💡</div>
+      <div class="insight-text">
+        <strong>Dica de calibração</strong>
+        O dicionário precisa ser ajustado para o contexto da sua comunidade. Uma comunidade de devs vai ter vocabulário diferente de uma de empreendedores. Comece com 10-15 palavras por categoria e refine com o tempo.
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: Tópicos -->
+  <div class="card">
+    <div class="card-title">🏷️ Passo 4 — Classificação de Tópicos</div>
+    <p class="card-sub">Identifica automaticamente os assuntos mais discutidos na semana.</p>
+    <div class="code-label">Python</div>
+    <pre>TOPICS = {
+    <span class="kw-green">"Instalação/Setup"</span>: [<span class="kw-green">"instalar"</span>, <span class="kw-green">"setup"</span>, <span class="kw-green">"terminal"</span>, <span class="kw-green">"bash"</span>],
+    <span class="kw-green">"Telegram"</span>:         [<span class="kw-green">"telegram"</span>, <span class="kw-green">"botfather"</span>, <span class="kw-green">"token"</span>, <span class="kw-green">"webhook"</span>],
+    <span class="kw-green">"API Keys"</span>:         [<span class="kw-green">"api"</span>, <span class="kw-green">"anthropic"</span>, <span class="kw-green">"billing"</span>, <span class="kw-green">"plano"</span>],
+    <span class="kw-green">"Erros/Debug"</span>:      [<span class="kw-green">"erro"</span>, <span class="kw-green">"error"</span>, <span class="kw-green">"bug"</span>, <span class="kw-green">"exception"</span>],
+    <span class="kw-green">"Cases de Uso"</span>:     [<span class="kw-green">"criei"</span>, <span class="kw-green">"automatiz"</span>, <span class="kw-green">"funcionou"</span>, <span class="kw-green">"resultado"</span>],
+    <span class="kw-green">"Windows"</span>:          [<span class="kw-green">"windows"</span>, <span class="kw-green">"wsl"</span>, <span class="kw-green">"powershell"</span>],
+}
+
+<span class="kw-purple">from</span> <span class="kw-blue">collections</span> <span class="kw-purple">import</span> Counter
+topic_counts = Counter()
+
+<span class="kw-purple">for</span> m <span class="kw-purple">in</span> week_msgs:
+    text = (m[<span class="kw-green">"message"</span>] <span class="kw-purple">or</span> <span class="kw-green">""</span>).lower()
+    <span class="kw-purple">for</span> topic, kws <span class="kw-purple">in</span> TOPICS.items():
+        <span class="kw-purple">if</span> any(kw <span class="kw-purple">in</span> text <span class="kw-purple">for</span> kw <span class="kw-purple">in</span> kws):
+            topic_counts[topic] += <span class="kw-orange">1</span></pre>
+  </div>
+</div>
+
+<!-- A SKILL -->
+<div class="section" id="skill">
+  <div class="section-title">A Skill — O Componente Central</div>
+  <div class="card">
+    <div class="card-title">O que é uma Skill no OpenClaw?</div>
+    <div class="card-sub">Uma Skill é um arquivo SKILL.md que documenta um processo inteiro — como fazer, com qual código, com quais cuidados. É a "memória operacional" do seu agente.</div>
+
+    <div class="insight insight-purple">
+      <div class="insight-icon">🧠</div>
+      <div class="insight-text">
+        <strong>Sem a Skill, o agente esquece</strong>
+        Cada sessão do agente começa do zero. A Skill é o que garante que o processo de gerar o report seja exatamente igual toda semana — credenciais corretas, paginação correta, análise correta, formato correto.
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <p style="font-size:14px;margin-bottom:16px;"><strong>A Skill criada nesta aula vive em:</strong></p>
+    <pre>skills/
+└── research/
+    └── report-grupo-openclaw/
+        └── SKILL.md          ← toda a inteligência do processo aqui</pre>
+
+    <div class="divider"></div>
+
+    <p style="font-size:14px;margin-bottom:16px;"><strong>Estrutura da SKILL.md:</strong></p>
+    <div class="timeline">
+      <div class="tl-row">
+        <div class="tl-time">Seção 1</div>
+        <div class="tl-label">O que faz + quando usar</div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-time">Seção 2</div>
+        <div class="tl-label">Grupos analisados (IDs, nomes, chat_ids)</div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-time">Seção 3</div>
+        <div class="tl-label">Credenciais — padrão op CLI (sem hardcode)</div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-time">Seção 4</div>
+        <div class="tl-label">Processo passo a passo (código Python completo)</div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-time">Seção 5</div>
+        <div class="tl-label">Estrutura do HTML a gerar (12 seções)</div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-time">Seção 6</div>
+        <div class="tl-label">Referência ao report anterior como template</div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-time">Seção 7</div>
+        <div class="tl-label">Guardrails e notas críticas</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- O CRON -->
+<div class="section" id="cron">
+  <div class="section-title">O Cron — Automação Completa</div>
+  <div class="card">
+    <div class="card-title">Configuração do Cron</div>
+    <div class="card-sub">Com um cron, o relatório chega toda segunda às 9h sem nenhuma interação manual.</div>
+
+    <div class="alert alert-info">
+      <span class="alert-icon">💡</span>
+      <span>Antes de criar um cron, sempre verifique se o horário está livre: <code>cron list</code>. Conflito de horários pode causar sobrecarga de sessões.</span>
+    </div>
+
+    <div class="code-label">Configuração via OpenClaw</div>
+    <pre>{
+  <span class="kw-blue">"name"</span>: <span class="kw-green">"📊 Report Comunidade OpenClaw (Seg 9h)"</span>,
+  <span class="kw-blue">"schedule"</span>: {
+    <span class="kw-blue">"kind"</span>: <span class="kw-green">"cron"</span>,
+    <span class="kw-blue">"expr"</span>: <span class="kw-green">"0 9 * * 1"</span>,        <span class="kw-gray">// toda segunda, 9h</span>
+    <span class="kw-blue">"tz"</span>: <span class="kw-green">"America/Sao_Paulo"</span>  <span class="kw-gray">// sempre declare o fuso!</span>
+  },
+  <span class="kw-blue">"sessionTarget"</span>: <span class="kw-green">"isolated"</span>, <span class="kw-gray">// sessão isolada (não polui o chat)</span>
+  <span class="kw-blue">"payload"</span>: {
+    <span class="kw-blue">"kind"</span>: <span class="kw-green">"agentTurn"</span>,
+    <span class="kw-blue">"message"</span>: <span class="kw-green">"Leia a skill report-grupo-openclaw e gere o relatório."</span>,
+    <span class="kw-blue">"model"</span>: <span class="kw-green">"openai/gpt-4o"</span>,
+    <span class="kw-blue">"timeoutSeconds"</span>: <span class="kw-orange">600</span>
+  },
+  <span class="kw-blue">"delivery"</span>: {
+    <span class="kw-blue">"mode"</span>: <span class="kw-green">"announce"</span>,          <span class="kw-gray">// entrega o resultado</span>
+    <span class="kw-blue">"channel"</span>: <span class="kw-green">"telegram"</span>,
+    <span class="kw-blue">"to"</span>: <span class="kw-green">"-1003873964847:2638"</span> <span class="kw-gray">// grupo:topic</span>
+  }
+}</pre>
+
+    <div class="divider"></div>
+
+    <p style="font-size:14px;color:var(--muted);"><strong style="color:var(--text);">Por que sessionTarget: "isolated"?</strong><br>
+    Tarefas automáticas não devem poluir o histórico da sua sessão principal. Uma sessão isolada executa o trabalho pesado num contexto separado e entrega apenas o resultado final.</p>
+  </div>
+</div>
+
+<!-- RESULTADO -->
+<div class="section" id="resultado">
+  <div class="section-title">O Resultado — O que o Report Entrega</div>
+  <div class="card">
+    <div class="card-title">14 seções em um único arquivo</div>
+    <div class="card-sub">Do header com KPIs globais até a review com recomendações concretas.</div>
+
+    <div class="result-example">
+      <div class="result-header">Preview — KPIs Globais (real, 14/02–14/03/2026)</div>
+      <div class="result-body">
+        <div class="result-kpi-row">
+          <div class="result-kpi"><div class="n">14.7k</div><div class="l">Mensagens</div></div>
+          <div class="result-kpi"><div class="n">331</div><div class="l">Membros pico</div></div>
+          <div class="result-kpi"><div class="n">3.6k</div><div class="l">Perguntas</div></div>
+          <div class="result-kpi"><div class="n" style="color:#22c55e;">63%</div><div class="l">Sentimento +</div></div>
+        </div>
+        <p style="font-size:13px;color:var(--muted);">+ evolução semanal · horários de pico · top 7 tópicos · retenção · embaixadores · dúvidas recorrentes · review com recomendações priorizadas</p>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <p style="font-size:14px;margin-bottom:12px;"><strong>O que você consegue responder com o report:</strong></p>
+    <ul class="obj-list">
+      <li>
+        <div class="obj-num" style="background:linear-gradient(135deg,#22c55e,#16a34a);">✓</div>
+        <div class="obj-text">
+          <strong>Qual é o humor da comunidade esta semana?</strong>
+          <span>Sentimento positivo vs negativo com exemplos reais de mensagens que puxaram cada lado.</span>
+        </div>
+      </li>
+      <li>
+        <div class="obj-num" style="background:linear-gradient(135deg,#22c55e,#16a34a);">✓</div>
+        <div class="obj-text">
+          <strong>O que está travando meus alunos?</strong>
+          <span>Top dúvidas recorrentes automaticamente identificadas — vira pauta de live ou aula nova.</span>
+        </div>
+      </li>
+      <li>
+        <div class="obj-num" style="background:linear-gradient(135deg,#22c55e,#16a34a);">✓</div>
+        <div class="obj-text">
+          <strong>Quando devo postar para maior alcance?</strong>
+          <span>Horários de pico por hora e dia da semana — ideal para fixar comunicados e agendarar lives.</span>
+        </div>
+      </li>
+      <li>
+        <div class="obj-num" style="background:linear-gradient(135deg,#22c55e,#16a34a);">✓</div>
+        <div class="obj-text">
+          <strong>Quem são meus embaixadores?</strong>
+          <span>Top membros que mais respondem os outros — candidatos a moderadores ou cases.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- ADAPTE -->
+<div class="section" id="adapte">
+  <div class="section-title">Adapte ao Seu Contexto</div>
+  <div class="grid2">
+    <div class="card" style="margin-bottom:0;">
+      <div class="card-title">📱 Comunidade</div>
+      <div class="card-sub">Grupos de clientes, alunos, comunidades pagas</div>
+      <div class="tags">
+        <span class="tag">Supabase MGM</span>
+        <span class="tag">WhatsApp</span>
+        <span class="tag">Telegram</span>
+        <span class="tag">Discord</span>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-top:12px;">Muda: chat_ids, dicionário de tópicos calibrado para seu nicho, palavras de sentimento.</p>
+    </div>
+    <div class="card" style="margin-bottom:0;">
+      <div class="card-title">📊 Produto SaaS</div>
+      <div class="card-sub">Análise de tickets de suporte, feedback de usuários</div>
+      <div class="tags">
+        <span class="tag">Zendesk</span>
+        <span class="tag">Crisp</span>
+        <span class="tag">Intercom</span>
+        <span class="tag">Supabase</span>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-top:12px;">Muda: endpoint da API, campos analisados. A lógica de NLP e o template HTML são reaproveitados.</p>
+    </div>
+    <div class="card" style="margin-bottom:0;">
+      <div class="card-title">📧 Newsletter</div>
+      <div class="card-sub">Engajamento de assinantes, aberturas, clicks</div>
+      <div class="tags">
+        <span class="tag">Beehiiv API</span>
+        <span class="tag">Mailchimp</span>
+        <span class="tag">ConvertKit</span>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-top:12px;">Muda: fonte de dados. Mesma estrutura de report semanal, mesma ideia de cron às 9h segunda.</p>
+    </div>
+    <div class="card" style="margin-bottom:0;">
+      <div class="card-title">🛒 E-commerce</div>
+      <div class="card-sub">Reviews de produtos, perguntas de clientes</div>
+      <div class="tags">
+        <span class="tag">Shopify API</span>
+        <span class="tag">Hotmart</span>
+        <span class="tag">Eduzz</span>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-top:12px;">Muda: análise de sentimento focada em reviews (muito positivo/muito negativo) e categorias de produto.</p>
+    </div>
+  </div>
+</div>
+
+<!-- EXERCÍCIO -->
+<div class="section" id="exercicio">
+  <div class="section-title">Exercício Prático</div>
+  <div class="card">
+    <div class="card-title">🎯 Desafio: Crie seu próprio Report de Comunidade</div>
+    <div class="card-sub">Use o prompt abaixo para pedir para o seu agente criar uma versão adaptada para o seu contexto.</div>
+
+    <div class="script-box" style="margin-top:16px;">
+      <p><strong>Você para o seu agente OpenClaw:</strong></p>
+      <p>"Quero criar um relatório semanal automático dos meus grupos de [WhatsApp/Telegram/Discord].</p>
+      <p>Tenho acesso a [descreva sua fonte de dados: Supabase, API do produto, CSV, etc].</p>
+      <p>Cria uma Skill em skills/research/report-[nome-comunidade]/ que:</p>
+      <p>1. Busca as mensagens dos últimos 30 dias (com paginação se necessário)</p>
+      <p>2. Analisa sentimento, tópicos mais discutidos e horários de pico</p>
+      <p>3. Gera um HTML dark theme com charts CSS puro</p>
+      <p>4. Converte em PDF e envia para mim no Telegram</p>
+      <p>Depois cria um cron toda segunda às 9h para rodar automaticamente."</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <p style="font-size:14px;font-weight:700;margin-bottom:12px;">Checklist de entrega:</p>
+    <ul class="checklist">
+      <li>Skill criada em <code>skills/research/report-[nome]/SKILL.md</code></li>
+      <li>Credenciais via 1Password (nenhuma senha hardcoded)</li>
+      <li>Paginação implementada (testar com grupo ativo)</li>
+      <li>Dicionário de sentimento calibrado para seu nicho</li>
+      <li>HTML gerado e aberto no browser (verificar visual)</li>
+      <li>PDF convertido via Chrome headless</li>
+      <li>Cron criado e verificado com <code>cron list</code></li>
+      <li>Primeiro relatório enviado no Telegram com sucesso</li>
+    </ul>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div style="text-align:center;padding:40px 0 20px;color:var(--muted);font-size:13px;border-top:1px solid var(--border);">
+  <div style="margin-bottom:8px;">⭐ Aula Bônus — Curso OpenClaw 2026</div>
+  <div>Amora · Sonnet 4-6 · Material gerado em 16/03/2026</div>
+</div>
+
+</div>
+</body>
+</html>

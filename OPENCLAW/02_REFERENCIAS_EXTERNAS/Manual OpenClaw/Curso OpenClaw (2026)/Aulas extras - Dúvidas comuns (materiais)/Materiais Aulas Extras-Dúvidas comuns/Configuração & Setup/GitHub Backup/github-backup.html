@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Backup no GitHub — OpenClaw</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #21262d;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent2: #3fb950;
+      --warn: #d29922;
+      --danger: #f85149;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --code-bg: #0d1117;
+      --prompt-bg: #0a1f0d;
+      --prompt-border: #3fb950;
+      --gh: #f0f6fc;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 860px; margin: 0 auto; }
+
+    /* HEADER */
+    header {
+      display: flex; align-items: center; gap: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem; margin-bottom: 2rem;
+    }
+    .logo {
+      width: 52px; height: 52px;
+      background: #21262d;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem;
+    }
+    header h1 { font-size: 1.5rem; font-weight: 700; }
+    header p { color: var(--muted); font-size: 0.9rem; margin-top: 2px; }
+    .badge {
+      display: inline-block;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 0.75rem;
+      color: var(--accent2);
+      font-weight: 600;
+      vertical-align: middle;
+      margin-left: 0.5rem;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, rgba(88,166,255,0.08), rgba(63,185,80,0.06));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    .hero h2 { font-size: 1.15rem; margin-bottom: 0.5rem; }
+    .hero p { color: var(--muted); max-width: 560px; margin: 0 auto 1.5rem; font-size: 0.93rem; }
+    .flow {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.5rem; flex-wrap: wrap;
+    }
+    .flow-step {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .flow-arrow { color: var(--muted); font-size: 1.2rem; }
+
+    /* SECTION */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    h2 {
+      font-size: 1.05rem; font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    h2 .num {
+      background: var(--accent);
+      color: #000;
+      border-radius: 50%;
+      width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 800; flex-shrink: 0;
+    }
+    h3 {
+      font-size: 0.92rem; font-weight: 700;
+      margin: 1.25rem 0 0.6rem;
+      color: var(--text);
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+    }
+    h3:first-child { margin-top: 0; }
+
+    /* CALLOUT */
+    .callout {
+      border-left: 3px solid var(--accent);
+      background: rgba(88,166,255,0.07);
+      padding: 0.8rem 1rem;
+      border-radius: 0 8px 8px 0;
+      margin: 0.75rem 0;
+      font-size: 0.9rem;
+    }
+    .callout.ok   { border-color: var(--accent2); background: rgba(63,185,80,0.07); }
+    .callout.warn { border-color: var(--warn);    background: rgba(210,153,34,0.07); }
+    .callout.danger { border-color: var(--danger); background: rgba(248,81,73,0.07); }
+
+    /* PROMPT BLOCK */
+    .prompt-block {
+      background: var(--prompt-bg);
+      border: 1px solid var(--prompt-border);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      margin: 0.6rem 0;
+    }
+    .prompt-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 0.4rem;
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .prompt-text {
+      font-size: 0.92rem;
+      color: #d1fae5;
+      line-height: 1.65;
+    }
+    .prompt-text em {
+      color: #6ee7b7;
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    /* CODE */
+    pre, code {
+      font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+      font-size: 0.82rem;
+    }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      overflow-x: auto;
+      margin: 0.75rem 0;
+    }
+    code {
+      background: var(--surface2);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      color: #a5f3fc;
+    }
+    pre code { background: none; padding: 0; color: inherit; }
+    .cm { color: #4a5568; }
+    .ck { color: #79c0ff; }
+    .ca { color: #56d364; }
+    .cs { color: #ffa657; }
+    .cn { color: #ff7b72; }
+
+    /* STEP LIST */
+    .step-list { list-style: none; counter-reset: steps; }
+    .step-list li {
+      counter-increment: steps;
+      display: flex; gap: 1rem;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.92rem;
+    }
+    .step-list li:last-child { border-bottom: none; }
+    .step-list li::before {
+      content: counter(steps);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      border-radius: 50%;
+      width: 26px; height: 26px; min-width: 26px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700;
+      margin-top: 2px;
+    }
+
+    /* LINK */
+    a.link { color: var(--accent); text-decoration: none; }
+    a.link:hover { text-decoration: underline; }
+
+    /* PILL */
+    .pill {
+      display: inline-block; padding: 2px 8px;
+      border-radius: 999px; font-size: 0.72rem; font-weight: 600;
+    }
+    .pill-blue   { background: rgba(88,166,255,0.15); color: var(--accent); }
+    .pill-green  { background: rgba(63,185,80,0.12);  color: var(--accent2); }
+    .pill-yellow { background: rgba(210,153,34,0.12); color: var(--warn); }
+    .pill-red    { background: rgba(248,81,73,0.12);  color: var(--danger); }
+
+    /* CHANNEL TAG */
+    .channel-tag {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 2px 8px; font-size: 0.78rem; margin: 2px;
+    }
+
+    /* TWO COL */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* SECURITY BOX */
+    .security-box {
+      background: rgba(248,81,73,0.06);
+      border: 1px solid rgba(248,81,73,0.3);
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 0.75rem 0;
+    }
+    .security-box-title {
+      font-weight: 700; font-size: 0.85rem;
+      color: var(--danger); margin-bottom: 0.5rem;
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+
+    /* TABLE */
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 0.75rem 0; }
+    th {
+      text-align: left; padding: 0.5rem 0.75rem;
+      background: var(--surface2); color: var(--muted);
+      font-weight: 600; border-bottom: 1px solid var(--border);
+    }
+    td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+
+    footer {
+      text-align: center; color: var(--muted); font-size: 0.8rem;
+      margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">🐙</div>
+    <div>
+      <h1>Backup no GitHub <span class="badge">OpenClaw</span></h1>
+      <p>Proteja a memória do seu agente — via chat ou terminal</p>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero">
+    <h2>Por que fazer backup?</h2>
+    <p>
+      Seu agente vive nos arquivos do workspace. Se o servidor perder dados, ele perde a memória.
+      O GitHub é o cofre: gratuito, versionado e acessível de qualquer lugar.
+    </p>
+    <div class="flow">
+      <div class="flow-step">🧠 MEMORY.md<br><small style="color:var(--muted);font-weight:400">memória do agente</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">📁 Workspace<br><small style="color:var(--muted);font-weight:400">arquivos locais</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">🐙 GitHub<br><small style="color:var(--muted);font-weight:400">backup versionado</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">♾️ Seguro<br><small style="color:var(--muted);font-weight:400">sempre recuperável</small></div>
+    </div>
+  </div>
+
+  <!-- ===== SEÇÃO 1: USANDO VIA AGENTE ===== -->
+  <div class="section">
+    <h2><span class="num">1</span>🌟 Usando via agente (modo principal)</h2>
+
+    <div class="callout ok">
+      A maioria das pessoas não precisa usar terminal. Basta mandar uma mensagem pro agente pelo
+      <span class="channel-tag">📱 Telegram</span>
+      <span class="channel-tag">💬 WhatsApp</span>
+      <span class="channel-tag">🎮 Discord</span>
+    </div>
+
+    <h3>🔑 Pegar o token de autenticação do GitHub</h3>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt</div>
+      <div class="prompt-text">Me ajuda a criar um Personal Access Token no GitHub pra eu configurar o backup do workspace</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt</div>
+      <div class="prompt-text">Abre o GitHub no navegador na página de criação de token pra mim</div>
+    </div>
+
+    <p style="color:var(--muted); font-size:.88rem; margin:.5rem 0;">
+      O agente vai te guiar pelo processo. Depois que você criar o token, guarde com segurança (aparece só uma vez).
+    </p>
+
+    <h3>📦 Configurar o repositório de backup</h3>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt</div>
+      <div class="prompt-text">Cria um repositório privado no GitHub chamado <em>"openclaw-backup"</em> e configura o workspace pra fazer push pra lá. Meu token é <em>[cole o token aqui]</em></div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt</div>
+      <div class="prompt-text">Inicializa o git no workspace e conecta com o meu repositório <em>github.com/meuuser/openclaw-backup</em></div>
+    </div>
+
+    <h3>💾 Fazer backup agora</h3>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt</div>
+      <div class="prompt-text">Faz um backup do workspace agora — commita tudo e manda pro GitHub</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt</div>
+      <div class="prompt-text">Commita as mudanças do workspace com a mensagem <em>"backup manual 11/03"</em> e faz push</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt</div>
+      <div class="prompt-text">Qual foi o último commit do workspace? Tá tudo no GitHub?</div>
+    </div>
+
+    <h3>⏰ Criar cron de backup automático diário</h3>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — cron diário à meia-noite</div>
+      <div class="prompt-text">Cria um cron pra fazer backup automático do workspace todo dia à meia-noite — commita tudo e manda pro GitHub</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — horário personalizado</div>
+      <div class="prompt-text">Configura backup automático todo dia às <em>23h</em> no horário de Brasília — git commit e push pro GitHub, e me avisa no Telegram quando fizer</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — verificar crons ativos</div>
+      <div class="prompt-text">Quais crons de backup estão rodando? Me lista todos os jobs de backup agendados</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — desativar cron</div>
+      <div class="prompt-text">Cancela o cron de backup automático do GitHub</div>
+    </div>
+
+    <h3>🔄 Restaurar backup</h3>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt</div>
+      <div class="prompt-text">Me mostra os últimos 10 commits do backup no GitHub com data e mensagem</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt</div>
+      <div class="prompt-text">Restaura o workspace pro commit de <em>ontem</em> às 23h — preciso recuperar um arquivo que deletei</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt</div>
+      <div class="prompt-text">O que mudou no workspace desde o último backup?</div>
+    </div>
+
+  </div>
+
+  <!-- ===== SEÇÃO 2: CRIAR TOKEN GITHUB ===== -->
+  <div class="section">
+    <h2><span class="num">2</span>🔑 Como criar o Personal Access Token (PAT)</h2>
+
+    <div class="callout warn">
+      O token aparece <strong>uma única vez</strong>. Copie e guarde em local seguro (ex: 1Password) antes de fechar a página.
+    </div>
+
+    <ol class="step-list">
+      <li>
+        Acesse: <a class="link" href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a>
+        (ou GitHub → Settings → Developer settings → Personal access tokens → Tokens classic)
+      </li>
+      <li>
+        <strong>Note</strong>: dê um nome descritivo, ex: <code>openclaw-backup-vps</code>
+      </li>
+      <li>
+        <strong>Expiration</strong>: recomendo <strong>No expiration</strong> (ou 1 ano se preferir renovar)
+      </li>
+      <li>
+        <strong>Scopes</strong> — marque apenas:
+        <ul style="list-style:none; margin-top:.5rem;">
+          <li style="padding:.2rem 0;">✅ <code>repo</code> — acesso completo a repos (inclui privados)</li>
+          <li style="padding:.2rem 0;">✅ <code>workflow</code> — se quiser automatizar GitHub Actions</li>
+        </ul>
+      </li>
+      <li>Clique <strong>Generate token</strong> → copie o token gerado (começa com <code>ghp_...</code>)</li>
+      <li>Salve no 1Password ou passe pro agente guardar via prompt</li>
+    </ol>
+
+    <h3>Guardar o token com o agente</h3>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt</div>
+      <div class="prompt-text">Guarda esse token do GitHub no 1Password com o nome <em>"GitHub PAT - OpenClaw Backup"</em>: <em>ghp_xxxxxxxxxxxx</em></div>
+    </div>
+
+    <div class="security-box">
+      <div class="security-box-title">🔐 Nunca faça isso</div>
+      <ul style="font-size:.88rem; list-style:disc; padding-left:1.2rem; color:var(--muted);">
+        <li>Não commite o token em nenhum arquivo do repo</li>
+        <li>Não cole o token em mensagens de grupo</li>
+        <li>Não deixe em .env ou arquivos de texto solto</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===== SEÇÃO 3: SETUP MANUAL (TERMINAL) ===== -->
+  <div class="section">
+    <h2><span class="num">3</span>⚙️ Setup manual via terminal (admins)</h2>
+
+    <div class="callout">
+      Essa seção é para quem prefere fazer no terminal. Usuários finais podem pular.
+    </div>
+
+    <h3>3.1 Inicializar o repositório</h3>
+    <pre><span class="cm"># Entrar no workspace</span>
+<span class="ck">cd</span> ~/.openclaw/workspace-curso-openclaw
+
+<span class="cm"># Inicializar git (se ainda não tiver)</span>
+<span class="ck">git</span> <span class="ca">init</span>
+<span class="ck">git</span> <span class="ca">branch</span> -M main
+
+<span class="cm"># Conectar ao repositório remoto</span>
+<span class="ck">git</span> <span class="ca">remote add</span> origin https://github.com/<span class="cs">SEU_USER</span>/openclaw-backup.git
+
+<span class="cm"># Configurar usuário</span>
+<span class="ck">git</span> <span class="ca">config</span> user.name <span class="cs">"Seu Nome"</span>
+<span class="ck">git</span> <span class="ca">config</span> user.email <span class="cs">"seu@email.com"</span></pre>
+
+    <h3>3.2 Criar .gitignore inteligente</h3>
+    <pre><span class="ck">cat</span> <span class="cs">&gt; .gitignore &lt;&lt;'EOF'</span>
+<span class="cm"># Nunca commitar segredos ou dados temporários</span>
+*.env
+*.key
+*.pem
+node_modules/
+.DS_Store
+__pycache__/
+*.log
+tmp/
+<span class="cs">EOF</span></pre>
+
+    <h3>3.3 Configurar autenticação com o token</h3>
+    <pre><span class="cm"># Opção 1: via URL (mais simples)</span>
+<span class="ck">git</span> <span class="ca">remote set-url</span> origin https://<span class="cs">ghp_SEU_TOKEN</span>@github.com/<span class="cs">SEU_USER</span>/openclaw-backup.git
+
+<span class="cm"># Opção 2: via Git credential store</span>
+<span class="ck">git</span> <span class="ca">config</span> credential.helper store
+<span class="cm"># Na primeira operação de push, informe: user=SEU_USER, senha=SEU_TOKEN</span>
+
+<span class="cm"># Opção 3: via variável de ambiente (mais seguro em scripts)</span>
+<span class="ck">export</span> GITHUB_TOKEN=<span class="cs">$(op item get "GitHub PAT" --field credential --reveal)</span></pre>
+
+    <h3>3.4 Primeiro backup</h3>
+    <pre><span class="ck">git</span> <span class="ca">add</span> -A
+<span class="ck">git</span> <span class="ca">commit</span> -m <span class="cs">"backup: inicial - $(date '+%Y-%m-%d %H:%M')"</span>
+<span class="ck">git</span> <span class="ca">push</span> -u origin main</pre>
+
+    <h3>3.5 Script de backup (salvar como <code>backup.sh</code>)</h3>
+    <pre><span class="cn">#!/bin/bash</span>
+<span class="ck">set</span> <span class="ca">-e</span>
+WORKSPACE=<span class="cs">"$HOME/.openclaw/workspace-curso-openclaw"</span>
+DATE=<span class="cs">$(date '+%Y-%m-%d %H:%M')</span>
+
+<span class="ck">cd</span> <span class="cs">"$WORKSPACE"</span>
+<span class="ck">git</span> <span class="ca">add</span> -A
+<span class="ck">git</span> <span class="ca">diff --cached --quiet</span> && <span class="ck">echo</span> <span class="cs">"Nada novo para commitar"</span> && <span class="ck">exit</span> 0
+<span class="ck">git</span> <span class="ca">commit</span> -m <span class="cs">"backup: $DATE"</span>
+<span class="ck">git</span> <span class="ca">push</span> origin main
+<span class="ck">echo</span> <span class="cs">"✅ Backup concluído: $DATE"</span></pre>
+    <pre><span class="ck">chmod</span> <span class="ca">+x</span> backup.sh</pre>
+
+    <h3>3.6 Criar cron via terminal</h3>
+    <pre><span class="cm"># Editar crontab</span>
+<span class="ck">crontab</span> <span class="ca">-e</span>
+
+<span class="cm"># Adicionar linha (todo dia à meia-noite)</span>
+<span class="ca">0 0 * * *</span> /root/.openclaw/workspace-curso-openclaw/backup.sh <span class="cs">&gt;&gt;</span> /tmp/backup.log 2&gt;&amp;1
+
+<span class="cm"># Todo dia às 23h (horário UTC = 20h Brasília)</span>
+<span class="ca">0 20 * * *</span> /root/.openclaw/workspace-curso-openclaw/backup.sh</pre>
+
+  </div>
+
+  <!-- ===== SEÇÃO 4: CRON VIA OPENCLAW ===== -->
+  <div class="section">
+    <h2><span class="num">4</span>⏰ Cron de backup via OpenClaw (recomendado)</h2>
+
+    <div class="callout ok">
+      O OpenClaw tem sistema de cron nativo. É a forma mais integrada — o agente commita, faz push e te avisa no Telegram.
+    </div>
+
+    <h3>Como funciona</h3>
+    <p style="font-size:.9rem; margin-bottom:.75rem;">
+      Você pede pro agente criar o cron via chat. Ele agenda um job isolado que roda diariamente,
+      faz git add + commit + push, e manda uma mensagem confirmando o backup.
+    </p>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt completo para configurar</div>
+      <div class="prompt-text">
+        Cria um cron job pra fazer backup do workspace no GitHub todo dia às 23h no horário de Brasília.
+        O job deve: fazer git add de tudo, commitar com a data de hoje, fazer push, e me mandar uma mensagem confirmando.
+        Usa sessionTarget isolated e manda o resultado aqui no Telegram.
+      </div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — verificar status</div>
+      <div class="prompt-text">Lista todos os cron jobs ativos e me mostra quando foi o último backup no GitHub</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — ver histórico de execuções</div>
+      <div class="prompt-text">Mostra o histórico das últimas 5 execuções do cron de backup</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — rodar agora</div>
+      <div class="prompt-text">Roda o cron de backup agora sem esperar o horário agendado</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — pausar</div>
+      <div class="prompt-text">Pausa o cron de backup automático temporariamente</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — deletar</div>
+      <div class="prompt-text">Deleta o cron de backup do GitHub permanentemente</div>
+    </div>
+
+  </div>
+
+  <!-- ===== SEÇÃO 5: REFERÊNCIA ===== -->
+  <div class="section">
+    <h2><span class="num">5</span>📋 Referência rápida</h2>
+
+    <table>
+      <thead>
+        <tr><th>Ação</th><th>Comando terminal</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Status do repositório</td>
+          <td><code>git status</code></td>
+        </tr>
+        <tr>
+          <td>Ver diferenças</td>
+          <td><code>git diff</code></td>
+        </tr>
+        <tr>
+          <td>Commitar tudo</td>
+          <td><code>git add -A && git commit -m "mensagem"</code></td>
+        </tr>
+        <tr>
+          <td>Enviar pro GitHub</td>
+          <td><code>git push origin main</code></td>
+        </tr>
+        <tr>
+          <td>Ver histórico</td>
+          <td><code>git log --oneline -10</code></td>
+        </tr>
+        <tr>
+          <td>Ver o que mudou</td>
+          <td><code>git show HEAD</code></td>
+        </tr>
+        <tr>
+          <td>Voltar a um commit</td>
+          <td><code>git checkout &lt;hash&gt; -- arquivo.md</code></td>
+        </tr>
+        <tr>
+          <td>Clonar em novo servidor</td>
+          <td><code>git clone https://github.com/user/openclaw-backup ~/.openclaw/workspace</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Expressões cron úteis</h3>
+    <table>
+      <thead>
+        <tr><th>Quando</th><th>Expressão</th><th>Horário Brasília → UTC</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Todo dia à meia-noite (BRT)</td><td><code>0 3 * * *</code></td><td>00:00 BRT = 03:00 UTC</td></tr>
+        <tr><td>Todo dia às 23h (BRT)</td><td><code>0 2 * * *</code></td><td>23:00 BRT = 02:00 UTC</td></tr>
+        <tr><td>Todo dia às 18h (BRT)</td><td><code>0 21 * * *</code></td><td>18:00 BRT = 21:00 UTC</td></tr>
+        <tr><td>A cada 6 horas</td><td><code>0 */6 * * *</code></td><td>—</td></tr>
+        <tr><td>Toda segunda às 9h (BRT)</td><td><code>0 12 * * 1</code></td><td>09:00 BRT = 12:00 UTC</td></tr>
+      </tbody>
+    </table>
+
+  </div>
+
+  <!-- ===== SEÇÃO 6: MIGRAR PARA NOVO SERVIDOR ===== -->
+  <div class="section">
+    <h2><span class="num">6</span>🚀 Migrar para novo servidor com o backup</h2>
+
+    <p style="margin-bottom:.75rem; font-size:.92rem;">
+      Se precisar mudar de VPS ou reinstalar tudo, o backup no GitHub garante que o agente volta exatamente como estava.
+    </p>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt para migrar</div>
+      <div class="prompt-text">Acabei de instalar o OpenClaw num servidor novo. Me ajuda a restaurar o workspace do backup em <em>github.com/meuuser/openclaw-backup</em></div>
+    </div>
+
+    <h3>Passos manuais</h3>
+    <pre><span class="cm"># No novo servidor, após instalar OpenClaw</span>
+<span class="ck">git</span> <span class="ca">clone</span> https://<span class="cs">ghp_TOKEN</span>@github.com/<span class="cs">SEU_USER</span>/openclaw-backup.git \
+  ~/.openclaw/workspace-curso-openclaw
+
+<span class="cm"># Verificar que tudo chegou</span>
+<span class="ck">ls</span> ~/.openclaw/workspace-curso-openclaw/
+<span class="ck">cat</span> ~/.openclaw/workspace-curso-openclaw/MEMORY.md</pre>
+
+    <div class="callout ok">
+      💡 O agente vai acordar com toda a memória intacta — MEMORY.md, arquivos de contexto, configurações.
+    </div>
+  </div>
+
+  <footer>
+    Gerado por Amora · <a class="link" href="https://github.com" target="_blank">github.com</a>
+    · Curso OpenClaw · Março 2026
+  </footer>
+
+</div>
+</body>
+</html>

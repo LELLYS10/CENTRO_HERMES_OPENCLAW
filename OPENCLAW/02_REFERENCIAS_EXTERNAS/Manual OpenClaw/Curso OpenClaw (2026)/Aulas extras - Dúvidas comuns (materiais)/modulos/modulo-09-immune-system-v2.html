@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Módulo 9 — Sistema Imunológico: Produção sem Surpresas</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #0a0a0f;
+  --bg-elevated: #12121a;
+  --bg-card: #1a1a25;
+  --bg-card-hover: #222230;
+  --grape: #8b5cf6;
+  --grape-light: #a78bfa;
+  --grape-dim: rgba(139, 92, 246, 0.12);
+  --grape-border: rgba(139, 92, 246, 0.25);
+  --grape-glow: rgba(139, 92, 246, 0.08);
+  --emerald: #10b981;
+  --emerald-dim: rgba(16, 185, 129, 0.12);
+  --emerald-border: rgba(16, 185, 129, 0.25);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245, 158, 11, 0.12);
+  --amber-border: rgba(245, 158, 11, 0.25);
+  --rose: #f43f5e;
+  --rose-dim: rgba(244, 63, 94, 0.12);
+  --rose-border: rgba(244, 63, 94, 0.25);
+  --cyan: #22d3ee;
+  --cyan-dim: rgba(34, 211, 238, 0.12);
+  --text: #f1f1f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --code-bg: #0d0d15;
+  --code-border: rgba(255,255,255,0.08);
+}
+
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 10.5pt;
+  line-height: 1.6;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 22mm 24mm 28mm;
+  position: relative;
+  overflow: hidden;
+  page-break-after: always;
+  background: var(--bg);
+}
+
+.page::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -25%;
+  width: 70%;
+  height: 70%;
+  background: radial-gradient(ellipse, var(--emerald-dim) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Cover ── */
+.cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 297mm;
+  padding: 36mm 28mm;
+  position: relative;
+}
+
+.cover-grid {
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 50%; height: 40%;
+  background-image:
+    linear-gradient(rgba(16,185,129,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16,185,129,0.04) 1px, transparent 1px);
+  background-size: 20px 20px;
+  mask-image: linear-gradient(135deg, transparent 30%, rgba(0,0,0,0.3) 100%);
+  -webkit-mask-image: linear-gradient(135deg, transparent 30%, rgba(0,0,0,0.3) 100%);
+}
+
+.cover-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  background: var(--emerald-dim);
+  border: 1px solid var(--emerald-border);
+  border-radius: 100px;
+  font-size: 10pt;
+  font-weight: 500;
+  color: var(--emerald);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.cover-title {
+  font-size: 44pt;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+  color: var(--text);
+  margin-bottom: 18px;
+  position: relative;
+  max-width: 520px;
+}
+
+.cover-title em {
+  font-style: italic;
+  background: linear-gradient(135deg, var(--emerald), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cover-subtitle {
+  font-size: 14pt;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 460px;
+  margin-bottom: 44px;
+  position: relative;
+}
+
+.cover-meta {
+  position: relative;
+  display: flex;
+  gap: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.cover-meta-item { display: flex; flex-direction: column; gap: 4px; }
+
+.cover-meta-label {
+  font-size: 8pt;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.cover-meta-value {
+  font-size: 12pt;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* ── Headers & Footers ── */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.page-header-left {
+  font-size: 9pt;
+  color: var(--emerald);
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.page-header-right {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8pt;
+  color: var(--text-muted);
+}
+
+.page-footer {
+  position: absolute;
+  bottom: 12mm;
+  left: 24mm; right: 24mm;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.page-footer-left {
+  font-size: 8pt;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.page-footer-right {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8pt;
+  color: var(--text-muted);
+}
+
+.page-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8pt;
+  color: var(--text-muted);
+}
+
+/* ── Typography ── */
+h1 { font-size: 28pt; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 16px; color: var(--text); }
+h2 { font-size: 16pt; font-weight: 600; letter-spacing: -0.3px; margin-bottom: 12px; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+h3 { font-size: 12pt; font-weight: 600; margin-bottom: 8px; color: var(--emerald); }
+h4 { font-size: 10.5pt; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+
+p { margin-bottom: 12px; color: var(--text-secondary); }
+p:last-child { margin-bottom: 0; }
+
+strong { color: var(--text); font-weight: 600; }
+em { color: var(--emerald); font-style: italic; }
+
+/* ── Cards ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  position: relative;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  border-radius: 12px 12px 0 0;
+  background: linear-gradient(90deg, var(--emerald), var(--cyan));
+  opacity: 0.6;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.card-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.card-sm {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.card-sm h4 { margin-bottom: 6px; }
+.card-sm p { font-size: 9.5pt; margin-bottom: 0; }
+
+/* ── Tables ── */
+.table-wrap {
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9.5pt;
+}
+
+thead tr { border-bottom: 2px solid var(--emerald-border); }
+tbody tr { border-bottom: 1px solid var(--border); }
+tbody tr:last-child { border-bottom: none; }
+
+th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 8pt;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+td {
+  padding: 9px 12px;
+  color: var(--text-secondary);
+  vertical-align: top;
+}
+
+td strong { color: var(--text); }
+
+tr:hover td { background: rgba(16,185,129,0.04); }
+
+/* ── Code ── */
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5pt;
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: var(--cyan);
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5pt;
+  line-height: 1.7;
+  color: var(--text);
+  overflow-x: auto;
+  margin-bottom: 14px;
+  white-space: pre;
+}
+
+pre .c { color: var(--text-muted); }
+pre .k { color: var(--rose); font-weight: 600; }
+pre .s { color: var(--emerald); }
+pre .v { color: var(--cyan); }
+pre .fn { color: var(--amber); }
+pre .str { color: var(--emerald); }
+
+/* ── Badges ── */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 100px;
+  font-size: 8pt;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.badge-grape { background: var(--grape-dim); color: var(--grape-light); border: 1px solid var(--grape-border); }
+.badge-emerald { background: var(--emerald-dim); color: var(--emerald); border: 1px solid var(--emerald-border); }
+.badge-amber { background: var(--amber-dim); color: var(--amber); border: 1px solid var(--amber-border); }
+.badge-rose { background: var(--rose-dim); color: var(--rose); border: 1px solid var(--rose-border); }
+.badge-cyan { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(34,211,238,0.25); }
+
+/* ── Flow ── */
+.flow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.flow-step {
+  background: var(--bg-card);
+  border: 1px solid var(--emerald-border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 9pt;
+  text-align: center;
+  flex: 1;
+  min-width: 120px;
+}
+
+.flow-step .num {
+  display: block;
+  font-size: 7pt;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--emerald);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.flow-arrow { color: var(--text-muted); font-size: 12pt; flex: 0; }
+
+/* ── Quote ── */
+.quote {
+  border-left: 3px solid var(--emerald);
+  padding: 10px 16px;
+  margin-bottom: 14px;
+  background: var(--emerald-dim);
+  border-radius: 0 8px 8px 0;
+}
+
+.quote p {
+  font-size: 11pt;
+  font-style: italic;
+  color: var(--text);
+  margin-bottom: 0;
+}
+
+/* ── Alert ── */
+.alert {
+  background: var(--amber-dim);
+  border: 1px solid var(--amber-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 9.5pt;
+}
+
+.alert-rose {
+  background: var(--rose-dim);
+  border-color: var(--rose-border);
+}
+
+.alert p { color: var(--text); margin-bottom: 0; }
+
+/* ── Lists ── */
+ul, ol {
+  padding-left: 18px;
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+}
+
+li { margin-bottom: 5px; }
+li:last-child { margin-bottom: 0; }
+
+.checklist {
+  list-style: none;
+  padding-left: 0;
+}
+
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.checklist li:last-child { border-bottom: none; }
+
+.check-box {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--emerald-border);
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  background: var(--bg-card);
+}
+
+/* ── Spacing ── */
+.section { margin-bottom: 28px; }
+.section:last-child { margin-bottom: 0; }
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ── Cron card ── */
+.cron-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+}
+
+.cron-box .label {
+  font-size: 7.5pt;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.cron-box .value {
+  color: var(--cyan);
+  line-height: 1.6;
+}
+
+/* ── Score circle ── */
+.score-ring {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 4px solid var(--emerald);
+  font-size: 22pt;
+  font-weight: 700;
+  color: var(--emerald);
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+/* ── Section accent top ── */
+.section-emerald::before {
+  content: '';
+  display: block;
+  height: 3px;
+  background: linear-gradient(90deg, var(--emerald), transparent);
+  border-radius: 2px;
+  margin-bottom: 16px;
+}
+
+.section-rose::before {
+  content: '';
+  display: block;
+  height: 3px;
+  background: linear-gradient(90deg, var(--rose), transparent);
+  border-radius: 2px;
+  margin-bottom: 16px;
+}
+
+.section-amber::before {
+  content: '';
+  display: block;
+  height: 3px;
+  background: linear-gradient(90deg, var(--amber), transparent);
+  border-radius: 2px;
+  margin-bottom: 16px;
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════ PAGE 1: COVER -->
+<div class="page">
+  <div class="cover">
+    <div class="cover-grid"></div>
+
+    <div class="cover-badge">
+      <span>🛡️</span> Curso OpenClaw 2026
+    </div>
+
+    <h1 class="cover-title">Módulo 9<br><em>Sistema Imunológico</em></h1>
+
+    <p class="cover-subtitle">
+      "Agents are 30% of the work.<br>
+      The other 70% is the immune system."<br>
+      — Eric Siu
+    </p>
+
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">Versão material</span>
+        <span class="cover-meta-value">v2 — 2026.4</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">OpenClaw</span>
+        <span class="cover-meta-value">2026.4.9+</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">Núcleo</span>
+        <span class="cover-meta-value">7 defesas ativas</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ PAGE 2: PHILOSOPHY + OVERVIEW -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-left">Módulo 9 · Sistema Imunológico</span>
+    <span class="page-header-right">openclaw · 2026.4.9+</span>
+  </div>
+
+  <div class="section">
+    <h1>Por que isso separa amador de produção?</h1>
+
+    <div class="quote">
+      <p>"Agents are 30% of the work. The other 70% is the immune system." — Eric Siu</p>
+    </div>
+
+    <p>Agentes quebram <strong>silenciosamente</strong>. Crons falham sem avisar. Sub-agents travam no limbo. Sem monitoramento, você descobre problemas <em>dias depois</em> — quando já deu merda.</p>
+
+    <div class="card-grid">
+      <div class="card-sm">
+        <h4>😰 Sem immune system</h4>
+        <ul>
+          <li>Cron falhou e ninguém viu</li>
+          <li>Sub-agent no limbo há 3 dias</li>
+          <li>Custo explotou sem saber por quê</li>
+          <li>Secrets expostos em arquivo .md</li>
+          <li>Backup? Qual backup?</li>
+        </ul>
+      </div>
+      <div class="card-sm">
+        <h4>🛡️ Com immune system</h4>
+        <ul>
+          <li>Watchdog detecta falha em 1h</li>
+          <li>sessions_yield garante resultado</li>
+          <li>Cost tracking em tempo real</li>
+          <li>openclaw secrets audit + openclaw doctor</li>
+          <li>Backup antes de cada mudança</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>As 7 defesas do sistema imunológico</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Defesa</th>
+            <th>Problema que previne</th>
+            <th>Complexidade</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1</strong></td>
+            <td>Watchdog de Crons</td>
+            <td>Crons falhando no silêncio</td>
+            <td><span class="badge badge-emerald">Fácil</span></td>
+          </tr>
+          <tr>
+            <td><strong>2</strong></td>
+            <td>Feedback Loops</td>
+            <td>Repetir erros de sugestão</td>
+            <td><span class="badge badge-emerald">Fácil</span></td>
+          </tr>
+          <tr>
+            <td><strong>3</strong></td>
+            <td>Cost Split + Budget</td>
+            <td>Custo explotando</td>
+            <td><span class="badge badge-emerald">Fácil</span></td>
+          </tr>
+          <tr>
+            <td><strong>4</strong></td>
+            <td>Sub-agents + sessions_yield</td>
+            <td>Sub-agents no limbo</td>
+            <td><span class="badge badge-amber">Médio</span></td>
+          </tr>
+          <tr>
+            <td><strong>5</strong></td>
+            <td>Backup antes de mudanças</td>
+            <td>Rollback impossível</td>
+            <td><span class="badge badge-emerald">Fácil</span></td>
+          </tr>
+          <tr>
+            <td><strong>6</strong></td>
+            <td>openclaw secrets audit</td>
+            <td>Credenciais expostas</td>
+            <td><span class="badge badge-emerald">Fácil</span></td>
+          </tr>
+          <tr>
+            <td><strong>7</strong></td>
+            <td>openclaw doctor + exec.approvals</td>
+            <td>Problemas não diagnosticados + exec sem controle</td>
+            <td><span class="badge badge-amber">Médio</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span class="page-footer-left">Curso OpenClaw · Módulo 9</span>
+    <span class="page-footer-right page-num">2</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ PAGE 3: WATCHDOG + FEEDBACK LOOPS -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-left">Módulo 9 · Sistema Imunológico</span>
+    <span class="page-header-right">openclaw · 2026.4.9+</span>
+  </div>
+
+  <div class="section">
+    <h2>1. Watchdog de Crons</h2>
+    <p>Crie um cron que monitora os outros crons. Se algum falhar, retry automático até 3x. Se falhar 3x, alerta no Telegram.</p>
+
+    <div class="two-col">
+      <div>
+        <div class="cron-box">
+          <div class="label">Cron — Monitor de Crons (Diário 08h BRT)</div>
+          <div class="value">{
+  "name": "Watchdog - Monitor de Crons",
+  "schedule": { "kind": "cron", "expr": "0 8 * * *", "tz": "America/Sao_Paulo" },
+  "sessionTarget": "isolated",
+  "payload": {
+    "kind": "agentTurn",
+    "message": "Checar saúde de todos os crons. Listar os que falharam nas últimas 24h. Fazer retry dos que falharam. Se algum falhar 3x, alertar no Telegram."
+  },
+  "delivery": { "mode": "announce" }
+}</div>
+        </div>
+      </div>
+      <div>
+        <h3>Lógica do watchdog</h3>
+        <ol>
+          <li>Listar todos os crons ativos</li>
+          <li>Checar último run de cada um</li>
+          <li>Se falhou → retry automático (até 3x)</li>
+          <li>Se falhou 3x → alertar no Telegram</li>
+        </ol>
+
+        <div class="alert">
+          <p><strong>⚠️ Importante:</strong> O watchdog também precisa de watchdog? Sim — configure um watchdog secundário que roda em horário diferente (ex: 20h BRT) para cobrir falhas no ciclo matinal.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2. Feedback Loops</h2>
+    <p>Sistema de aprendizado contínuo: o agente aprende com suas decisões (approve/reject).</p>
+
+    <div class="two-col">
+      <div>
+        <h3>Estrutura de arquivos</h3>
+        <pre>memory/feedback/
+├── content.json         ← feedback sobre conteúdo
+├── tasks.json           ← feedback sobre tasks
+└── recommendations.json ← feedback sobre sugestões</pre>
+      </div>
+      <div>
+        <h3>Formato de cada entrada</h3>
+        <pre>{
+  <span class="k">"entries"</span>: [{
+    <span class="k">"date"</span>: <span class="s">"2026-04-11"</span>,
+    <span class="k">"context"</span>: <span class="s">"Sugeri thread sobre X"</span>,
+    <span class="k">"decision"</span>: <span class="s">"reject"</span>,
+    <span class="k">"reason"</span>: <span class="s">"Tom inadequado"</span>,
+    <span class="k">"tags"</span>: [<span class="s">"linkedin"</span>, <span class="s">"thread"</span>]
+  }]
+}
+<span class="c">// Max 30 entradas por arquivo (FIFO)</span></pre>
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step">
+        <span class="num">Ciclo</span>
+        Feedback (JSON granular)
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">
+        <span class="num">Mensal</span>
+        Lessons (curado, prose)
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">
+        <span class="num">Permanente</span>
+        Decisions (política)
+      </div>
+    </div>
+
+    <div class="alert">
+      <p><strong>Regra:</strong> Agente DEVE consultar feedback antes de sugerir novamente → evita repetir erros. Isso é aprendizado real, não decorativo.</p>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span class="page-footer-left">Curso OpenClaw · Módulo 9</span>
+    <span class="page-footer-right page-num">3</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ PAGE 4: COST + SUB-AGENTS -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-left">Módulo 9 · Sistema Imunológico</span>
+    <span class="page-header-right">openclaw · 2026.4.9+</span>
+  </div>
+
+  <div class="section">
+    <h2>3. Monitoramento de Custos</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Uso</th>
+            <th>Modelo</th>
+            <th>Custo relativo</th>
+            <th>Exemplo mensal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Interação direta</strong></td>
+            <td><code>GPT-4o</code></td>
+            <td><span class="badge badge-amber">$$$</span></td>
+            <td>~$0.50–1.00/sessão</td>
+          </tr>
+          <tr>
+            <td><strong>Crons e automação</strong></td>
+            <td><code>GPT-4o-mini</code></td>
+            <td><span class="badge badge-emerald">$</span></td>
+            <td>~$0.01–0.05/sessão</td>
+          </tr>
+          <tr>
+            <td><strong>Heartbeats</strong></td>
+            <td><code>GPT-4o-mini</code></td>
+            <td><span class="badge badge-emerald">¢</span></td>
+            <td>~$1-2/mês</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <h3>Regras de ouro</h3>
+        <ul>
+          <li>TODOS os crons devem rodar em <code>GPT-4o-mini</code> (nunca GPT-4o)</li>
+          <li>Heartbeats em <code>GPT-4o-mini</code></li>
+          <li>Só a interação direta usa <code>GPT-4o</code></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Kill switch</h3>
+        <ul>
+          <li><strong>2x custo esperado</strong> → ⚠️ Alerta no Telegram</li>
+          <li><strong>3x custo esperado</strong> → 🚨 Pausa e pergunta a você</li>
+        </ul>
+        <div class="alert alert-rose">
+          <p><strong>⚠️ NUNCA auto-kill.</strong> Sempre pedir confirmação humana antes de parar qualquer coisa.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4. Sub-agents + sessions_yield (v2026.3.13+)</h2>
+
+    <div class="card">
+      <p>Todo sub-agent spawnado DEVE ter follow-up. Use <code>sessions_yield</code> para encerrar o turno limpo após spawnar.</p>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step">
+        <span class="num">1</span>
+        Spawna com <code>sessions_spawn</code>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">
+        <span class="num">2</span>
+        Informa o que vai fazer
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">
+        <span class="num">3</span>
+        <code>sessions_yield</code> encerra turno
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">
+        <span class="num">4</span>
+        Resultado na próxima mensagem
+      </div>
+    </div>
+
+    <div class="card-grid">
+      <div class="card-sm">
+        <h4>✅ Sucesso</h4>
+        <p>Resumir resultado em linguagem humana simples</p>
+      </div>
+      <div class="card-sm">
+        <h4>❌ Falha</h4>
+        <p>Retry imediato → se falhar 2x → avisar o usuário</p>
+      </div>
+      <div class="card-sm">
+        <h4>🚫 Limbo</h4>
+        <p>NUNCA deixar sub-agent sem follow-up — é o erro mais comum</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span class="page-footer-left">Curso OpenClaw · Módulo 9</span>
+    <span class="page-footer-right page-num">4</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ PAGE 5: BACKUP + SECRETS + DOCTOR -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-left">Módulo 9 · Sistema Imunológico</span>
+    <span class="page-header-right">openclaw · 2026.4.9+</span>
+  </div>
+
+  <div class="section">
+    <h2>5. Backup antes de mudanças</h2>
+
+    <div class="two-col">
+      <div>
+        <h3>Regra</h3>
+        <p>Antes de criar agentes, modificar config, ou reorganizar workspace:</p>
+
+        <pre>mkdir -p backups/$(date +%Y-%m-%d)
+cp ~/.openclaw/openclaw.json backups/$(date +%Y-%m-%d)/</pre>
+      </div>
+      <div>
+        <h3>ROLLBACK.md</h3>
+        <p>Para cada mudança estrutural, crie um <code>ROLLBACK.md</code> junto:</p>
+
+        <pre>## Como reverter
+1. Copiar backup de /backups/YYYY-MM-DD/
+2. Substituir arquivo em ~/.openclaw/
+3. openclaw gateway restart</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>6. openclaw secrets audit (v2026.3.2+)</h2>
+
+    <div class="alert">
+      <p><strong>⚠️ Execute isso AGORA se nunca fez.</strong> Credenciais expostas são o ataque mais comum contra agentes mal configurados.</p>
+    </div>
+
+    <pre># Auditar todo o workspace
+openclaw secrets audit
+
+# Auditar diretório específico
+openclaw secrets audit --path /root/.openclaw/workspace-meu-agente
+
+# Relatório detalhado
+openclaw secrets audit --report</pre>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>O que detecta</th>
+            <th>Arquivos alcançados</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>API keys hardcodadas</td><td><code>.json</code>, <code>.md</code>, <code>.env</code></td></tr>
+          <tr><td>Tokens no git history</td><td>Todos os arquivos versionados</td></tr>
+          <tr><td>Credenciais em SOUL/AGENTS/TOOLS</td><td>Arquivos de agente</td></tr>
+          <tr><td>Patterns conhecidos</td><td>OpenAI, Stripe, Telegram, AWS, etc.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>7. openclaw doctor (v2026.3.2+)</h2>
+    <p>O comando <code>openclaw doctor</code> verifica a saúde do seu agente. Rode sempre que algo estiver "estranho".</p>
+
+    <div class="card-grid">
+      <div class="card-sm">
+        <h4>✅ Checks disponíveis</h4>
+        <ul>
+          <li><code>tools.profile</code> compatibility</li>
+          <li>ACP dispatch status</li>
+          <li>Secrets audit rápido</li>
+          <li>Versão do Node.js</li>
+          <li>Conexão com canais (Telegram, WhatsApp, Slack)</li>
+          <li>Crons com config inválida</li>
+        </ul>
+      </div>
+      <div class="card-sm">
+        <h4>🎯 Quando rodar</h4>
+        <ul>
+          <li>Após atualizar o OpenClaw</li>
+          <li>Quando algo parar de funcionar</li>
+          <li>Antes de colocar em produção</li>
+          <li>Checklist semanal de saúde</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span class="page-footer-left">Curso OpenClaw · Módulo 9</span>
+    <span class="page-footer-right page-num">5</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ PAGE 6: EXEC APPROVALS + PLUGIN SDK + CHECKLIST -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-left">Módulo 9 · Sistema Imunológico</span>
+    <span class="page-header-right">openclaw · 2026.4.9+</span>
+  </div>
+
+  <div class="section">
+    <h2>exec.approvals — Nunca desabilite (v2026.3.13)</h2>
+
+    <div class="alert alert-rose">
+      <p><strong>🔴 CRÍTICO:</strong> Em março/2026, 7 formas de burlar o sistema de approvals foram encontradas e corrigidas. Atacantes usavam caracteres invisíveis Unicode, quebras de linha com backslash, e wrappers de ferramentas comuns (pnpm, npm, Perl). O sistema existe para bloquear isso.</p>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <h3>Verificar configuração</h3>
+        <pre>openclaw config get exec.approvals
+<span class="c"># Deve retornar: ask</span></pre>
+
+        <h3>⚠️ Valores</h3>
+        <ul>
+          <li><code>ask</code> ✅ — Pausa e pede confirmação</li>
+          <li><code>allow</code> 🚨 — Executa SEM confirmar (NUNCA use)</li>
+          <li><code>deny</code> — Bloqueia tudo</li>
+        </ul>
+      </div>
+      <div>
+        <div class="card">
+          <h3>Por que não desabilitar?</h3>
+          <p>Quando o agente quer executar algo fora do padrão, ele <strong>pausa e pede confirmação</strong> antes de prosseguir. É sua última linha de defesa.</p>
+        </div>
+
+        <div class="alert">
+          <p><strong>Dica:</strong> Peça ao aluno para demonstrar ao vivo o sistema pausando e pedindo aprovação. O aluno tende a achar que é burocracia — mostrar o contexto de segurança muda completamente a percepção.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Plugin SDK — Mudança de path (v2026.3.22+)</h2>
+
+    <div class="two-col">
+      <div>
+        <pre><span class="c"># ANTES (v3.21 e anterior)</span>
+@anthropic-ai/extension-api
+
+<span class="c"># AGORA (v3.22+)</span>
+@openclaws/extension-api</pre>
+      </div>
+      <div>
+        <div class="alert">
+          <p><strong>⚠️ Ação necessária:</strong> Se você usa plugins no workspace, atualize o import nos arquivos do plugin. O path antigo foi descontinuado.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Health Check — Score final</h2>
+
+    <div style="display:flex; align-items:center; margin-bottom:16px;">
+      <div class="score-ring">7/7</div>
+      <div>
+        <h3 style="margin-bottom:4px;">Sistema Imunológico Ativo</h3>
+        <p style="margin-bottom:0; color: var(--emerald); font-weight: 600;">Todas as defesas foram configuradas</p>
+      </div>
+    </div>
+
+    <ul class="checklist">
+      <li><div class="check-box"></div> Watchdog de crons ativo (diário)</li>
+      <li><div class="check-box"></div> Feedback loops configurados (pelo menos 1 domínio)</li>
+      <li><div class="check-box"></div> Split de modelos aplicado (GPT-4o-mini em crons/heartbeats)</li>
+      <li><div class="check-box"></div> sessions_yield configurado para sub-agents</li>
+      <li><div class="check-box"></div> Regra de sub-agents documentada no AGENTS.md</li>
+      <li><div class="check-box"></div> Backup automático antes de mudanças</li>
+      <li><div class="check-box"></div> <code>openclaw secrets audit</code> executado — zero leaks</li>
+      <li><div class="check-box"></div> <code>openclaw doctor</code> rodado — sem erros críticos</li>
+      <li><div class="check-box"></div> <code>exec.approvals = ask</code> (nunca <code>allow</code>!) ← v2026.3.13</li>
+      <li><div class="check-box"></div> ACP bind configurado (se usar topic separado) ← v2026.4</li>
+      <li><div class="check-box"></div> Plugin SDK path atualizado (<code>@openclaws/extension-api</code>) ← v2026.3.22</li>
+    </ul>
+  </div>
+
+  <div class="page-footer">
+    <span class="page-footer-left">Curso OpenClaw · Módulo 9</span>
+    <span class="page-footer-right page-num">6</span>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula N-2 v2: Bot sem acesso ao shell | Curso OpenClaw</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root {
+  --bg: #0a0a0f;
+  --bg-elevated: #12121a;
+  --bg-card: #1a1a25;
+  --grape: #8b5cf6;
+  --grape-light: #a78bfa;
+  --grape-dim: rgba(139,92,246,0.12);
+  --grape-border: rgba(139,92,246,0.25);
+  --grape-glow: rgba(139,92,246,0.08);
+  --emerald: #10b981;
+  --emerald-dim: rgba(16,185,129,0.12);
+  --emerald-border: rgba(16,185,129,0.25);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,0.12);
+  --amber-border: rgba(245,158,11,0.25);
+  --rose: #f43f5e;
+  --rose-dim: rgba(244,63,94,0.12);
+  --rose-border: rgba(244,63,94,0.25);
+  --cyan: #22d3ee;
+  --cyan-dim: rgba(34,211,238,0.12);
+  --text: #f1f1f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --border: rgba(255,255,255,0.06);
+  --code-bg: #0d0d15;
+  --code-border: rgba(255,255,255,0.08);
+}
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 10.5pt;
+  line-height: 1.6;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 22mm 24mm 28mm;
+  position: relative;
+  overflow: hidden;
+  page-break-after: always;
+  background: var(--bg);
+}
+.page::before {
+  content: '';
+  position: absolute;
+  top: -40%; right: -25%;
+  width: 70%; height: 70%;
+  background: radial-gradient(ellipse, var(--grape-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cover {
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: flex-start;
+  min-height: 297mm; padding: 36mm 28mm;
+  position: relative;
+}
+.cover-grid {
+  position: absolute; bottom: 0; right: 0;
+  width: 50%; height: 40%;
+  background-image: linear-gradient(rgba(139,92,246,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.04) 1px, transparent 1px);
+  background-size: 20px 20px;
+  mask-image: linear-gradient(135deg, transparent 30%, rgba(0,0,0,0.3) 100%);
+}
+.cover-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 16px;
+  background: var(--grape-dim); border: 1px solid var(--grape-border);
+  border-radius: 100px; font-size: 10pt; font-weight: 500;
+  color: var(--grape-light); letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.new-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 14px;
+  background: var(--rose-dim); border: 1px solid var(--rose-border);
+  border-radius: 100px; font-size: 9pt; font-weight: 600;
+  color: var(--rose); margin-bottom: 16px; margin-left: 10px;
+}
+.cover-title {
+  font-size: 40pt; font-weight: 700; line-height: 1.05;
+  letter-spacing: -1.5px; color: var(--text); margin-bottom: 18px;
+  position: relative; max-width: 500px;
+}
+.cover-title em {
+  font-style: italic;
+  background: linear-gradient(135deg, var(--grape), var(--grape-light));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.cover-subtitle { font-size: 13pt; font-weight: 300; color: var(--text-secondary); line-height: 1.6; max-width: 440px; margin-bottom: 44px; }
+.cover-meta { display: flex; gap: 36px; padding-top: 28px; border-top: 1px solid var(--border); }
+.cover-meta-item { display: flex; flex-direction: column; gap: 4px; }
+.cover-meta-label { font-size: 8pt; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-weight: 500; }
+.cover-meta-value { font-size: 12pt; font-weight: 600; color: var(--text); }
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.page-header-left { font-size: 9pt; color: var(--grape-light); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+.page-header-right { font-family: 'JetBrains Mono', monospace; font-size: 8pt; color: var(--text-muted); }
+.page-footer { position: absolute; bottom: 12mm; left: 24mm; right: 24mm; display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--border); }
+.page-footer-left { font-size: 8pt; color: var(--text-muted); }
+.page-footer-right { font-family: 'JetBrains Mono', monospace; font-size: 8pt; color: var(--text-muted); }
+.section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.section-number { font-family: 'JetBrains Mono', monospace; font-size: 9pt; font-weight: 600; color: var(--grape); padding: 4px 10px; background: var(--grape-dim); border-radius: 6px; }
+.section-title { font-size: 22pt; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
+.section-subtitle { font-size: 11pt; color: var(--text-secondary); margin-top: -12px; margin-bottom: 22px; font-weight: 300; }
+h3 { font-size: 13pt; font-weight: 600; color: var(--grape-light); margin: 22px 0 10px; display: flex; align-items: center; gap: 8px; }
+h4 { font-size: 11pt; font-weight: 600; color: var(--text); margin: 16px 0 8px; }
+p { margin-bottom: 10px; color: var(--text-secondary); font-size: 10.5pt; }
+strong { color: var(--text); }
+.code-block {
+  background: var(--code-bg); border: 1px solid var(--code-border); border-radius: 10px;
+  padding: 14px 18px; margin: 12px 0;
+  font-family: 'JetBrains Mono', monospace; font-size: 9pt; line-height: 1.7;
+  color: var(--text-secondary); overflow-x: auto; position: relative; white-space: pre;
+}
+.code-block::before { content: attr(data-lang); position: absolute; top: 8px; right: 12px; font-size: 7.5pt; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+code { background: var(--grape-dim); color: var(--grape-light); padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 9pt; }
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin: 12px 0; }
+.card.grape { border-color: var(--grape-border); background: linear-gradient(135deg, rgba(139,92,246,0.06), var(--bg-card)); }
+.card.emerald { border-color: var(--emerald-border); background: linear-gradient(135deg, rgba(16,185,129,0.06), var(--bg-card)); }
+.card.amber { border-color: var(--amber-border); background: linear-gradient(135deg, rgba(245,158,11,0.06), var(--bg-card)); }
+.card.rose { border-color: var(--rose-border); background: linear-gradient(135deg, rgba(244,63,94,0.06), var(--bg-card)); }
+.card-title { font-size: 12pt; font-weight: 600; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.card-desc { font-size: 10pt; color: var(--text-secondary); line-height: 1.5; }
+.step { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px 16px 56px; margin: 12px 0; position: relative; }
+.step-num { position: absolute; left: 16px; top: 16px; width: 28px; height: 28px; background: var(--grape-dim); border: 1px solid var(--grape-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 12pt; font-weight: 700; color: var(--grape-light); }
+.step-title { font-size: 12pt; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.callout { border-radius: 10px; padding: 14px 16px; margin: 14px 0; display: flex; gap: 10px; align-items: flex-start; }
+.callout-icon { font-size: 16pt; flex-shrink: 0; line-height: 1; }
+.callout-content { flex: 1; }
+.callout-content strong { display: block; margin-bottom: 3px; color: var(--text); }
+.callout-content p { margin-bottom: 4px; }
+.callout.tip { background: var(--emerald-dim); border: 1px solid var(--emerald-border); }
+.callout.warning { background: var(--amber-dim); border: 1px solid var(--amber-border); }
+.callout.danger { background: var(--rose-dim); border: 1px solid var(--rose-border); }
+.callout.info { background: var(--grape-dim); border: 1px solid var(--grape-border); }
+.checklist { background: var(--bg-card); border: 1px solid var(--emerald-border); border-radius: 12px; padding: 18px 20px; margin: 18px 0; }
+.checklist-title { font-size: 13pt; font-weight: 700; color: var(--emerald); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.checklist-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 10pt; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+.checklist-item:last-child { border-bottom: none; }
+.check-box { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.12); border-radius: 5px; flex-shrink: 0; }
+table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 14px 0; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+thead th { background: var(--bg-card); padding: 10px 14px; text-align: left; font-size: 9pt; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+tbody td { padding: 9px 14px; font-size: 10pt; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+tbody tr:last-child td { border-bottom: none; }
+tbody td:first-child { font-weight: 500; color: var(--text); }
+.diagram { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; margin: 16px 0; }
+.diagram-title { font-size: 11pt; font-weight: 700; color: var(--grape-light); margin-bottom: 14px; text-align: center; }
+.flow-tree { font-family: 'JetBrains Mono', monospace; font-size: 8.5pt; line-height: 1.9; color: var(--text-secondary); white-space: pre; }
+.flow-tree .yes { color: var(--emerald); font-weight: 600; }
+.flow-tree .no { color: var(--text-muted); }
+.flow-tree .action { color: var(--amber); }
+.flow-tree .node { color: var(--grape-light); }
+.cause-num-0 { background: linear-gradient(135deg, rgba(244,63,94,0.15), var(--bg-card)); border: 2px solid var(--rose-border); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+.cause-num-0 .cause-tag { display: inline-block; padding: 3px 10px; background: var(--rose-dim); border: 1px solid var(--rose-border); border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 8pt; color: var(--rose); font-weight: 700; margin-bottom: 8px; }
+.cause-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin: 12px 0; border-left: 3px solid var(--grape); }
+.cause-block.amber { border-left-color: var(--amber); }
+.cause-block.emerald { border-left-color: var(--emerald); }
+.cause-block.cyan { border-left-color: var(--cyan); }
+.cause-block.rose { border-left-color: var(--rose); }
+.cause-tag { display: inline-block; padding: 3px 10px; background: var(--grape-dim); border: 1px solid var(--grape-border); border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 8pt; color: var(--grape-light); font-weight: 700; margin-bottom: 8px; }
+ul, ol { margin: 8px 0 12px 18px; }
+li { margin-bottom: 3px; font-size: 10pt; color: var(--text-secondary); }
+.tag-new { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 8pt; font-weight: 700; background: var(--rose-dim); color: var(--rose); letter-spacing: 0.3px; vertical-align: middle; margin-left: 6px; }
+.next-module { background: var(--bg-card); border: 1px solid var(--grape-border); border-radius: 12px; padding: 16px 18px; margin-top: 20px; display: flex; align-items: center; gap: 12px; }
+.next-module .next-icon { font-size: 20pt; }
+.next-module .next-text { flex: 1; }
+.next-module .next-label { font-size: 8.5pt; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.next-module .next-title { font-size: 12pt; font-weight: 600; color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="page cover">
+  <div class="cover-grid"></div>
+  <div class="cover-badge">✦ MÓDULO N · DIAGNÓSTICO</div>
+  <div class="new-badge">🆕 ATUALIZADO v2 · 3.2</div>
+  <h1 class="cover-title">Bot sem acesso ao <em>shell</em></h1>
+  <p class="cover-subtitle">Identifique e corrija as 5 causas mais comuns — incluindo o novo tools.profile e o BotFather privacy mode.</p>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><span class="cover-meta-label">Aula</span><span class="cover-meta-value">N-2</span></div>
+    <div class="cover-meta-item"><span class="cover-meta-label">Duração</span><span class="cover-meta-value">~15 min</span></div>
+    <div class="cover-meta-item"><span class="cover-meta-label">Nível</span><span class="cover-meta-value">Intermediário</span></div>
+    <div class="cover-meta-item"><span class="cover-meta-label">Versão</span><span class="cover-meta-value">3.2 ✨</span></div>
+  </div>
+</div>
+
+<!-- PAGE 2 — SINTOMAS + FLUXOGRAMA -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-left">N-2 · Bot sem Shell</span>
+    <span class="page-header-right">v2 · OpenClaw 3.2</span>
+  </div>
+
+  <div class="section-header">
+    <span class="section-number">01</span>
+    <span class="section-title">Sintomas</span>
+  </div>
+  <p class="section-subtitle">Como saber que você está com esse problema</p>
+
+  <div class="card amber">
+    <div class="card-title">⚠️ Sintomas Clássicos</div>
+    <div class="card-desc">
+      <ul style="margin-top:8px">
+        <li>O agente diz: <em>"Não consigo executar comandos no seu sistema"</em></li>
+        <li>O agente responde texto fluentemente, mas qualquer tarefa de sistema falha</li>
+        <li>Erros como <code>exec: not in allowlist</code>, <code>Permission denied</code>, <code>Sandbox restriction</code></li>
+        <li>Bot adicionado ao grupo — não responde nada (nem erros)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <span class="callout-icon">🧪</span>
+    <div class="callout-content">
+      <strong>Teste rápido</strong>
+      <p>Peça pro agente executar <code>echo "SHELL_TEST_OK"</code>. Se receber o texto de volta, shell OK. Se der erro — você tem um dos problemas abaixo.</p>
+    </div>
+  </div>
+
+  <h3>🗺️ Fluxograma de Diagnóstico</h3>
+  <div class="diagram">
+    <div class="diagram-title">Siga esta ordem — resolve 95% dos casos</div>
+    <div class="flow-tree"><span class="node">Bot não executa comandos?</span>
+         │
+         ▼
+<span class="node">tools.profile = "messaging"?</span> ──<span class="yes">SIM</span>──▶ <span class="action">Remover ou trocar para "default"</span>
+         │ <span class="no">NÃO</span>
+         ▼
+<span class="node">Bot em grupo e não responde?</span> ──<span class="yes">SIM</span>──▶ <span class="action">BotFather → desativar Group Privacy</span>
+         │ <span class="no">NÃO</span>
+         ▼
+<span class="node">sandbox = "all" ?</span>           ──<span class="yes">SIM</span>──▶ <span class="action">Mudar para "off" ou "non-main"</span>
+         │ <span class="no">NÃO</span>
+         ▼
+<span class="node">security = "deny" ?</span>         ──<span class="yes">SIM</span>──▶ <span class="action">Mudar para "allowlist"</span>
+         │ <span class="no">NÃO</span>
+         ▼
+<span class="node">"exec" no allowlist?</span>        ──<span class="no">NÃO</span>──▶ <span class="action">Adicionar "exec" ao allowlist</span>
+         │ <span class="yes">SIM</span>
+         ▼
+    <span class="action">openclaw gateway restart</span>
+         │
+    <span class="action">echo "SHELL_TEST_OK"</span> → OK? ✅ Resolvido  ❌ Ver logs</div>
+  </div>
+
+  <div class="page-footer">
+    <span class="page-footer-left">Curso OpenClaw · Pixel Educação</span>
+    <span class="page-footer-right">2/5</span>
+  </div>
+</div>
+
+<!-- PAGE 3 — CAUSAS 0, 1, 2 -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-left">N-2 · As 5 Causas</span>
+    <span class="page-header-right">v2 · OpenClaw 3.2</span>
+  </div>
+
+  <div class="section-header">
+    <span class="section-number">02</span>
+    <span class="section-title">As 5 Causas</span>
+  </div>
+
+  <!-- CAUSA 0 -->
+  <div class="cause-num-0">
+    <span class="cause-tag">⚡ CAUSA 0 — MAIS COMUM · NOVO 3.2</span>
+    <h3 style="margin-top:8px;color:var(--rose)">tools.profile = "messaging" <span class="tag-new">NOVO</span></h3>
+    <p>Desde a 3.2, a causa #1 de "bot não faz nada" é o <code>tools.profile</code> configurado como <code>messaging</code>. Esse perfil otimiza o agente para responder texto no Telegram/WhatsApp — mas bloqueia exec e acesso ao sistema.</p>
+    <div class="code-block" data-lang="json">{
+  <span style="color:var(--cyan)">"agents"</span>: { <span style="color:var(--cyan)">"main"</span>: { <span style="color:var(--cyan)">"tools"</span>: {
+    <span style="color:var(--rose)">"profile"</span>: <span style="color:var(--rose)">"messaging"</span>  <span style="color:#4a4a5a">// ← PROBLEMA</span>
+  }}}
+}
+</div>
+    <div class="code-block" data-lang="json">// CORREÇÃO: trocar para "default" ou remover a chave
+{
+  <span style="color:var(--cyan)">"agents"</span>: { <span style="color:var(--cyan)">"main"</span>: { <span style="color:var(--cyan)">"tools"</span>: {
+    <span style="color:var(--emerald)">"profile"</span>: <span style="color:var(--emerald)">"default"</span>  <span style="color:#4a4a5a">// ← CORREÇÃO</span>
+  }}}
+}</div>
+  </div>
+
+  <!-- CAUSA 1 -->
+  <div class="cause-block">
+    <span class="cause-tag">CAUSA 1</span>
+    <h3 style="margin-top:8px"><code>exec</code> não está no allowlist</h3>
+    <p>O agente tem uma lista de ferramentas permitidas. Se <code>exec</code> não estiver nela, nenhum comando roda.</p>
+    <div class="code-block" data-lang="json">{
+  "agents": { "main": { "tools": {
+    "allowlist": [<span style="color:var(--emerald)">"exec"</span>, "read", "write", "edit", "web_search"]
+  }}}
+}</div>
+  </div>
+
+  <!-- CAUSA 2 -->
+  <div class="cause-block amber">
+    <span class="cause-tag" style="background:var(--amber-dim);border-color:var(--amber-border);color:var(--amber)">CAUSA 2</span>
+    <h3 style="margin-top:8px;color:var(--amber)">Sandbox <code>all</code> sem permissão correta</h3>
+    <p>Com <code>sandbox: "all"</code>, até o agente principal fica isolado. Use <code>off</code> pro principal ou <code>non-main</code> para sandbox só em sub-agentes.</p>
+    <table>
+      <thead><tr><th>Valor</th><th>Comportamento</th></tr></thead>
+      <tbody>
+        <tr><td><code>off</code></td><td>Sem sandbox — acesso total ao sistema</td></tr>
+        <tr><td><code>non-main</code></td><td>Sandbox só em sub-agentes</td></tr>
+        <tr><td><code>all</code></td><td>Sandbox em todos — inclui agente principal ⚠️</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="page-footer">
+    <span class="page-footer-left">Curso OpenClaw · Pixel Educação</span>
+    <span class="page-footer-right">3/5</span>
+  </div>
+</div>
+
+<!-- PAGE 4 — CAUSAS 3, 4, 5 + CORREÇÕES -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-left">N-2 · Causas 3, 4, 5</span>
+    <span class="page-header-right">v2 · OpenClaw 3.2</span>
+  </div>
+
+  <!-- CAUSA 3 -->
+  <div class="cause-block">
+    <span class="cause-tag">CAUSA 3</span>
+    <h3 style="margin-top:8px">Security mode <code>deny</code></h3>
+    <p>Com <code>security: "deny"</code>, o agente bloqueia qualquer execução de comandos. Mude para <code>allowlist</code>.</p>
+    <div class="code-block" data-lang="json">{
+  "agents": { "main": {
+    "security": <span style="color:var(--emerald)">"allowlist"</span>  <span style="color:#4a4a5a">// era "deny"</span>
+  }}
+}</div>
+  </div>
+
+  <!-- CAUSA 4 — BOTFATHER -->
+  <div class="cause-block rose">
+    <span class="cause-tag" style="background:var(--rose-dim);border-color:var(--rose-border);color:var(--rose)">CAUSA 4 · GRUPO TELEGRAM</span>
+    <h3 style="margin-top:8px;color:var(--rose)">BotFather Group Privacy Mode</h3>
+    <p>Bot funciona em DM mas ignora mensagens no grupo? É o <strong>Group Privacy Mode</strong> do BotFather — ativo por padrão. Com privacy ON, o bot só recebe mensagens que começam com <code>/comando</code>.</p>
+
+    <div class="card rose" style="margin-top:10px">
+      <div class="card-title">📋 Como desativar</div>
+      <div class="card-desc">
+        <ol style="margin-top:6px">
+          <li>Abra <strong>@BotFather</strong> no Telegram</li>
+          <li>Envie: <code>/mybots</code> → selecione seu bot</li>
+          <li>Clique em <strong>"Bot Settings"</strong></li>
+          <li>Clique em <strong>"Group Privacy"</strong></li>
+          <li>Clique em <strong>"Turn off"</strong></li>
+          <li>Confirmação: <em>"Privacy mode is disabled"</em></li>
+          <li style="color:var(--rose);font-weight:600">⚠️ Remova e re-adicione o bot ao grupo!</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAUSA 5 -->
+  <div class="cause-block emerald">
+    <span class="cause-tag" style="background:var(--emerald-dim);border-color:var(--emerald-border);color:var(--emerald)">CAUSA 5 · VPS</span>
+    <h3 style="margin-top:8px;color:var(--emerald)">Path do shell não encontrado</h3>
+    <p>Mais comum em VPS, containers Docker e distribuições minimalistas. O OpenClaw não acha o shell.</p>
+    <div class="code-block" data-lang="json">{
+  "agents": { "main": {
+    "shell": <span style="color:var(--emerald)">"/bin/bash"</span>  <span style="color:#4a4a5a">// ou "/bin/sh" em Alpine</span>
+  }}
+}</div>
+    <p style="margin-top:8px">Confirme o path: rode <code>which bash</code> ou <code>which sh</code> no terminal do servidor.</p>
+  </div>
+
+  <div class="page-footer">
+    <span class="page-footer-left">Curso OpenClaw · Pixel Educação</span>
+    <span class="page-footer-right">4/5</span>
+  </div>
+</div>
+
+<!-- PAGE 5 — CHECKLIST + PROMPT -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-left">N-2 · Verificação & Prompt</span>
+    <span class="page-header-right">v2 · OpenClaw 3.2</span>
+  </div>
+
+  <div class="section-header">
+    <span class="section-number">03</span>
+    <span class="section-title">Checklist Pós-Correção</span>
+  </div>
+
+  <div class="checklist">
+    <div class="checklist-title">✅ Verificação</div>
+    <div class="checklist-item"><div class="check-box"></div>Reiniciar gateway: <code>openclaw gateway restart</code></div>
+    <div class="checklist-item"><div class="check-box"></div>Verificar status: <code>openclaw gateway status</code></div>
+    <div class="checklist-item"><div class="check-box"></div>Teste básico: pedir ao agente <code>echo "SHELL_TEST_OK"</code></div>
+    <div class="checklist-item"><div class="check-box"></div>Teste de arquivo: <code>touch /tmp/teste-openclaw &amp;&amp; echo "OK"</code></div>
+    <div class="checklist-item"><div class="check-box"></div>Verificar logs: <code>openclaw gateway logs --tail 20</code></div>
+    <div class="checklist-item"><div class="check-box"></div>Testar tarefa real: <em>"liste os arquivos do diretório atual"</em></div>
+    <div class="checklist-item"><div class="check-box"></div>Se bot de grupo: testar mensagem no grupo após re-adicionar</div>
+  </div>
+
+  <div class="section-header" style="margin-top:20px">
+    <span class="section-number">04</span>
+    <span class="section-title">Resumo das Causas</span>
+  </div>
+
+  <table>
+    <thead><tr><th>#</th><th>Causa</th><th>Correção</th></tr></thead>
+    <tbody>
+      <tr><td style="color:var(--rose);font-weight:700">0 ⚡</td><td><code>tools.profile = "messaging"</code></td><td>Trocar para <code>"default"</code> ou remover</td></tr>
+      <tr><td>1</td><td><code>exec</code> não no allowlist</td><td>Adicionar <code>"exec"</code> ao allowlist</td></tr>
+      <tr><td>2</td><td>Sandbox <code>"all"</code></td><td>Mudar para <code>"off"</code> ou <code>"non-main"</code></td></tr>
+      <tr><td>3</td><td>Security <code>"deny"</code></td><td>Mudar para <code>"allowlist"</code></td></tr>
+      <tr><td>4</td><td>BotFather Privacy Mode (grupo)</td><td>Desativar Group Privacy no BotFather</td></tr>
+      <tr><td>5</td><td>Path do shell não encontrado</td><td>Configurar <code>"shell": "/bin/bash"</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout info">
+    <span class="callout-icon">💡</span>
+    <div class="callout-content">
+      <strong>Prompt de Diagnóstico</strong>
+      <p>Use o arquivo <code>prompts/aula-n2-bot-sem-shell-prompt-aluno.md</code> — cole no chat do agente para diagnóstico interativo automático. O prompt cobre todas as 5 causas, incluindo as novas.</p>
+    </div>
+  </div>
+
+  <div class="next-module">
+    <span class="next-icon">🚀</span>
+    <div class="next-text">
+      <div class="next-label">Próxima aula</div>
+      <div class="next-title">N-4 — Lentidão no Telegram: causas e correções</div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span class="page-footer-left">Curso OpenClaw · Pixel Educação · 2026</span>
+    <span class="page-footer-right">5/5</span>
+  </div>
+</div>
+
+</body>
+</html>

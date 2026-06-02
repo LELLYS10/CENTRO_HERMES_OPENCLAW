@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Módulo 8 — Multi-Agentes: Construindo seu Time de IA</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #0a0a0f;
+  --bg-elevated: #12121a;
+  --bg-card: #1a1a25;
+  --bg-card-hover: #222230;
+  --grape: #8b5cf6;
+  --grape-light: #a78bfa;
+  --grape-dim: rgba(139, 92, 246, 0.12);
+  --grape-border: rgba(139, 92, 246, 0.25);
+  --grape-glow: rgba(139, 92, 246, 0.08);
+  --emerald: #10b981;
+  --emerald-dim: rgba(16, 185, 129, 0.12);
+  --emerald-border: rgba(16, 185, 129, 0.25);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245, 158, 11, 0.12);
+  --amber-border: rgba(245, 158, 11, 0.25);
+  --rose: #f43f5e;
+  --rose-dim: rgba(244, 63, 94, 0.12);
+  --rose-border: rgba(244, 63, 94, 0.25);
+  --cyan: #22d3ee;
+  --cyan-dim: rgba(34, 211, 238, 0.12);
+  --text: #f1f1f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --code-bg: #0d0d15;
+  --code-border: rgba(255,255,255,0.08);
+}
+
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 10.5pt;
+  line-height: 1.6;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 22mm 24mm 28mm;
+  position: relative;
+  overflow: hidden;
+  page-break-after: always;
+  background: var(--bg);
+}
+
+.page::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -25%;
+  width: 70%;
+  height: 70%;
+  background: radial-gradient(ellipse, var(--grape-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Cover ── */
+.cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 297mm;
+  padding: 36mm 28mm;
+  position: relative;
+}
+
+.cover-grid {
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 50%; height: 40%;
+  background-image:
+    linear-gradient(rgba(139,92,246,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139,92,246,0.04) 1px, transparent 1px);
+  background-size: 20px 20px;
+  mask-image: linear-gradient(135deg, transparent 30%, rgba(0,0,0,0.3) 100%);
+  -webkit-mask-image: linear-gradient(135deg, transparent 30%, rgba(0,0,0,0.3) 100%);
+}
+
+.cover-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  background: var(--grape-dim);
+  border: 1px solid var(--grape-border);
+  border-radius: 100px;
+  font-size: 10pt;
+  font-weight: 500;
+  color: var(--grape-light);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.cover-title {
+  font-size: 44pt;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+  color: var(--text);
+  margin-bottom: 18px;
+  position: relative;
+  max-width: 500px;
+}
+
+.cover-title em {
+  font-style: italic;
+  background: linear-gradient(135deg, var(--grape), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cover-subtitle {
+  font-size: 14pt;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 440px;
+  margin-bottom: 44px;
+  position: relative;
+}
+
+.cover-meta {
+  position: relative;
+  display: flex;
+  gap: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.cover-meta-item { display: flex; flex-direction: column; gap: 4px; }
+
+.cover-meta-label {
+  font-size: 8pt;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.cover-meta-value {
+  font-size: 12pt;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* ── Headers & Footers ── */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.page-header-left {
+  font-size: 9pt;
+  color: var(--grape-light);
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.page-header-right {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8pt;
+  color: var(--text-muted);
+}
+
+.page-footer {
+  position: absolute;
+  bottom: 12mm;
+  left: 24mm; right: 24mm;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.page-footer-left {
+  font-size: 8pt;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.page-footer-right {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8pt;
+  color: var(--text-muted);
+}
+
+/* ── Typography ── */
+h1 { font-size: 28pt; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 16px; color: var(--text); }
+h2 { font-size: 16pt; font-weight: 600; letter-spacing: -0.3px; margin-bottom: 12px; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+h3 { font-size: 12pt; font-weight: 600; margin-bottom: 8px; color: var(--grape-light); }
+h4 { font-size: 10.5pt; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+
+p { margin-bottom: 12px; color: var(--text-secondary); }
+p:last-child { margin-bottom: 0; }
+
+strong { color: var(--text); font-weight: 600; }
+em { color: var(--grape-light); font-style: italic; }
+
+/* ── Cards ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  position: relative;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  border-radius: 12px 12px 0 0;
+  background: linear-gradient(90deg, var(--grape), var(--cyan));
+  opacity: 0.6;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.card-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.card-sm {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.card-sm h4 { margin-bottom: 6px; }
+.card-sm p { font-size: 9.5pt; margin-bottom: 0; }
+
+/* ── Tables ── */
+.table-wrap {
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9.5pt;
+}
+
+thead tr { border-bottom: 2px solid var(--grape-border); }
+tbody tr { border-bottom: 1px solid var(--border); }
+tbody tr:last-child { border-bottom: none; }
+
+th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 8pt;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+td {
+  padding: 9px 12px;
+  color: var(--text-secondary);
+  vertical-align: top;
+}
+
+td strong { color: var(--text); }
+
+tr:hover td { background: rgba(139,92,246,0.04); }
+
+/* ── Code ── */
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5pt;
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: var(--cyan);
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5pt;
+  line-height: 1.7;
+  color: var(--text);
+  overflow-x: auto;
+  margin-bottom: 14px;
+  white-space: pre;
+}
+
+pre .c { color: var(--text-muted); }
+pre .k { color: var(--rose); font-weight: 600; }
+pre .s { color: var(--emerald); }
+pre .v { color: var(--cyan); }
+pre .fn { color: var(--amber); }
+pre .str { color: var(--emerald); }
+
+/* ── Badges ── */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 100px;
+  font-size: 8pt;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.badge-grape { background: var(--grape-dim); color: var(--grape-light); border: 1px solid var(--grape-border); }
+.badge-emerald { background: var(--emerald-dim); color: var(--emerald); border: 1px solid var(--emerald-border); }
+.badge-amber { background: var(--amber-dim); color: var(--amber); border: 1px solid var(--amber-border); }
+.badge-rose { background: var(--rose-dim); color: var(--rose); border: 1px solid var(--rose-border); }
+.badge-cyan { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(34,211,238,0.25); }
+
+/* ── Flow ── */
+.flow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.flow-step {
+  background: var(--bg-card);
+  border: 1px solid var(--grape-border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 9pt;
+  text-align: center;
+  flex: 1;
+  min-width: 120px;
+}
+
+.flow-step .num {
+  display: block;
+  font-size: 7pt;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--grape-light);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.flow-arrow {
+  color: var(--text-muted);
+  font-size: 12pt;
+  flex: 0;
+}
+
+/* ── Quote ── */
+.quote {
+  border-left: 3px solid var(--grape);
+  padding: 10px 16px;
+  margin-bottom: 14px;
+  background: var(--grape-dim);
+  border-radius: 0 8px 8px 0;
+}
+
+.quote p {
+  font-size: 11pt;
+  font-style: italic;
+  color: var(--text);
+  margin-bottom: 0;
+}
+
+/* ── Alert ── */
+.alert {
+  background: var(--amber-dim);
+  border: 1px solid var(--amber-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 9.5pt;
+}
+
+.alert-rose {
+  background: var(--rose-dim);
+  border-color: var(--rose-border);
+}
+
+.alert p { color: var(--text); margin-bottom: 0; }
+
+/* ── Lists ── */
+ul, ol {
+  padding-left: 18px;
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+}
+
+li { margin-bottom: 5px; }
+li:last-child { margin-bottom: 0; }
+
+.checklist {
+  list-style: none;
+  padding-left: 0;
+}
+
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.checklist li:last-child { border-bottom: none; }
+
+.check-box {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--grape-border);
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  background: var(--bg-card);
+}
+
+/* ── Spacing ── */
+.section { margin-bottom: 28px; }
+.section:last-child { margin-bottom: 0; }
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ── Level badges ── */
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.level-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 12px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.level-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+}
+
+.level-l1::after { background: var(--text-muted); }
+.level-l2::after { background: var(--cyan); }
+.level-l3::after { background: var(--amber); }
+.level-l4::after { background: var(--emerald); }
+
+.level-num {
+  font-size: 20pt;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.level-l1 .level-num { color: var(--text-muted); }
+.level-l2 .level-num { color: var(--cyan); }
+.level-l3 .level-num { color: var(--amber); }
+.level-l4 .level-num { color: var(--emerald); }
+
+.level-name {
+  font-size: 9pt;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.level-desc { font-size: 8.5pt; color: var(--text-muted); margin-bottom: 0; }
+
+/* ── Architecture diagram ── */
+.arch-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  text-align: center;
+  font-size: 9pt;
+  position: relative;
+}
+
+.arch-you { border-color: var(--rose-border); background: var(--rose-dim); }
+.arch-cos { border-color: var(--grape-border); }
+.arch-boss { border-color: var(--cyan); }
+.arch-worker { border-color: var(--emerald-border); }
+
+.arch-label {
+  font-size: 7pt;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 3px;
+}
+
+/* ── Prompt box ── */
+.prompt-box {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-left: 3px solid var(--grape);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ── Footer page num ── */
+.page-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8pt;
+  color: var(--text-muted);
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════ PAGE 1: COVER -->
+<div class="page">
+  <div class="cover">
+    <div class="cover-grid"></div>
+
+    <div class="cover-badge">
+      <span>🎓</span> Curso OpenClaw 2026
+    </div>
+
+    <h1 class="cover-title">Módulo 8<br><em>Multi-Agentes</em></h1>
+
+    <p class="cover-subtitle">
+      Quando um agente não é suficiente — construa um time de IA especializado,
+      coordenado e economicamente inteligente.
+    </p>
+
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">Versão material</span>
+        <span class="cover-meta-value">v2 — 2026.4</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">OpenClaw</span>
+        <span class="cover-meta-value">2026.4.9+</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">Modelos</span>
+        <span class="cover-meta-value">GPT-4o / GPT-4o-mini</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ PAGE 2: INTRO -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-left">Módulo 8 · Multi-Agentes</span>
+    <span class="page-header-right">openclaw · 2026.4.9+</span>
+  </div>
+
+  <div class="section">
+    <h1>Quando um agente vira gargalo?</h1>
+
+    <div class="two-col">
+      <div>
+        <h3>Sinais de que você precisa de multi-agentes</h3>
+        <ul>
+          <li>O agente <strong>esquece contexto</strong> porque a thread está longa demais</li>
+          <li>Você precisa de <strong>múltiplas especialidades</strong> simultâneas</li>
+          <li>Crons estão <strong>competindo</strong> pelo mesmo contexto</li>
+          <li>O agente faz <strong>muita coisa ao mesmo tempo</strong> e fica lento</li>
+          <li>Você quer isolar <strong>domínios diferentes</strong> (conteúdo ≠ ops ≠ código)</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Sinais de que ainda é cedo</h3>
+        <ul>
+          <li>Você ainda está <strong>aprendendo</strong> a dar contexto</li>
+          <li>O agente faz <strong>1–2 tarefas</strong> por dia</li>
+          <li>Você não tem <strong>processos definidos</strong> o suficiente</li>
+          <li>A complexidade de gerenciar múltiplos agentes vai <strong>superar o benefício</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="alert alert-rose">
+      <p><strong>⚠️ Regra de ouro:</strong> 2 agentes bem feitos > 6 agentes bagunçados. Multi-agentes sem fundamento = caos. Se ainda está aprendendo a dar contexto, foque no Módulo 4 primeiro.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Arquiteturas de multi-agentes</h2>
+
+    <div class="card-grid">
+      <div class="card-sm">
+        <h4>Hub + Workers (v1)</h4>
+        <p>1 agente principal (Opus/GPT-4o) + workers (GPT-4o-mini). Simples, bom pra começar.</p>
+        <span class="badge badge-amber">Recomendado iniciante</span>
+      </div>
+      <div class="card-sm">
+        <h4>Boss + Workers (v2)</h4>
+        <p>CoS coordena bosses por domínio. Cada boss gerencia seus workers. Escalável.</p>
+        <span class="badge badge-grape">Recomendado produção</span>
+      </div>
+      <div class="card-sm">
+        <h4>ACP bind (v2026.4+)</h4>
+        <p>Agentes isolados em topics Telegram. Cada um com contexto próprio, isolado do hub.</p>
+        <span class="badge badge-cyan">Avançado</span>
+      </div>
+      <div class="card-sm">
+        <h4>ACPX Runtime (v2026.4+)</h4>
+        <p>Agentes leves rodando embedded no gateway. Coordenação sem LLM externo.</p>
+        <span class="badge badge-emerald">Experimental</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Leveling System — Como os agentes sobem de nível</h2>
+    <p>Todo agente novo começa em <strong>L1 (Observer)</strong>. Promoção é manual e baseada em performance.</p>
+
+    <div class="level-grid">
+      <div class="level-card level-l1">
+        <div class="level-num">L1</div>
+        <div class="level-name">Observer</div>
+        <p class="level-desc">Zero autonomia. Output sempre revisado por você. Cada entrega é revisada.</p>
+      </div>
+      <div class="level-card level-l2">
+        <div class="level-num">L2</div>
+        <div class="level-name">Contributor</div>
+        <p class="level-desc">Baixa autonomia. Pode sugerir, não executar sozinho. Review semanal.</p>
+      </div>
+      <div class="level-card level-l3">
+        <div class="level-num">L3</div>
+        <div class="level-name">Operator</div>
+        <p class="level-desc">Média autonomia. Executa dentro de guidelines. Review semanal.</p>
+      </div>
+      <div class="level-card level-l4">
+        <div class="level-num">L4</div>
+        <div class="level-name">Trusted</div>
+        <p class="level-desc">Alta autonomia. Quase total. Review quinzenal.</p>
+      </div>
+    </div>
+
+    <div class="alert">
+      <p><strong>📋 Regras:</strong> Nunca "rushar" um agente pra L3+ sem histórico. Promoção via performance review semanal. Rebaixamento é possível se qualidade cair.</p>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span class="page-footer-left">Curso OpenClaw · Módulo 8</span>
+    <span class="page-footer-right page-num">2</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ PAGE 3: ORCHESTRATION -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-left">Módulo 8 · Multi-Agentes</span>
+    <span class="page-header-right">openclaw · 2026.4.9+</span>
+  </div>
+
+  <div class="section">
+    <h1>Orquestração: sessions_spawn + sessions_yield</h1>
+    <p>A partir da <strong>v2026.3.13</strong>, o tool <code>sessions_yield</code> permite encerrar o turno do agente principal imediatamente após spawnar um sub-agent — sem ficar "preso" esperando.</p>
+
+    <div class="flow">
+      <div class="flow-step">
+        <span class="num">Passo 1</span>
+        Spawna sub-agent com <code>sessions_spawn</code>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">
+        <span class="num">Passo 2</span>
+        Chama <code>sessions_yield</code> pra encerrar turno
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">
+        <span class="num">Passo 3</span>
+        Resultado chega na próxima mensagem
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <h3>Antes (sem sessions_yield)</h3>
+        <pre>1. Agent spawna sub-agent
+2. Agent continua "rodando" (esperando)
+3. Sub-agent termina → agent continua no mesmo turno
+<span class="c">// Problema: tokens desperdiçados + complexidade</span></pre>
+      </div>
+      <div>
+        <h3>Depois (com sessions_yield) ✅</h3>
+        <pre>1. Agent spawna sub-agent
+2. Agent chama sessions_yield → turno encerra
+3. Sub-agent termina
+4. Próximo turno começa com resultado
+<span class="c">// Limpo, econômico, organizado</span></pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Como demonstrar ao vivo</h3>
+      <p>Peça ao seu agente: <em>"Spawna um sub-agent com sessions_spawn para uma tarefa simples, usa sessions_yield e me mostra o resultado chegando na próxima mensagem."</em></p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>sessions_spawn com Attachments (v2026.3.2+)</h2>
+    <p>Você pode enviar arquivos, imagens e buffers diretamente ao spawnar um sub-agent:</p>
+
+    <pre>{
+  <span class="k">"sessionTarget"</span>: <span class="s">"isolated"</span>,
+  <span class="k">"payload"</span>: {
+    <span class="k">"kind"</span>: <span class="s">"agentTurn"</span>,
+    <span class="k">"message"</span>: <span class="s">"Analise este relatório e me dê um resumo executivo."</span>,
+    <span class="k">"attachments"</span>: [
+      {
+        <span class="k">"type"</span>: <span class="s">"file"</span>,
+        <span class="k">"path"</span>: <span class="s">"/workspace/relatorio-mensal.pdf"</span>
+      }
+    ]
+  }
+}</pre>
+
+    <p>Casos de uso: passar PDFs pra análise, imagens pra processamento, CSVs pra transformação.</p>
+  </div>
+
+  <div class="section">
+    <h2>ACP bind — Agentes isolados por topic (v2026.4+)</h2>
+    <p>O ACP bind permite criar agentes <strong>isolados</strong> em topics Telegram específicos — cada um com seu próprio contexto, sem interferir no agente principal.</p>
+
+    <div class="prompt-box">
+/acp spawn codex --bind here
+    </div>
+
+    <div class="two-col">
+      <div>
+        <h3>Quando usar ACP bind</h3>
+        <ul>
+          <li>Criar agente de <strong>conteúdo isolado</strong> num topic próprio</li>
+          <li><strong>Experiments</strong> em topics separados</li>
+          <li>Ter múltiplos agentes "slave" em <strong>topics diferentes</strong>, cada um com seu contexto</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Quando NÃO usar</h3>
+        <ul>
+          <li>Precisa de <strong>contexto compartilhado</strong> com o hub → use <code>sessions_spawn</code></li>
+          <li>Precisa de <strong>memória persistente</strong> entre agentes → Boss/Worker é melhor</li>
+          <li>Domínios <strong>conectados</strong> entre si</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="alert">
+      <p><strong>⚠️ ACP bind = isolamento total.</strong> O agente criado não compartilha memória nem contexto com o hub. Use quando precisa de sandbox real.</p>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span class="page-footer-left">Curso OpenClaw · Módulo 8</span>
+    <span class="page-footer-right page-num">3</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ PAGE 4: ACPX + ECONOMY + TEAM -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-left">Módulo 8 · Multi-Agentes</span>
+    <span class="page-header-right">openclaw · 2026.4.9+</span>
+  </div>
+
+  <div class="section">
+    <h1>ACPX Runtime e Embed (v2026.4+)</h1>
+
+    <div class="card">
+      <p>O <strong>ACPX</strong> é o modelo de runtime que permite a agentes operarem de forma <strong>embedded</strong> (embutida) — rodando como processos leves dentro do gateway, sem overhead de LLM externo para tarefas simples de coordenação.</p>
+    </div>
+
+    <div class="card-grid">
+      <div class="card-sm">
+        <h4>✅ Benefícios</h4>
+        <ul>
+          <li>Tasks de coordenação sem LLM externo</li>
+          <li>Redução de latência</li>
+          <li>Redução de custo</li>
+          <li>Reação a eventos sem round-trip de API</li>
+        </ul>
+      </div>
+      <div class="card-sm">
+        <h4>⚠️ Quando considerar</h4>
+        <ul>
+          <li>Orquestração de múltiplos agentes está ficando cara</li>
+          <li>Latência entre agentes é um problema</li>
+          <li>Você já tem uma arquitetura multi-agente madura</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="alert">
+      <p><strong>📌 Recomendação:</strong> A configuração padrão com <code>sessions_spawn</code> + <code>sessions_yield</code> é suficiente para a maioria dos casos. Explore ACPX quando a orquestração começar a custar caro ou ficar lenta.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Economia de Modelos</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Uso</th>
+            <th>Modelo recomendado</th>
+            <th>Custo relativo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>CoS / Hub (coordenação)</strong></td>
+            <td><code>GPT-4o</code></td>
+            <td><span class="badge badge-amber">$$$</span></td>
+          </tr>
+          <tr>
+            <td><strong>Bosses (domínio)</strong></td>
+            <td><code>GPT-4o</code></td>
+            <td><span class="badge badge-amber">$$$</span></td>
+          </tr>
+          <tr>
+            <td><strong>Crons / automações</strong></td>
+            <td><code>GPT-4o-mini</code></td>
+            <td><span class="badge badge-emerald">$</span></td>
+          </tr>
+          <tr>
+            <td><strong>Heartbeats</strong></td>
+            <td><code>GPT-4o-mini</code></td>
+            <td><span class="badge badge-emerald">¢</span></td>
+          </tr>
+          <tr>
+            <td><strong>Makers (sob demanda)</strong></td>
+            <td><code>GPT-4o-mini</code> ou <code>GPT-4o</code></td>
+            <td><span class="badge badge-emerald">$ a $$$</span></td>
+          </tr>
+          <tr>
+            <td><strong>ACP bind agents</strong></td>
+            <td><code>GPT-4o</code></td>
+            <td><span class="badge badge-amber">$$$</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="alert">
+      <p><strong>Regra #1:</strong> Agente que não precisa de GPT-4o → <strong>GPT-4o-mini</strong> (90% mais barato).<br>
+      <strong>Regra #2:</strong> Heartbeats SEMPRE em GPT-4o-mini.<br>
+      <strong>Regra #3:</strong> Maker idle = <strong>$0</strong> — não existe custo se não é spawnado.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Contexto Compartilhado</h2>
+
+    <div class="two-col">
+      <div>
+        <h3>Estrutura (v2 real)</h3>
+        <pre>shared/
+├── decisions.md   ← políticas permanentes
+├── lessons.md      ← aprendizados do time
+├── people.md       ← registry de agentes
+├── tools/         ← integrações compartilhadas
+├── assets/        ← arquivos compartilhados
+└── projects/      ← projetos ativos</pre>
+      </div>
+      <div>
+        <h3>TEAM.md (legacy)</h3>
+        <pre>| Agente | Papel    | Nível | Status |
+|--------|----------|-------|--------|
+| Amora  | CoS      | L4    | Ativo  |
+| Boss-A | Domínio A| L2    | Ativo  |
+| Worker | Função X | L1    | Idle   |</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Você (humano) sempre no loop</h3>
+      <p>Regra inegociável: decisões importantes (dinheiro real, mudanças estruturais, deleções) sempre pedem aprovação humana. O agente coordena, você aprova.</p>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span class="page-footer-left">Curso OpenClaw · Módulo 8</span>
+    <span class="page-footer-right page-num">4</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ PAGE 5: BOSS/WORKER + CHECKLIST -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-left">Módulo 8 · Multi-Agentes</span>
+    <span class="page-header-right">openclaw · 2026.4.9+</span>
+  </div>
+
+  <div class="section">
+    <h1>Arquitetura v2: Boss + Workers</h1>
+    <p>Quando o Hub vira gargalo, evolua para uma <strong>hierarquia de 3 níveis</strong>: você (CEO) → CoS (Chief of Staff) → Bosses → Workers.</p>
+
+    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px; align-items:center;">
+
+      <div class="arch-box arch-you">
+        <div class="arch-label">Você</div>
+        CEO — decisões finais
+      </div>
+      <div style="color:var(--grape-light);">↓</div>
+      <div class="arch-box arch-cos">
+        <div class="arch-label">Chief of Staff (CoS)</div>
+        Coordena, não executa · L4 · GPT-4o
+      </div>
+      <div style="color:var(--grape-light);">↓</div>
+      <div style="display:flex; gap:10px; width:100%;">
+        <div class="arch-box arch-boss" style="flex:1;">
+          <div class="arch-label">Boss A</div>
+          Domínio: Conteúdo · L2 · GPT-4o
+        </div>
+        <div class="arch-box arch-boss" style="flex:1;">
+          <div class="arch-label">Boss B</div>
+          Domínio: Ops · L2 · GPT-4o
+        </div>
+        <div class="arch-box arch-boss" style="flex:1;">
+          <div class="arch-label">Boss C</div>
+          Domínio: Dev · L2 · GPT-4o
+        </div>
+      </div>
+      <div style="color:var(--grape-light);">↓</div>
+      <div style="display:flex; gap:10px; width:100%;">
+        <div class="arch-box arch-worker" style="flex:1; border-color: var(--emerald-border);">
+          <div class="arch-label">Workers</div>
+          Watcher / Maker · L1 · GPT-4o-mini
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <h3>Watcher (fica de plantão)</h3>
+        <ul>
+          <li>Heartbeat ativo (30-60 min)</li>
+          <li>Reage a eventos sem o boss pedir</li>
+          <li>Custo: ~$1-2/mês cada</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Maker (só existe quando tem trabalho)</h3>
+        <ul>
+          <li>Sem heartbeat — boss usa <code>sessions_spawn</code></li>
+          <li>Custo quando idle: <strong>$0</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="quote">
+      <p>"Agents are 30% of the work. The other 70% is the immune system + governance."</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Regra de decisão: Watcher vs Maker</h2>
+    <p><em>"Esse worker precisa reagir a algo sem que o boss precise pedir?"</em></p>
+    <ul>
+      <li><strong>Sim</strong> → Watcher (heartbeat ativo, custo baixo)</li>
+      <li><strong>Não</strong> → Maker (sem heartbeat, $0 quando idle)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Checklist — M8 Multi-Agentes</h2>
+    <ul class="checklist">
+      <li><div class="check-box"></div> Avaliei se multi-agentes faz sentido para meu uso atual</li>
+      <li><div class="check-box"></div> Criei 1-2 agentes extras com SOUL.md e AGENTS.md</li>
+      <li><div class="check-box"></div> Implementei o sistema de leveling (L1 → L4)</li>
+      <li><div class="check-box"></div> Configurei contexto compartilhado (shared/)</li>
+      <li><div class="check-box"></div> Defini split de modelos (GPT-4o / GPT-4o-mini)</li>
+      <li><div class="check-box"></div> Demonstrei sessions_yield ao vivo</li>
+      <li><div class="check-box"></div> Entendi quando usar sessions_spawn vs ACP bind</li>
+      <li><div class="check-box"></div> TEOR da economia: Worker idle = $0 (Maker) | Watcher = ~$1-2/mês</li>
+    </ul>
+  </div>
+
+  <div class="page-footer">
+    <span class="page-footer-left">Curso OpenClaw · Módulo 8</span>
+    <span class="page-footer-right page-num">5</span>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula N-8 — Telegram: Bot Não Responde no Grupo | Curso OpenClaw</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #0a0a0f;
+  --bg-elevated: #12121a;
+  --bg-card: #1a1a25;
+  --grape: #8b5cf6;
+  --grape-light: #a78bfa;
+  --grape-dim: rgba(139, 92, 246, 0.12);
+  --grape-border: rgba(139, 92, 246, 0.25);
+  --grape-glow: rgba(139, 92, 246, 0.08);
+  --emerald: #10b981;
+  --emerald-dim: rgba(16, 185, 129, 0.12);
+  --emerald-border: rgba(16, 185, 129, 0.25);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245, 158, 11, 0.12);
+  --amber-border: rgba(245, 158, 11, 0.25);
+  --rose: #f43f5e;
+  --rose-dim: rgba(244, 63, 94, 0.12);
+  --rose-border: rgba(244, 63, 94, 0.25);
+  --cyan: #22d3ee;
+  --cyan-dim: rgba(34, 211, 238, 0.12);
+  --text: #f1f1f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --border: rgba(255,255,255,0.06);
+  --code-bg: #0d0d15;
+  --code-border: rgba(255,255,255,0.08);
+}
+
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 10.5pt;
+  line-height: 1.6;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 22mm 24mm 28mm;
+  position: relative;
+  overflow: hidden;
+  page-break-after: always;
+  background: var(--bg);
+}
+
+.page::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -25%;
+  width: 70%;
+  height: 70%;
+  background: radial-gradient(ellipse, var(--grape-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 297mm;
+  padding: 36mm 28mm;
+  position: relative;
+}
+
+.cover-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  background: var(--grape-dim);
+  border: 1px solid var(--grape-border);
+  border-radius: 100px;
+  font-size: 10pt;
+  font-weight: 500;
+  color: var(--grape-light);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.cover-star {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  background: var(--cyan-dim);
+  border: 1px solid rgba(34,211,238,0.25);
+  border-radius: 100px;
+  font-size: 9pt;
+  font-weight: 500;
+  color: var(--cyan);
+  margin-bottom: 16px;
+}
+
+.cover-title {
+  font-size: 36pt;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+  color: var(--text);
+  margin-bottom: 18px;
+  max-width: 500px;
+}
+
+.cover-title em {
+  font-style: italic;
+  background: linear-gradient(135deg, var(--cyan), var(--grape-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cover-subtitle {
+  font-size: 13pt;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 440px;
+  margin-bottom: 44px;
+}
+
+.cover-meta {
+  display: flex;
+  gap: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.cover-meta-item { display: flex; flex-direction: column; gap: 4px; }
+.cover-meta-label { font-size: 8pt; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-weight: 500; }
+.cover-meta-value { font-size: 12pt; font-weight: 600; color: var(--text); }
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.page-header-left { font-size: 9pt; color: var(--grape-light); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+.page-header-right { font-family: 'JetBrains Mono', monospace; font-size: 8pt; color: var(--text-muted); }
+
+.page-footer {
+  position: absolute;
+  bottom: 12mm;
+  left: 24mm; right: 24mm;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.page-footer-left { font-size: 8pt; color: var(--text-muted); }
+.page-footer-right { font-family: 'JetBrains Mono', monospace; font-size: 8pt; color: var(--text-muted); }
+
+.section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.section-number { font-family: 'JetBrains Mono', monospace; font-size: 9pt; font-weight: 600; color: var(--grape); padding: 4px 10px; background: var(--grape-dim); border-radius: 6px; }
+.section-title { font-size: 22pt; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
+.section-subtitle { font-size: 11pt; color: var(--text-secondary); margin-top: -12px; margin-bottom: 22px; font-weight: 300; }
+
+h3 { font-size: 13pt; font-weight: 600; color: var(--grape-light); margin: 22px 0 10px; display: flex; align-items: center; gap: 8px; }
+h4 { font-size: 11pt; font-weight: 600; color: var(--text); margin: 16px 0 8px; }
+p { margin-bottom: 10px; color: var(--text-secondary); font-size: 10.5pt; }
+strong { color: var(--text); }
+ul, ol { margin: 8px 0 12px 18px; }
+li { margin-bottom: 3px; font-size: 10pt; color: var(--text-secondary); }
+
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 12px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  position: relative;
+  white-space: pre;
+}
+.code-block::before { content: attr(data-lang); position: absolute; top: 8px; right: 12px; font-size: 7.5pt; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+code { background: var(--grape-dim); color: var(--grape-light); padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 9pt; }
+
+table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 14px 0; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+thead th { background: var(--bg-card); padding: 10px 14px; text-align: left; font-size: 9pt; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+tbody td { padding: 9px 14px; font-size: 10pt; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+tbody tr:last-child td { border-bottom: none; }
+tbody td:first-child { font-weight: 500; color: var(--text); }
+
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin: 12px 0; }
+.card.grape { border-color: var(--grape-border); background: linear-gradient(135deg, rgba(139,92,246,0.06), var(--bg-card)); }
+.card.emerald { border-color: var(--emerald-border); background: linear-gradient(135deg, rgba(16,185,129,0.06), var(--bg-card)); }
+.card.amber { border-color: var(--amber-border); background: linear-gradient(135deg, rgba(245,158,11,0.06), var(--bg-card)); }
+.card.rose { border-color: var(--rose-border); background: linear-gradient(135deg, rgba(244,63,94,0.06), var(--bg-card)); }
+.card.cyan { border-color: rgba(34,211,238,0.25); background: linear-gradient(135deg, rgba(34,211,238,0.06), var(--bg-card)); }
+.card-title { font-size: 12pt; font-weight: 600; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.card-desc { font-size: 10pt; color: var(--text-secondary); line-height: 1.5; }
+
+.step { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px 16px 56px; margin: 12px 0; position: relative; }
+.step-num { position: absolute; left: 16px; top: 16px; width: 28px; height: 28px; background: var(--grape-dim); border: 1px solid var(--grape-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 12pt; font-weight: 700; color: var(--grape-light); }
+.step-title { font-size: 12pt; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.step-time { font-family: 'JetBrains Mono', monospace; font-size: 8.5pt; color: var(--emerald); padding: 2px 8px; background: var(--emerald-dim); border-radius: 4px; display: inline-block; margin-bottom: 6px; }
+.step-cause { font-family: 'JetBrains Mono', monospace; font-size: 8.5pt; color: var(--rose); padding: 2px 8px; background: var(--rose-dim); border-radius: 4px; display: inline-block; margin-bottom: 6px; }
+
+.callout { border-radius: 10px; padding: 14px 16px; margin: 14px 0; display: flex; gap: 10px; align-items: flex-start; }
+.callout-icon { font-size: 16pt; flex-shrink: 0; line-height: 1; }
+.callout-content { flex: 1; }
+.callout-content strong { display: block; margin-bottom: 3px; color: var(--text); }
+.callout-content p { margin-bottom: 4px; }
+.callout.tip { background: var(--emerald-dim); border: 1px solid var(--emerald-border); }
+.callout.warning { background: var(--amber-dim); border: 1px solid var(--amber-border); }
+.callout.danger { background: var(--rose-dim); border: 1px solid var(--rose-border); }
+.callout.info { background: var(--grape-dim); border: 1px solid var(--grape-border); }
+.callout.cyan-info { background: var(--cyan-dim); border: 1px solid rgba(34,211,238,0.25); }
+
+.checklist { background: var(--bg-card); border: 1px solid var(--emerald-border); border-radius: 12px; padding: 18px 20px; margin: 18px 0; }
+.checklist-title { font-size: 13pt; font-weight: 700; color: var(--emerald); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.checklist-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 10pt; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+.checklist-item:last-child { border-bottom: none; }
+.check-box { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 5px; flex-shrink: 0; }
+
+.troubleshoot { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin: 8px 0; }
+.troubleshoot-problem { font-weight: 600; color: var(--rose); font-size: 10pt; margin-bottom: 4px; }
+.troubleshoot-solution { font-size: 9.5pt; color: var(--text-secondary); }
+
+.next-module { background: var(--bg-card); border: 1px solid var(--grape-border); border-radius: 12px; padding: 16px 18px; margin-top: 20px; display: flex; align-items: center; gap: 12px; }
+.next-module .next-icon { font-size: 20pt; }
+.next-module .next-text { flex: 1; }
+.next-module .next-label { font-size: 8.5pt; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.next-module .next-title { font-size: 12pt; font-weight: 600; color: var(--text); }
+
+.flow-diagram {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin: 16px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5pt;
+  line-height: 1.9;
+  color: var(--text-secondary);
+  white-space: pre;
+}
+
+.dm-vs-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 14px 0;
+}
+</style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="page cover">
+  <div class="cover-badge">🍇 Curso OpenClaw — Aula N-8</div>
+  <div class="cover-star">🔧 Troubleshooting — 3 Causas, 3 Fixes</div>
+  <div class="cover-title">Telegram:<br>Bot <em>Mudo</em><br>no Grupo</div>
+  <div class="cover-subtitle">Por que o bot funciona em DM mas ignora o grupo — e como resolver em 10 minutos. Quase sempre são 3 causas. Vamos ver as 3.</div>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Duração</div>
+      <div class="cover-meta-value">10 min</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Nível</div>
+      <div class="cover-meta-value">Intermediário</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Pré-req</div>
+      <div class="cover-meta-value">Bot funcionando em DM</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: AS 3 CAUSAS -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">Aula N-8 — Bot Mudo no Grupo</div>
+    <div class="page-header-right">openclaw.ai/curso</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-number">01</div>
+    <div class="section-title">As 3 Causas</div>
+  </div>
+  <p class="section-subtitle">Qualquer uma delas já basta para o bot ficar mudo. Podem ser as 3 ao mesmo tempo.</p>
+
+  <div class="card rose">
+    <div class="card-title">🔇 Causa 1 — Privacy Mode ATIVADO no BotFather</div>
+    <div class="card-desc">Por padrão, o Telegram cria bots com "privacy mode" ATIVADO. O bot <strong>NÃO RECEBE mensagens do grupo</strong> — só recebe mensagens que começam com <code>/comando</code> ou que mencionam diretamente o bot com @username. <strong>Mais comum.</strong></div>
+  </div>
+
+  <div class="card amber">
+    <div class="card-title">⚙️ Causa 2 — groupPolicy não configurado no OpenClaw</div>
+    <div class="card-desc">Mesmo que o bot receba as mensagens, o OpenClaw tem uma camada de segurança própria: por padrão, <strong>ele não processa mensagens de grupos</strong> a menos que você configure explicitamente.</div>
+  </div>
+
+  <div class="card grape">
+    <div class="card-title">🔐 Causa 3 — Chat ID não está no allowlist</div>
+    <div class="card-desc">Se você usou <code>groupPolicy = allowlist</code>, precisa adicionar o chat ID do grupo específico. Sem o ID correto, o OpenClaw ignora as mensagens mesmo com tudo configurado.</div>
+  </div>
+
+  <h3>🔑 Teste Rápido: Qual é a sua causa?</h3>
+
+  <div class="callout info">
+    <div class="callout-icon">🔍</div>
+    <div class="callout-content">
+      <strong>Envie <code>/start</code> no grupo:</strong>
+      <p>• Bot responde ao <code>/start</code> mas ignora mensagens normais → <strong>Causa 1</strong> (Privacy Mode)<br>
+      • Bot não responde nada nem ao <code>/start</code> → pode ser Causa 2 ou 3<br>
+      • Bot funciona em DM, mudo total no grupo → Seguir fluxograma</p>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-left">© Curso OpenClaw</div>
+    <div class="page-footer-right">pág. 2</div>
+  </div>
+</div>
+
+<!-- PAGE 3: FIX 1 + FIX 2 -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">Aula N-8 — Bot Mudo no Grupo</div>
+    <div class="page-header-right">openclaw.ai/curso</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-number">02</div>
+    <div class="section-title">Fix 1 — Privacy Mode</div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-title">BotFather — Desativar Privacy Mode</div>
+    <span class="step-cause">CAUSA 1</span>
+    <ol>
+      <li>Abra o Telegram e fale com <strong>@BotFather</strong></li>
+      <li>Envie: <code>/setprivacy</code></li>
+      <li>BotFather vai listar seus bots — selecione o seu</li>
+      <li>Escolha: <strong>Disable</strong></li>
+      <li>Confirmação: <em>"Success! Privacy mode is disabled."</em></li>
+    </ol>
+
+    <div class="callout danger" style="margin-top: 12px;">
+      <div class="callout-icon">🚨</div>
+      <div class="callout-content">
+        <strong>CRÍTICO — Remova e re-adicione o bot ao grupo!</strong>
+        <p>Após mudar o privacy mode, você precisa <strong>remover o bot do grupo e adicionar de volta</strong>. O Telegram só aplica a nova configuração quando o bot entra no grupo. Se o bot já estava, a mudança não vai funcionar.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top: 24px;">
+    <div class="section-number">03</div>
+    <div class="section-title">Fix 2 — groupPolicy</div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-title">Configurar groupPolicy no OpenClaw</div>
+    <span class="step-cause">CAUSA 2 + 3</span>
+    <div class="code-block" data-lang="bash">
+<span style="color: var(--text-muted)"># Política recomendada: allowlist (só grupos autorizados)</span>
+openclaw config set channels.telegram.groupPolicy allowlist
+
+<span style="color: var(--text-muted)"># Adicionar chat ID do grupo (veja seção abaixo para descobrir o ID)</span>
+openclaw config set channels.telegram.groupAllowlist "[-100XXXXXXXXXX]"
+
+<span style="color: var(--text-muted)"># Se tiver mais de um grupo:</span>
+openclaw config set channels.telegram.groupAllowlist "[-100111111111, -100222222222]"
+
+<span style="color: var(--text-muted)"># Para permitir qualquer grupo (menos seguro, não recomendado):</span>
+openclaw config set channels.telegram.groupPolicy open</div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-content">
+        <strong>Como descobrir o Chat ID do grupo</strong>
+        <p>Adicione o bot ao grupo, envie qualquer mensagem e verifique os logs:</p>
+      </div>
+    </div>
+    <div class="code-block" data-lang="bash">
+openclaw gateway logs | grep "chat_id"
+<span style="color: var(--text-muted)"># Saída: Received message from chat_id: -1001234567890, user: João</span>
+<span style="color: var(--text-muted)"># Chat IDs de grupos começam com -100</span></div>
+
+    <div class="callout info">
+      <div class="callout-icon">🔎</div>
+      <div class="callout-content">
+        <strong>Alternativa: bot @userinfobot</strong>
+        <p>Adicione @userinfobot ao grupo, mande <code>/start</code>, ele retorna o ID do grupo automaticamente.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-left">© Curso OpenClaw</div>
+    <div class="page-footer-right">pág. 3</div>
+  </div>
+</div>
+
+<!-- PAGE 4: DM vs GROUP + DIAGNÓSTICO + CHECKLIST -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">Aula N-8 — Bot Mudo no Grupo</div>
+    <div class="page-header-right">openclaw.ai/curso</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-number">04</div>
+    <div class="section-title">dmPolicy vs groupPolicy</div>
+  </div>
+
+  <p>Confusão comum — dois guardiões independentes:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>dmPolicy</th>
+        <th>groupPolicy</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Controla</td>
+        <td>Mensagens diretas (DM/privadas)</td>
+        <td>Mensagens em grupos</td>
+      </tr>
+      <tr>
+        <td>Default</td>
+        <td>allowlist</td>
+        <td>não configurado</td>
+      </tr>
+      <tr>
+        <td>Escopo</td>
+        <td>1-para-1 com você</td>
+        <td>Muitos usuários no chat</td>
+      </tr>
+      <tr>
+        <td>Risco</td>
+        <td>Alguém comandar seu agente</td>
+        <td>Bot ativo em grupos não autorizados</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="section-header" style="margin-top: 20px;">
+    <div class="section-number">05</div>
+    <div class="section-title">Fluxo de Diagnóstico</div>
+  </div>
+
+  <div class="flow-diagram">
+<span style="color: var(--text)">Bot no grupo mas não responde?</span>
+│
+├── [1] <span style="color: var(--rose)">Privacy mode ATIVADO?</span>
+│   Teste: /start no grupo
+│   Se responde /start mas ignora mensagens normais → Privacy mode ATIVO
+│   <span style="color: var(--emerald)">FIX: BotFather → /setprivacy → Disable → Remove + re-adiciona bot</span>
+│
+├── [2] <span style="color: var(--amber)">groupPolicy configurado?</span>
+│   Teste: openclaw config get channels.telegram.groupPolicy
+│   Se retornar vazio ou "none" → não configurado
+│   <span style="color: var(--emerald)">FIX: openclaw config set channels.telegram.groupPolicy allowlist</span>
+│
+├── [3] <span style="color: var(--grape-light)">Chat ID no allowlist?</span>
+│   Teste: openclaw config get channels.telegram.groupAllowlist
+│   Verifique se o ID do grupo está na lista
+│   <span style="color: var(--emerald)">FIX: openclaw config set ...groupAllowlist "[-100XXXXXXX]"</span>
+│
+└── [4] <span style="color: var(--text-muted)">Ainda não funciona?</span>
+    openclaw gateway logs | tail -100
+    openclaw gateway restart</div>
+
+  <div class="section-header" style="margin-top: 16px;">
+    <div class="section-number">06</div>
+    <div class="section-title">Configuração Completa</div>
+  </div>
+
+  <div class="code-block" data-lang="bash">
+<span style="color: var(--text-muted)"># 1. BotFather: /setprivacy → Disable (no Telegram)</span>
+<span style="color: var(--text-muted)"># 2. Remover bot do grupo e adicionar de volta</span>
+
+<span style="color: var(--text-muted)"># 3. Configurar política</span>
+openclaw config set channels.telegram.groupPolicy allowlist
+
+<span style="color: var(--text-muted)"># 4. Adicionar chat ID</span>
+openclaw config set channels.telegram.groupAllowlist "[-100XXXXXXXXXX]"
+
+<span style="color: var(--text-muted)"># 5. Verificar</span>
+openclaw config get channels.telegram.groupPolicy
+openclaw config get channels.telegram.groupAllowlist
+
+<span style="color: var(--text-muted)"># 6. Reiniciar e checar logs</span>
+openclaw gateway restart
+openclaw gateway logs | tail -30</div>
+
+  <div class="page-footer">
+    <div class="page-footer-left">© Curso OpenClaw</div>
+    <div class="page-footer-right">pág. 4</div>
+  </div>
+</div>
+
+<!-- PAGE 5: ERROS COMUNS + CHECKLIST -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">Aula N-8 — Bot Mudo no Grupo</div>
+    <div class="page-header-right">openclaw.ai/curso</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-number">07</div>
+    <div class="section-title">Erros Comuns</div>
+  </div>
+
+  <div class="troubleshoot">
+    <div class="troubleshoot-problem">Bot responde /start mas ignora mensagens normais</div>
+    <div class="troubleshoot-solution"><strong>Causa:</strong> Privacy mode ATIVADO. <strong>Fix:</strong> BotFather → /setprivacy → Disable → remover e re-adicionar bot ao grupo.</div>
+  </div>
+
+  <div class="troubleshoot">
+    <div class="troubleshoot-problem">Bot não responde nada no grupo</div>
+    <div class="troubleshoot-solution"><strong>Causa:</strong> groupPolicy não configurado. <strong>Fix:</strong> <code>openclaw config set channels.telegram.groupPolicy allowlist</code></div>
+  </div>
+
+  <div class="troubleshoot">
+    <div class="troubleshoot-problem">groupPolicy configurado mas ainda não responde</div>
+    <div class="troubleshoot-solution"><strong>Causa:</strong> Chat ID não está no allowlist. <strong>Fix:</strong> Adicione o ID correto. Verifique via logs: <code>openclaw gateway logs | grep chat_id</code></div>
+  </div>
+
+  <div class="troubleshoot">
+    <div class="troubleshoot-problem">Após mudança de privacy mode, ainda mudo</div>
+    <div class="troubleshoot-solution">Bot ainda está no grupo com a config antiga. <strong>Fix:</strong> Remover o bot do grupo e adicionar de volta — obrigatório.</div>
+  </div>
+
+  <div class="troubleshoot">
+    <div class="troubleshoot-problem">Chat ID inválido</div>
+    <div class="troubleshoot-solution">Copiou ID errado. Verifique nos logs: <code>openclaw gateway logs | grep chat_id</code>. IDs de grupo começam com <code>-100</code>.</div>
+  </div>
+
+  <div class="callout cyan-info" style="margin-top: 16px;">
+    <div class="callout-icon">📋</div>
+    <div class="callout-content">
+      <strong>Tópicos (Forum Mode)</strong>
+      <p>Se seu grupo usa tópicos, o bot precisa ser admin para acessar todos eles. Para configuração completa de forum mode, consulte a <strong>Aula Extra C</strong>.</p>
+    </div>
+  </div>
+
+  <div class="checklist">
+    <div class="checklist-title">✅ Checklist Final</div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div>Privacy mode desativado no BotFather (<code>/setprivacy → Disable</code>)</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div>Bot removido e re-adicionado ao grupo após mudança</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div>Chat ID do grupo descoberto (começa com <code>-100...</code>)</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div><code>groupPolicy = allowlist</code> configurado</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div>Chat ID adicionado ao <code>groupAllowlist</code></div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div>Gateway reiniciado</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div>Teste: mensagem enviada no grupo → bot respondeu ✅</div>
+    </div>
+  </div>
+
+  <div class="next-module">
+    <div class="next-icon">➡️</div>
+    <div class="next-text">
+      <div class="next-label">Próxima Aula</div>
+      <div class="next-title">Módulo 5 — Integrações e Skills</div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-left">© Curso OpenClaw</div>
+    <div class="page-footer-right">pág. 5</div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula Extra — Rate Limits: Por que seu agente trava e como resolver | Curso OpenClaw</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #0a0a0f;
+  --bg-elevated: #12121a;
+  --bg-card: #1a1a25;
+  --grape: #8b5cf6;
+  --grape-light: #a78bfa;
+  --grape-dim: rgba(139, 92, 246, 0.12);
+  --grape-border: rgba(139, 92, 246, 0.25);
+  --grape-glow: rgba(139, 92, 246, 0.08);
+  --emerald: #10b981;
+  --emerald-dim: rgba(16, 185, 129, 0.12);
+  --emerald-border: rgba(16, 185, 129, 0.25);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245, 158, 11, 0.12);
+  --amber-border: rgba(245, 158, 11, 0.25);
+  --rose: #f43f5e;
+  --rose-dim: rgba(244, 63, 94, 0.12);
+  --rose-border: rgba(244, 63, 94, 0.25);
+  --cyan: #22d3ee;
+  --cyan-dim: rgba(34, 211, 238, 0.12);
+  --cyan-border: rgba(34, 211, 238, 0.25);
+  --text: #f1f1f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --border: rgba(255,255,255,0.06);
+  --code-bg: #0d0d15;
+  --code-border: rgba(255,255,255,0.08);
+}
+
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 10.5pt;
+  line-height: 1.6;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 22mm 24mm 28mm;
+  position: relative;
+  overflow: hidden;
+  page-break-after: always;
+  background: var(--bg);
+}
+
+.page::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -25%;
+  width: 70%;
+  height: 70%;
+  background: radial-gradient(ellipse, var(--grape-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 297mm;
+  padding: 36mm 28mm;
+  position: relative;
+}
+
+.cover-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  background: var(--rose-dim);
+  border: 1px solid var(--rose-border);
+  border-radius: 100px;
+  font-size: 10pt;
+  font-weight: 500;
+  color: var(--rose);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.cover-star {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  background: var(--cyan-dim);
+  border: 1px solid var(--cyan-border);
+  border-radius: 100px;
+  font-size: 9pt;
+  font-weight: 500;
+  color: var(--cyan);
+  margin-bottom: 16px;
+}
+
+.cover-title {
+  font-size: 38pt;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+  color: var(--text);
+  margin-bottom: 18px;
+  max-width: 520px;
+}
+
+.cover-title em {
+  font-style: italic;
+  background: linear-gradient(135deg, var(--rose), #fb7185);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cover-subtitle {
+  font-size: 13pt;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 440px;
+  margin-bottom: 44px;
+}
+
+.cover-meta {
+  display: flex;
+  gap: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.cover-meta-item { display: flex; flex-direction: column; gap: 4px; }
+.cover-meta-label { font-size: 8pt; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-weight: 500; }
+.cover-meta-value { font-size: 12pt; font-weight: 600; color: var(--text); }
+
+/* Cover decorative error block */
+.cover-error-preview {
+  position: absolute;
+  bottom: 40mm;
+  right: 24mm;
+  background: var(--code-bg);
+  border: 1px solid var(--rose-border);
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5pt;
+  max-width: 220px;
+  opacity: 0.85;
+}
+.cover-error-preview .err-tag {
+  color: var(--rose);
+  font-size: 7.5pt;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  display: block;
+}
+.cover-error-preview .err-code {
+  color: var(--amber);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+}
+.cover-error-preview .err-msg {
+  color: var(--text-secondary);
+  font-size: 8pt;
+  line-height: 1.5;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.page-header-left { font-size: 9pt; color: var(--grape-light); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+.page-header-right { font-family: 'JetBrains Mono', monospace; font-size: 8pt; color: var(--text-muted); }
+
+.page-footer {
+  position: absolute;
+  bottom: 12mm;
+  left: 24mm; right: 24mm;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.page-footer-left { font-size: 8pt; color: var(--text-muted); }
+.page-footer-right { font-family: 'JetBrains Mono', monospace; font-size: 8pt; color: var(--text-muted); }
+
+.section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.section-number { font-family: 'JetBrains Mono', monospace; font-size: 9pt; font-weight: 600; color: var(--grape); padding: 4px 10px; background: var(--grape-dim); border-radius: 6px; }
+.section-title { font-size: 22pt; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
+.section-subtitle { font-size: 11pt; color: var(--text-secondary); margin-top: -12px; margin-bottom: 22px; font-weight: 300; }
+
+h3 { font-size: 13pt; font-weight: 600; color: var(--grape-light); margin: 22px 0 10px; display: flex; align-items: center; gap: 8px; }
+h4 { font-size: 11pt; font-weight: 600; color: var(--text); margin: 16px 0 8px; }
+p { margin-bottom: 10px; color: var(--text-secondary); font-size: 10.5pt; }
+strong { color: var(--text); }
+ul, ol { margin: 8px 0 12px 18px; }
+li { margin-bottom: 3px; font-size: 10pt; color: var(--text-secondary); }
+
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 12px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  position: relative;
+  white-space: pre;
+}
+.code-block::before { content: attr(data-lang); position: absolute; top: 8px; right: 12px; font-size: 7.5pt; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+code { background: var(--grape-dim); color: var(--grape-light); padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 9pt; }
+code.rose { background: var(--rose-dim); color: var(--rose); }
+code.amber { background: var(--amber-dim); color: var(--amber); }
+code.emerald { background: var(--emerald-dim); color: var(--emerald); }
+code.cyan { background: var(--cyan-dim); color: var(--cyan); }
+
+table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 14px 0; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+thead th { background: var(--bg-card); padding: 10px 14px; text-align: left; font-size: 9pt; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+tbody td { padding: 9px 14px; font-size: 10pt; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+tbody tr:last-child td { border-bottom: none; }
+tbody td:first-child { font-weight: 500; color: var(--text); }
+.row-highlight td { background: rgba(139, 92, 246, 0.08); }
+.row-emerald td { background: rgba(16, 185, 129, 0.06); }
+.row-amber td { background: rgba(245, 158, 11, 0.06); }
+.row-rose td { background: rgba(244, 63, 94, 0.06); }
+.row-cyan td { background: rgba(34, 211, 238, 0.06); }
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-size: 8pt;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.badge-rose { background: var(--rose-dim); color: var(--rose); border: 1px solid var(--rose-border); }
+.badge-amber { background: var(--amber-dim); color: var(--amber); border: 1px solid var(--amber-border); }
+.badge-emerald { background: var(--emerald-dim); color: var(--emerald); border: 1px solid var(--emerald-border); }
+.badge-grape { background: var(--grape-dim); color: var(--grape-light); border: 1px solid var(--grape-border); }
+.badge-cyan { background: var(--cyan-dim); color: var(--cyan); border: 1px solid var(--cyan-border); }
+
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin: 12px 0; }
+.card.grape { border-color: var(--grape-border); background: linear-gradient(135deg, rgba(139,92,246,0.06), var(--bg-card)); }
+.card.emerald { border-color: var(--emerald-border); background: linear-gradient(135deg, rgba(16,185,129,0.06), var(--bg-card)); }
+.card.amber { border-color: var(--amber-border); background: linear-gradient(135deg, rgba(245,158,11,0.06), var(--bg-card)); }
+.card.rose { border-color: var(--rose-border); background: linear-gradient(135deg, rgba(244,63,94,0.06), var(--bg-card)); }
+.card.cyan { border-color: var(--cyan-border); background: linear-gradient(135deg, rgba(34,211,238,0.06), var(--bg-card)); }
+.card-title { font-size: 12pt; font-weight: 600; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.card-desc { font-size: 10pt; color: var(--text-secondary); line-height: 1.5; }
+
+.callout { border-radius: 10px; padding: 14px 16px; margin: 14px 0; display: flex; gap: 10px; align-items: flex-start; }
+.callout-icon { font-size: 16pt; flex-shrink: 0; line-height: 1; }
+.callout-content { flex: 1; }
+.callout-content strong { display: block; margin-bottom: 3px; color: var(--text); }
+.callout-content p { margin-bottom: 4px; }
+.callout.tip { background: var(--emerald-dim); border: 1px solid var(--emerald-border); }
+.callout.warning { background: var(--amber-dim); border: 1px solid var(--amber-border); }
+.callout.danger { background: var(--rose-dim); border: 1px solid var(--rose-border); }
+.callout.info { background: var(--grape-dim); border: 1px solid var(--grape-border); }
+.callout.cyan { background: var(--cyan-dim); border: 1px solid var(--cyan-border); }
+
+/* Rate limit type pills */
+.type-pills { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0; }
+.type-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: 1px solid;
+  flex: 1;
+  min-width: 100px;
+}
+.type-pill.rpm { background: var(--rose-dim); border-color: var(--rose-border); }
+.type-pill.tpm { background: var(--grape-dim); border-color: var(--grape-border); }
+.type-pill.rpd { background: var(--amber-dim); border-color: var(--amber-border); }
+.type-pill .pill-acronym { font-family: 'JetBrains Mono', monospace; font-size: 16pt; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+.type-pill.rpm .pill-acronym { color: var(--rose); }
+.type-pill.tpm .pill-acronym { color: var(--grape-light); }
+.type-pill.rpd .pill-acronym { color: var(--amber); }
+.type-pill .pill-name { font-size: 9pt; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.type-pill .pill-desc { font-size: 8pt; color: var(--text-muted); text-align: center; }
+
+/* Tier progress visual */
+.tier-ladder {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 14px 0;
+}
+.tier-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 9.5pt;
+}
+.tier-row:last-child { border-bottom: none; }
+.tier-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.tier-name { font-weight: 600; color: var(--text); min-width: 100px; }
+.tier-spend { font-family: 'JetBrains Mono', monospace; font-size: 8.5pt; color: var(--text-muted); min-width: 80px; }
+.tier-bar-wrap { flex: 1; background: rgba(255,255,255,0.04); border-radius: 4px; height: 6px; overflow: hidden; }
+.tier-bar { height: 100%; border-radius: 4px; }
+
+/* Checklist diagnostic */
+.checklist { background: var(--bg-card); border: 1px solid var(--emerald-border); border-radius: 12px; padding: 18px 20px; margin: 18px 0; }
+.checklist-title { font-size: 13pt; font-weight: 700; color: var(--emerald); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.checklist-item { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; font-size: 10pt; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+.checklist-item:last-child { border-bottom: none; }
+.check-box { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 5px; flex-shrink: 0; margin-top: 1px; }
+
+/* Backoff timeline */
+.timeline { margin: 14px 0; }
+.timeline-step {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+.timeline-dot-col { display: flex; flex-direction: column; align-items: center; }
+.t-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10pt; font-weight: 700; flex-shrink: 0; }
+.t-dot.rose { background: var(--rose-dim); border: 2px solid var(--rose-border); color: var(--rose); }
+.t-dot.amber { background: var(--amber-dim); border: 2px solid var(--amber-border); color: var(--amber); }
+.t-dot.emerald { background: var(--emerald-dim); border: 2px solid var(--emerald-border); color: var(--emerald); }
+.t-line { width: 1px; flex: 1; background: var(--border); min-height: 14px; }
+.t-content { flex: 1; padding-top: 3px; }
+.t-label { font-weight: 600; color: var(--text); font-size: 10.5pt; margin-bottom: 2px; }
+.t-sub { font-size: 9.5pt; color: var(--text-secondary); }
+
+/* Stats row */
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0; }
+.stat-item { text-align: center; padding: 14px 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; position: relative; overflow: hidden; }
+.stat-item::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+.stat-item.rose::before { background: linear-gradient(90deg, var(--rose), var(--amber)); }
+.stat-item.grape::before { background: linear-gradient(90deg, var(--grape), var(--cyan)); }
+.stat-item.emerald::before { background: linear-gradient(90deg, var(--emerald), var(--cyan)); }
+.stat-value { font-family: 'JetBrains Mono', monospace; font-size: 18pt; font-weight: 700; color: var(--text); line-height: 1; margin-bottom: 4px; }
+.stat-label { font-size: 8pt; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 500; }
+
+/* Strategy cards */
+.strategy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+.strategy-card {
+  border-radius: 12px;
+  padding: 14px 16px;
+  border: 1px solid;
+}
+.strategy-card.a { background: var(--rose-dim); border-color: var(--rose-border); }
+.strategy-card.b { background: var(--emerald-dim); border-color: var(--emerald-border); }
+.strategy-card.c { background: var(--grape-dim); border-color: var(--grape-border); }
+.strategy-card.d { background: var(--cyan-dim); border-color: var(--cyan-border); }
+.strategy-card .s-letter { font-family: 'JetBrains Mono', monospace; font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.strategy-card.a .s-letter { color: var(--rose); }
+.strategy-card.b .s-letter { color: var(--emerald); }
+.strategy-card.c .s-letter { color: var(--grape-light); }
+.strategy-card.d .s-letter { color: var(--cyan); }
+.strategy-card .s-title { font-size: 11pt; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.strategy-card ul { margin-left: 14px; }
+.strategy-card li { font-size: 9pt; color: var(--text-secondary); margin-bottom: 4px; }
+
+/* Comparison box rate vs billing */
+.comparison-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
+.comparison-card { border-radius: 12px; padding: 16px; border: 1px solid; }
+.comparison-card.left { background: var(--rose-dim); border-color: var(--rose-border); }
+.comparison-card.right { background: var(--emerald-dim); border-color: var(--emerald-border); }
+.comparison-card .c-icon { font-size: 20pt; margin-bottom: 8px; display: block; }
+.comparison-card .c-title { font-size: 11pt; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.comparison-card .c-desc { font-size: 9.5pt; color: var(--text-secondary); line-height: 1.5; }
+
+.next-module { background: var(--bg-card); border: 1px solid var(--grape-border); border-radius: 12px; padding: 16px 18px; margin-top: 20px; display: flex; align-items: center; gap: 12px; }
+.next-module .next-icon { font-size: 20pt; }
+.next-module .next-text { flex: 1; }
+.next-module .next-label { font-size: 8.5pt; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.next-module .next-title { font-size: 12pt; font-weight: 600; color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- ████████████████████ COVER PAGE ████████████████████ -->
+<div class="page cover">
+  <div class="cover-badge">🚦 Curso OpenClaw — Aula Extra</div>
+  <div class="cover-star">⚡ Seu agente trava? Provavelmente é isso</div>
+  <div class="cover-title">Rate<br><em>Limits</em>:<br>Por que trava<br>e como resolver</div>
+  <div class="cover-subtitle">Entenda o 429, conheça os tiers da Anthropic e OpenAI, e aprenda as estratégias práticas para nunca mais ter seu agente parado por falta de cota.</div>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Duração</div>
+      <div class="cover-meta-value">12 min</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Nível</div>
+      <div class="cover-meta-value">Intermediário</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Pré-req</div>
+      <div class="cover-meta-value">API Key ativa</div>
+    </div>
+  </div>
+
+  <!-- Decorative error preview -->
+  <div class="cover-error-preview">
+    <span class="err-tag">⛔ Error Log</span>
+    <span class="err-code">429 Too Many Requests</span>
+    <span class="err-msg">RateLimitError: Rate limit reached for claude-sonnet-4-5.
+Retrying in 32s…</span>
+  </div>
+</div>
+
+<!-- ████████████████████ PAGE 2: O QUE É + COMO APARECE ████████████████████ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">Aula Extra — Rate Limits</div>
+    <div class="page-header-right">openclaw.ai/curso</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-number">01</div>
+    <div class="section-title">O que é Rate Limit?</div>
+  </div>
+  <p class="section-subtitle">O provedor limita quantas requisições você pode fazer por unidade de tempo.</p>
+
+  <p>Rate limit é um mecanismo de proteção que todo provedor de API usa. Quando você ultrapassa a cota, a API recusa a chamada com o status <code class="rose">HTTP 429</code> — "Too Many Requests". Não é falha sua; é uma regra de infraestrutura que existe por boas razões:</p>
+
+  <div class="strategy-grid">
+    <div class="strategy-card a">
+      <div class="s-letter">Motivo 1</div>
+      <div class="s-title">🏗️ Proteger infraestrutura</div>
+      <ul>
+        <li>Evitar sobrecarga dos servidores</li>
+        <li>Garantir estabilidade da plataforma</li>
+        <li>Prevenir abusos e DDoS acidentais</li>
+      </ul>
+    </div>
+    <div class="strategy-card b">
+      <div class="s-letter">Motivo 2</div>
+      <div class="s-title">🤝 Qualidade para todos</div>
+      <ul>
+        <li>Nenhum usuário monopoliza recursos</li>
+        <li>SLA justo para toda a base</li>
+        <li>Tiers refletem uso e comprometimento</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>📊 Os 3 tipos de limite</h3>
+
+  <div class="type-pills">
+    <div class="type-pill rpm">
+      <div class="pill-acronym">RPM</div>
+      <div class="pill-name">Requests Per Minute</div>
+      <div class="pill-desc">Nº de chamadas por minuto — o mais comum</div>
+    </div>
+    <div class="type-pill tpm">
+      <div class="pill-acronym">TPM</div>
+      <div class="pill-name">Tokens Per Minute</div>
+      <div class="pill-desc">Volume de tokens (input + output) por minuto</div>
+    </div>
+    <div class="type-pill rpd">
+      <div class="pill-acronym">RPD</div>
+      <div class="pill-name">Requests Per Day</div>
+      <div class="pill-desc">Limite diário de chamadas (tier Free)</div>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top: 28px;">
+    <div class="section-number">02</div>
+    <div class="section-title">Como aparece no OpenClaw</div>
+  </div>
+  <p class="section-subtitle">O sinal mais óbvio é o 429 no log — mas nem sempre fica tão claro.</p>
+
+  <div class="code-block" data-lang="log">
+<span style="color: var(--rose)">ERROR</span> RateLimitError: 429 Too Many Requests
+<span style="color: var(--text-muted)">       at Anthropic.makeRequest (sdk/client.js:142)</span>
+<span style="color: var(--amber)">WARN</span>  Rate limit reached for model <span style="color: var(--cyan)">claude-sonnet-4-5</span>
+       x-ratelimit-remaining-requests: <span style="color: var(--rose)">0</span>
+       x-ratelimit-remaining-tokens: <span style="color: var(--rose)">0</span>
+       x-ratelimit-reset-requests: <span style="color: var(--amber)">60s</span>
+<span style="color: var(--emerald)">INFO</span>  Retrying in <span style="color: var(--amber)">32s</span> (attempt 1/3)…</div>
+
+  <h3>🔍 Quando acontece mais</h3>
+
+  <div class="card rose">
+    <div class="card-title">🕙 Muitos crons no mesmo horário</div>
+    <div class="card-desc">10 crons agendados para 9:00h disparam ao mesmo tempo → burst de RPM em segundos. O agente "trava" na hora do rush.</div>
+  </div>
+
+  <div class="card amber">
+    <div class="card-title">🤖 Sub-agents em paralelo</div>
+    <div class="card-desc">Cada sub-agent faz suas próprias chamadas. Três sub-agents rodando juntos = 3× a pressão no rate limit da mesma API Key.</div>
+  </div>
+
+  <div class="card grape">
+    <div class="card-title">💓 Heartbeats muito frequentes</div>
+    <div class="card-desc">Heartbeat configurado a cada 5 min com modelo pesado + contexto grande → acumula TPM rapidamente ao longo do dia.</div>
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-left">© Curso OpenClaw</div>
+    <div class="page-footer-right">pág. 2</div>
+  </div>
+</div>
+
+<!-- ████████████████████ PAGE 3: TABELAS DE TIERS ████████████████████ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">Aula Extra — Rate Limits</div>
+    <div class="page-header-right">openclaw.ai/curso</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-number">03</div>
+    <div class="section-title">Limites por Provedor</div>
+  </div>
+  <p class="section-subtitle">Conheça os tiers e saiba onde você está agora.</p>
+
+  <h3>🟣 Anthropic (Claude)</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Tier</th>
+        <th>RPM</th>
+        <th>TPM</th>
+        <th>RPD</th>
+        <th>Requisito</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="row-rose">
+        <td><span class="badge badge-rose">Free</span></td>
+        <td>5</td>
+        <td>25k</td>
+        <td>100</td>
+        <td>Conta criada</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-amber">Build Tier 1</span></td>
+        <td>50</td>
+        <td>50k</td>
+        <td>1k</td>
+        <td>$5 gastos</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-grape">Build Tier 2</span></td>
+        <td>1.000</td>
+        <td>160k</td>
+        <td>—</td>
+        <td>$50 gastos</td>
+      </tr>
+      <tr class="row-emerald">
+        <td><span class="badge badge-emerald">Scale Tier 3</span></td>
+        <td>2.000</td>
+        <td>800k</td>
+        <td>—</td>
+        <td>$100 gastos</td>
+      </tr>
+      <tr class="row-cyan">
+        <td><span class="badge badge-cyan">Scale Tier 4</span></td>
+        <td>4.000</td>
+        <td>2.4M</td>
+        <td>—</td>
+        <td>$250 gastos</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>🟢 OpenAI (GPT)</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Tier</th>
+        <th>RPM</th>
+        <th>TPM</th>
+        <th>Requisito</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="row-rose">
+        <td><span class="badge badge-rose">Free</span></td>
+        <td>3</td>
+        <td>40k</td>
+        <td>Conta criada</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-amber">Tier 1</span></td>
+        <td>500</td>
+        <td>200k</td>
+        <td>$5 gastos</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-grape">Tier 2</span></td>
+        <td>5.000</td>
+        <td>2M</td>
+        <td>$50 gastos</td>
+      </tr>
+      <tr class="row-emerald">
+        <td><span class="badge badge-emerald">Tier 3</span></td>
+        <td>10.000</td>
+        <td>4M</td>
+        <td>$100 gastos</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>📈 Como subir de tier</h3>
+  <p>O tier sobe automaticamente conforme seu <strong>gasto acumulado</strong> ao longo do tempo. Não precisa pedir — a plataforma detecta e libera.</p>
+
+  <div class="tier-ladder">
+    <div class="tier-row">
+      <div class="tier-dot" style="background: var(--rose);"></div>
+      <div class="tier-name">Free</div>
+      <div class="tier-spend">$0</div>
+      <div class="tier-bar-wrap"><div class="tier-bar" style="width: 2%; background: var(--rose);"></div></div>
+      <span class="badge badge-rose">Início</span>
+    </div>
+    <div class="tier-row">
+      <div class="tier-dot" style="background: var(--amber);"></div>
+      <div class="tier-name">Tier 1</div>
+      <div class="tier-spend">≥ $5</div>
+      <div class="tier-bar-wrap"><div class="tier-bar" style="width: 15%; background: var(--amber);"></div></div>
+      <span class="badge badge-amber">Básico</span>
+    </div>
+    <div class="tier-row">
+      <div class="tier-dot" style="background: var(--grape-light);"></div>
+      <div class="tier-name">Tier 2</div>
+      <div class="tier-spend">≥ $50</div>
+      <div class="tier-bar-wrap"><div class="tier-bar" style="width: 38%; background: var(--grape-light);"></div></div>
+      <span class="badge badge-grape">Médio</span>
+    </div>
+    <div class="tier-row">
+      <div class="tier-dot" style="background: var(--emerald);"></div>
+      <div class="tier-name">Tier 3</div>
+      <div class="tier-spend">≥ $100</div>
+      <div class="tier-bar-wrap"><div class="tier-bar" style="width: 65%; background: var(--emerald);"></div></div>
+      <span class="badge badge-emerald">Avançado</span>
+    </div>
+    <div class="tier-row">
+      <div class="tier-dot" style="background: var(--cyan);"></div>
+      <div class="tier-name">Tier 4</div>
+      <div class="tier-spend">≥ $250</div>
+      <div class="tier-bar-wrap"><div class="tier-bar" style="width: 100%; background: var(--cyan);"></div></div>
+      <span class="badge badge-cyan">Scale</span>
+    </div>
+  </div>
+
+  <div class="callout warning">
+    <div class="callout-icon">⚠️</div>
+    <div class="callout-content">
+      <strong>Fique atento ao Free tier</strong>
+      <p>5 RPM significa que se você tiver 2 crons rodando juntos com 3 chamadas cada, você já vai bater o limite em segundos. Com conta nova, isso é o cenário mais comum de "agente travado".</p>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-left">© Curso OpenClaw</div>
+    <div class="page-footer-right">pág. 3</div>
+  </div>
+</div>
+
+<!-- ████████████████████ PAGE 4: ESTRATÉGIAS ████████████████████ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">Aula Extra — Rate Limits</div>
+    <div class="page-header-right">openclaw.ai/curso</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-number">04</div>
+    <div class="section-title">Estratégias no OpenClaw</div>
+  </div>
+  <p class="section-subtitle">Quatro abordagens complementares — use a combinação certa pro seu nível de uso.</p>
+
+  <h3>🔻 A) Reduzir Pressão</h3>
+  <p>Antes de tentar qualquer outra coisa: gaste menos cota. Parece óbvio, mas a maioria dos problemas se resolve aqui.</p>
+
+  <div class="card emerald">
+    <div class="card-title">⚡ Modelo mínimo para cada tarefa</div>
+    <div class="card-desc">
+      <strong>Haiku</strong> para heartbeats e crons rotineiros — usa 10× menos tokens que Sonnet.<br>
+      <strong>Sonnet</strong> para interação diária e tarefas com contexto médio.<br>
+      <strong>Opus</strong> <em>somente</em> quando precisar de raciocínio profundo — nunca como padrão.
+    </div>
+  </div>
+
+  <div class="card amber">
+    <div class="card-title">🕐 Espaçar os crons</div>
+    <div class="card-desc">Nunca agendar múltiplos crons para o mesmo horário exato. Distribua com pelo menos 5 minutos de intervalo:<br>
+    <code>9:00</code> → resumo diário &nbsp;|&nbsp; <code>9:05</code> → checar emails &nbsp;|&nbsp; <code>9:10</code> → sync calendário</div>
+  </div>
+
+  <div class="card rose">
+    <div class="card-title">🤖 Evitar sub-agents em paralelo</div>
+    <div class="card-desc">Se uma tarefa pode ser feita em sequência, não dispare em paralelo. Cada sub-agent consome cota da mesma API Key. Prefira <strong>serial</strong> quando não há ganho real de velocidade.</div>
+  </div>
+
+  <h3>🔄 B) Retry com Backoff Automático</h3>
+  <p>O OpenClaw já cuida disso por você. Quando recebe um 429, o runtime espera e tenta novamente automaticamente.</p>
+
+  <div class="timeline">
+    <div class="timeline-step">
+      <div class="timeline-dot-col">
+        <div class="t-dot rose">1</div>
+        <div class="t-line"></div>
+      </div>
+      <div class="t-content">
+        <div class="t-label">API retorna 429</div>
+        <div class="t-sub">Limite atingido — chamada rejeitada pelo provedor</div>
+      </div>
+    </div>
+    <div class="timeline-step">
+      <div class="timeline-dot-col">
+        <div class="t-dot amber">2</div>
+        <div class="t-line"></div>
+      </div>
+      <div class="t-content">
+        <div class="t-label">OpenClaw inicia backoff</div>
+        <div class="t-sub">Espera exponencial: 1s → 2s → 4s → 8s… até a janela resetar</div>
+      </div>
+    </div>
+    <div class="timeline-step">
+      <div class="timeline-dot-col">
+        <div class="t-dot emerald">3</div>
+      </div>
+      <div class="t-content">
+        <div class="t-label">Retry automático — sem intervenção</div>
+        <div class="t-sub">A chamada é retentada. Você não precisa fazer nada.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-icon">💡</div>
+    <div class="callout-content">
+      <strong>Agente "lento" não é agente "travado"</strong>
+      <p>Se você perceber que o agente demorou 30-60 segundos a mais para responder, provavelmente estava em backoff. Isso é comportamento <em>correto</em> — não é falha. O agente vai responder; só precisa aguardar.</p>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-left">© Curso OpenClaw</div>
+    <div class="page-footer-right">pág. 4</div>
+  </div>
+</div>
+
+<!-- ████████████████████ PAGE 5: DISTRIBUIR + MONITORAR ████████████████████ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">Aula Extra — Rate Limits</div>
+    <div class="page-header-right">openclaw.ai/curso</div>
+  </div>
+
+  <h3>📅 C) Distribuir Carga</h3>
+  <p>Quando reduzir e esperar não bastam, a próxima fronteira é distribuir o trabalho no tempo e no espaço.</p>
+
+  <div class="code-block" data-lang="yaml">
+<span style="color: var(--text-muted)"># ❌ Evite: 3 crons no mesmo minuto</span>
+crons:
+  - schedule: "0 9 * * *"
+    name: resumo-diario
+  - schedule: "0 9 * * *"
+    name: checar-emails
+  - schedule: "0 9 * * *"
+    name: sync-calendario
+
+<span style="color: var(--text-muted)"># ✅ Prefira: distribuídos em 5 min</span>
+crons:
+  - schedule: "0 9 * * *"
+    name: resumo-diario
+  - schedule: "5 9 * * *"          <span style="color: var(--emerald)"># 09:05</span>
+    name: checar-emails
+  - schedule: "10 9 * * *"         <span style="color: var(--emerald)"># 09:10</span>
+    name: sync-calendario</div>
+
+  <div class="card cyan">
+    <div class="card-title">🔒 Jobs pesados → sessionTarget: isolated</div>
+    <div class="card-desc">Use <code>sessionTarget: "isolated"</code> para sub-agents que fazem muitas chamadas. Isso garante que o job pesado não compete com as interações da sessão principal pelo mesmo rate limit window.</div>
+  </div>
+
+  <h3>📡 D) Monitorar em Tempo Real</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Header de Resposta</th>
+        <th>Significado</th>
+        <th>Ação se baixo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code class="cyan">x-ratelimit-remaining-requests</code></td>
+        <td>Chamadas restantes na janela atual</td>
+        <td>Reduzir frequência</td>
+      </tr>
+      <tr>
+        <td><code class="cyan">x-ratelimit-remaining-tokens</code></td>
+        <td>Tokens restantes na janela atual</td>
+        <td>Usar modelo menor</td>
+      </tr>
+      <tr>
+        <td><code class="amber">x-ratelimit-reset-requests</code></td>
+        <td>Tempo até RPM resetar</td>
+        <td>Aguardar backoff</td>
+      </tr>
+      <tr>
+        <td><code class="amber">x-ratelimit-reset-tokens</code></td>
+        <td>Tempo até TPM resetar</td>
+        <td>Aguardar backoff</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout tip">
+    <div class="callout-icon">✅</div>
+    <div class="callout-content">
+      <strong>Verifique seu tier no dashboard</strong>
+      <p><strong>Anthropic:</strong> console.anthropic.com → Settings → Limits &nbsp;|&nbsp; <strong>OpenAI:</strong> platform.openai.com → Settings → Limits</p>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top: 26px;">
+    <div class="section-number">05</div>
+    <div class="section-title">Diagnóstico Rápido</div>
+  </div>
+  <p class="section-subtitle">"Meu agente travou — é rate limit?"</p>
+
+  <div class="checklist">
+    <div class="checklist-title">🔍 Checklist de Diagnóstico</div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div>Você tem <strong>múltiplos crons agendados para o mesmo horário</strong>?</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div>Tem <strong>sub-agents rodando em paralelo</strong> nessa sessão?</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div>O log menciona <code class="rose">429</code> ou <code class="rose">RateLimitError</code>?</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div>O agente <strong>voltou a funcionar sozinho</strong> após alguns minutos?</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div>Você está no tier <span class="badge badge-rose">Free</span> ou <span class="badge badge-amber">Tier 1</span> com uso intenso?</div>
+    </div>
+  </div>
+
+  <div class="callout warning">
+    <div class="callout-icon">🎯</div>
+    <div class="callout-content">
+      <strong>Se marcou 3 ou mais → quase certeza que é rate limit</strong>
+      <p>A solução mais rápida: espaçar os crons, usar Haiku no heartbeat, e aguardar o retry automático. Se persistir, verificar o tier e considerar aumentar o gasto acumulado.</p>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-left">© Curso OpenClaw</div>
+    <div class="page-footer-right">pág. 5</div>
+  </div>
+</div>
+
+<!-- ████████████████████ PAGE 6: CUSTO + KEYS MÚLTIPLAS ████████████████████ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">Aula Extra — Rate Limits</div>
+    <div class="page-header-right">openclaw.ai/curso</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-number">06</div>
+    <div class="section-title">Rate Limit e Custo</div>
+  </div>
+  <p class="section-subtitle">Esclarece uma confusão frequente — são duas coisas diferentes.</p>
+
+  <div class="comparison-row">
+    <div class="comparison-card left">
+      <span class="c-icon">🚦</span>
+      <div class="c-title">Rate Limit</div>
+      <div class="c-desc">Limita a <strong>velocidade</strong> das chamadas. Quando atingido, o agente espera. <strong>Não aumenta o custo</strong> — tokens de espera não existem. Apenas atrasa a execução.</div>
+    </div>
+    <div class="comparison-card right">
+      <span class="c-icon">💳</span>
+      <div class="c-title">Billing Limit</div>
+      <div class="c-desc">Limita o <strong>gasto</strong> mensal. Configurável no dashboard. Quando atingido, as chamadas são bloqueadas até o ciclo resetar ou o limite ser aumentado.</div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-item rose">
+      <div class="stat-value">429</div>
+      <div class="stat-label">Rate Limit — espere</div>
+    </div>
+    <div class="stat-item amber">
+      <div class="stat-value">402</div>
+      <div class="stat-label">Billing Limit — pague</div>
+    </div>
+    <div class="stat-item emerald">
+      <div class="stat-value">$0</div>
+      <div class="stat-label">Custo do tempo esperando</div>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-icon">💡</div>
+    <div class="callout-content">
+      <strong>Rate limit não te cobra nada a mais</strong>
+      <p>Você paga apenas pelos tokens que o modelo <em>processou</em>. O tempo em backoff não gera cobrança. Um agente que ficou 2 minutos em retry usou exatamente os mesmos tokens de um que respondeu em 10 segundos.</p>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top: 26px;">
+    <div class="section-number">07</div>
+    <div class="section-title">Dica Avançada: Múltiplas API Keys</div>
+  </div>
+  <p class="section-subtitle">Para uso intenso, distribuir entre chaves (ou provedores) é a saída.</p>
+
+  <div class="card grape">
+    <div class="card-title">🔑 Múltiplas chaves no mesmo provedor</div>
+    <div class="card-desc">Cada API Key tem seu próprio rate limit independente. Criar duas keys na Anthropic e rotacionar entre elas dobra o seu RPM efetivo. Funciona bem para workloads previsíveis.</div>
+  </div>
+
+  <div class="card cyan">
+    <div class="card-title">🌐 Provedores diferentes por agente</div>
+    <div class="card-desc">
+      <strong>Anthropic</strong> para agentes de produção críticos.<br>
+      <strong>OpenAI</strong> como backup ou para tarefas específicas de código.<br>
+      O OpenClaw suporta múltiplos providers nativamente — configure tokens distintos por agente.
+    </div>
+  </div>
+
+  <div class="code-block" data-lang="config">
+<span style="color: var(--text-muted)"># OpenClaw — configurar providers por agente</span>
+<span style="color: var(--text-muted)"># Agente principal usa Anthropic</span>
+openclaw config set model anthropic/claude-sonnet-4-5
+
+<span style="color: var(--text-muted)"># Agente de backup configurado com OpenAI</span>
+<span style="color: var(--text-muted)"># (via OPENAI_API_KEY no env ou config)</span>
+openclaw config set model openai/gpt-4o --agent backup-agent</div>
+
+  <div class="callout info">
+    <div class="callout-icon">🧠</div>
+    <div class="callout-content">
+      <strong>Regra prática</strong>
+      <p>Para 90% dos usuários do curso, o rate limit some depois de gastar $5 (Tier 1) e espaçar os crons. Múltiplas keys e multi-provider são para quem está escalando sério — não pule para isso primeiro.</p>
+    </div>
+  </div>
+
+  <div class="checklist">
+    <div class="checklist-title">✅ Checklist Anti-Rate-Limit</div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div>Heartbeat usando <code>claude-haiku-4-5</code> (não Sonnet ou Opus)</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div>Crons distribuídos com ≥ 5 min de intervalo entre si</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div>Jobs pesados com <code>sessionTarget: "isolated"</code></div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div>Tier verificado em console.anthropic.com → Settings → Limits</div>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box"></div>
+      <div>Billing limit configurado (não deixar ilimitado)</div>
+    </div>
+  </div>
+
+  <div class="next-module">
+    <div class="next-icon">➡️</div>
+    <div class="next-text">
+      <div class="next-label">Aula relacionada</div>
+      <div class="next-title">N-7 — Quanto Custa e Qual Modelo Usar</div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-left">© Curso OpenClaw</div>
+    <div class="page-footer-right">pág. 6</div>
+  </div>
+</div>
+
+</body>
+</html>

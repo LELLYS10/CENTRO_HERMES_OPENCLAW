@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Update v2026.3.28 — Curso OpenClaw</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --surface-warm: #F5F3EF;
+    --surface-hover: #EEEBE5;
+    --border: rgba(0,0,0,0.06);
+    --border-strong: rgba(0,0,0,0.10);
+    --text: #1A1A1A;
+    --text-2: #555;
+    --text-3: #999;
+    --accent: #E8590C;
+    --accent-soft: rgba(232,89,12,0.07);
+    --accent-border: rgba(232,89,12,0.16);
+    --blue: #2563EB;
+    --blue-soft: rgba(37,99,235,0.06);
+    --blue-border: rgba(37,99,235,0.13);
+    --green: #059669;
+    --green-soft: rgba(5,150,105,0.06);
+    --green-border: rgba(5,150,105,0.13);
+    --purple: #7C3AED;
+    --purple-soft: rgba(124,58,237,0.06);
+    --purple-border: rgba(124,58,237,0.13);
+    --red: #DC2626;
+    --red-soft: rgba(220,38,38,0.06);
+    --red-border: rgba(220,38,38,0.15);
+    --yellow: #D97706;
+    --yellow-soft: rgba(217,119,6,0.06);
+    --yellow-border: rgba(217,119,6,0.14);
+    --r: 16px;
+    --r-sm: 10px;
+    --r-xs: 6px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.05), 0 4px 14px rgba(0,0,0,0.04);
+    --t: 0.25s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Outfit', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 32px; }
+
+  .hero { padding: 56px 0 40px; border-bottom: 1px solid var(--border-strong); }
+  .hero-eye {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent);
+    display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+  }
+  .hero-eye::before { content: ''; width: 20px; height: 2px; background: var(--accent); border-radius: 1px; }
+  .hero h1 { font-size: 34px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; }
+  .hero-sub { font-size: 15px; color: var(--text-2); margin-top: 8px; }
+  .hero-sub strong { color: var(--text); font-weight: 600; }
+
+  .seal {
+    margin-top: 20px;
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--green-soft); border: 1px solid var(--green-border);
+    border-radius: 100px; padding: 8px 18px 8px 12px;
+    font-size: 12px; font-weight: 600; color: var(--green);
+    transition: var(--t);
+  }
+  .seal:hover { transform: scale(1.02); }
+  .seal-icon {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--green); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800;
+  }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 32px 0 0; }
+  .stat {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-sm); padding: 18px; position: relative;
+    overflow: hidden; transition: var(--t);
+  }
+  .stat::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .stat:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .stat-n { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 3px; }
+  .stat-l { font-size: 11px; font-weight: 600; color: var(--text-3); letter-spacing: 0.02em; }
+  .s1::before { background: var(--yellow); } .s1 .stat-n { color: var(--yellow); }
+  .s2::before { background: var(--blue); } .s2 .stat-n { color: var(--blue); }
+  .s3::before { background: var(--green); } .s3 .stat-n { color: var(--green); }
+  .s4::before { background: var(--purple); } .s4 .stat-n { color: var(--purple); }
+
+  .section { padding: 40px 0 0; }
+
+  .sec-title {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
+  }
+  .sec-title::before, .sec-title::after { content: ''; flex: 1; height: 1px; background: var(--border-strong); }
+  .sec-title span {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.13em;
+    text-transform: uppercase; color: var(--text-3); white-space: nowrap;
+    padding: 5px 14px; background: var(--surface-warm); border-radius: 100px;
+  }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r); margin-bottom: 16px; overflow: hidden;
+    transition: var(--t);
+  }
+  .card:hover { box-shadow: var(--shadow); border-color: var(--border-strong); }
+
+  .card-top {
+    padding: 20px 24px; display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 14px;
+  }
+  .card-top-left { display: flex; gap: 14px; align-items: flex-start; flex: 1; min-width: 0; }
+  .card-icon {
+    width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; background: var(--surface-warm); border: 1px solid var(--border);
+  }
+  .card-title { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.3; }
+  .card-module { font-size: 12px; color: var(--text-3); font-weight: 500; margin-top: 3px; }
+
+  .pills { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .pill {
+    padding: 3px 10px; border-radius: 100px; font-size: 11px;
+    font-weight: 600; white-space: nowrap; transition: var(--t);
+  }
+  .pill:hover { transform: scale(1.03); }
+  .pill-y { background: var(--yellow-soft); color: var(--yellow); border: 1px solid var(--yellow-border); }
+  .pill-b { background: var(--blue-soft); color: var(--blue); border: 1px solid var(--blue-border); }
+  .pill-g { background: var(--green-soft); color: var(--green); border: 1px solid var(--green-border); }
+  .pill-r { background: var(--red-soft); color: var(--red); border: 1px solid var(--red-border); }
+  .pill-p { background: var(--purple-soft); color: var(--purple); border: 1px solid var(--purple-border); }
+  .vpill {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600;
+    padding: 3px 9px; border-radius: 100px;
+    background: var(--surface-warm); border: 1px solid var(--border); color: var(--text-2);
+  }
+
+  .card-desc {
+    padding: 14px 24px; background: var(--surface-warm);
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    font-size: 13px; color: var(--text-2); line-height: 1.7;
+  }
+  .card-desc strong { color: var(--text); font-weight: 600; }
+  .card-desc code {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 3px;
+    color: var(--accent); font-weight: 500;
+  }
+
+  .diff { padding: 20px 24px; }
+  .diff-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; margin-bottom: 10px; color: var(--text-3);
+  }
+  .diff-grid { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 0; align-items: stretch; }
+  .diff-box {
+    border-radius: var(--r-xs); padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    line-height: 1.8; white-space: pre-wrap; word-break: break-word;
+    overflow-x: auto;
+  }
+  .diff-before {
+    background: #FEF2F2; border: 1px solid rgba(220,38,38,0.12); color: #7F1D1D;
+  }
+  .diff-before .hl { background: rgba(220,38,38,0.12); border-radius: 2px; }
+  .diff-after {
+    background: #F0FDF4; border: 1px solid rgba(5,150,105,0.12); color: #14532D;
+  }
+  .diff-after .hl { background: rgba(5,150,105,0.15); border-radius: 2px; }
+  .diff-arrow {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: var(--text-3);
+  }
+  .diff-source {
+    margin-top: 8px; font-size: 10px; color: var(--text-3); font-weight: 500;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .diff-source .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
+
+  .rec-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 16px; }
+  .rec-table th {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-3); text-align: left;
+    padding: 10px 16px; background: var(--surface-warm);
+    border-bottom: 1px solid var(--border);
+  }
+  .rec-table td {
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+    font-size: 13px; vertical-align: middle;
+  }
+  .rec-table tr:last-child td { border-bottom: none; }
+
+  .msg-section {
+    margin-top: 24px; background: var(--surface);
+    border: 1px solid var(--green-border); border-radius: var(--r); overflow: hidden;
+  }
+  .msg-head {
+    padding: 16px 24px; background: var(--green-soft);
+    border-bottom: 1px solid var(--green-border);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px; font-weight: 700; color: var(--green);
+  }
+  .msg-body {
+    padding: 24px; font-size: 14px; line-height: 1.9; white-space: pre-wrap;
+  }
+  .msg-body strong { font-weight: 700; }
+  .msg-body code {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    background: var(--surface-warm); padding: 2px 7px; border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  .footer {
+    padding: 32px 0 48px; margin-top: 40px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; color: var(--text-3); font-weight: 500;
+  }
+  .footer-brand { display: flex; align-items: center; gap: 8px; }
+  .footer-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+
+  @media (max-width: 700px) {
+    .wrap { padding: 0 16px; }
+    .hero h1 { font-size: 26px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .diff-grid { grid-template-columns: 1fr; gap: 8px; }
+    .diff-arrow { transform: rotate(90deg); padding: 4px 0; }
+    .card-top { flex-direction: column; }
+  }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  .hero { animation: fadeUp 0.5s ease-out; }
+  .stat { animation: fadeUp 0.4s ease-out backwards; }
+  .stat:nth-child(1) { animation-delay: 0.08s; }
+  .stat:nth-child(2) { animation-delay: 0.12s; }
+  .stat:nth-child(3) { animation-delay: 0.16s; }
+  .stat:nth-child(4) { animation-delay: 0.2s; }
+  .card { animation: fadeUp 0.4s ease-out backwards; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eye">Amora · Update de Materiais</div>
+  <h1>v2026.3.28 × Curso OpenClaw</h1>
+  <div class="hero-sub">Update completo: <strong>ACP bind</strong>, requireApproval hooks, Docker <code>--container</code>, gpt-5.4 default, memory-core plugin, heartbeat auto-recovery</div>
+
+  <div class="seal">
+    <div class="seal-icon">✓</div>
+    Verificado contra changelog oficial (v3.22 → v3.28 + Unreleased) em 30/03/2026
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat s1"><div class="stat-n">12</div><div class="stat-l">Arquivos atualizados</div></div>
+  <div class="stat s2"><div class="stat-n">7</div><div class="stat-l">Módulos afetados</div></div>
+  <div class="stat s3"><div class="stat-n">6</div><div class="stat-l">Notas de gravação</div></div>
+  <div class="stat s4"><div class="stat-n">4</div><div class="stat-l">Breaking changes verificados</div></div>
+</div>
+
+<!-- BREAKING CHANGES VERIFICADOS -->
+<div class="section">
+  <div class="sec-title"><span>Breaking changes — verificados ✅</span></div>
+
+  <div class="card">
+    <div class="card-top">
+      <div class="card-top-left">
+        <div class="card-icon">🔍</div>
+        <div>
+          <div class="card-title">4 breaking changes analisados — 0 afetam materiais</div>
+          <div class="card-module">Changelog v3.22 + v3.28</div>
+        </div>
+      </div>
+      <div class="pills">
+        <span class="pill pill-g">Sem impacto</span>
+      </div>
+    </div>
+    <div class="card-desc">
+      <strong>nano-banana-pro removida</strong> (v3.22) — materiais do curso nunca referenciavam essa skill. ✅<br>
+      <strong>CLAWDBOT_*/MOLTBOT_* env removidos</strong> (v3.22) — nenhum material usava esses nomes. ✅<br>
+      <strong>Plugin SDK: extension-api → plugin-sdk/*</strong> (v3.22) — nota adicionada no módulo Immune System. ✅<br>
+      <strong>Qwen portal-auth removido</strong> (v3.28) — material de fallback LLMs não menciona Qwen. ✅
+    </div>
+  </div>
+</div>
+
+<!-- MUDANÇAS APLICADAS - FASE 1 (v3.24) -->
+<div class="section">
+  <div class="sec-title"><span>Mudanças aplicadas — v3.22 → v3.24</span></div>
+
+  <!-- 1. Troubleshooting -->
+  <div class="card">
+    <div class="card-top">
+      <div class="card-top-left">
+        <div class="card-icon">🔧</div>
+        <div>
+          <div class="card-title">Troubleshooting — 4 adições</div>
+          <div class="card-module">Extras · troubleshooting.md</div>
+        </div>
+      </div>
+      <div class="pills">
+        <span class="vpill">v3.24</span>
+        <span class="pill pill-y">Update</span>
+      </div>
+    </div>
+    <div class="card-desc">
+      Adicionado: <strong>rate limits por modelo</strong> (Haiku e Opus têm limites separados — 30s/1min/5min ladder), <strong>exec config protegida</strong> (agente não pode alterar permissões via <code>config.patch</code>), <strong><code>openclaw config schema</code></strong> para inspecionar campos, e <strong>Node.js 22.14+</strong> como requisito mínimo.
+    </div>
+    <div class="diff">
+      <div class="diff-label">Rate limits — Antes → Depois</div>
+      <div class="diff-grid">
+        <div class="diff-box diff-before"><strong>Solução:</strong> Espaçar crons em
+pelo menos 15-30 minutos entre si.</div>
+        <div class="diff-arrow">→</div>
+        <div class="diff-box diff-after"><strong>Solução:</strong> Espaçar crons em
+pelo menos 15-30 minutos entre si.
+
+<span class="hl">⚠️ Rate limits agora são por</span>
+<span class="hl">modelo (30s → 1min → 5min).</span>
+<span class="hl">Haiku e Opus separados.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Memória aula 1 -->
+  <div class="card">
+    <div class="card-top">
+      <div class="card-top-left">
+        <div class="card-icon">🧠</div>
+        <div>
+          <div class="card-title">Memória (Prompt) — removido workaround OpenAI</div>
+          <div class="card-module">Módulo 4a · modulo-04-memoria-prompt.md</div>
+        </div>
+      </div>
+      <div class="pills">
+        <span class="vpill">v3.24</span>
+        <span class="pill pill-b">Update</span>
+      </div>
+    </div>
+    <div class="card-desc">
+      Removido workaround de chave OpenAI para memory search (bug corrigido definitivamente). Adicionado: compactação gerenciada pelo plugin <code>memory-core</code>.
+    </div>
+  </div>
+
+  <!-- 3. Memória aula 2 -->
+  <div class="card">
+    <div class="card-top">
+      <div class="card-top-left">
+        <div class="card-icon">🧠</div>
+        <div>
+          <div class="card-title">Memória Avançada — memory-core + /status 1M</div>
+          <div class="card-module">Módulo 4b · modulo-04-memoria-aula2.html</div>
+        </div>
+      </div>
+      <div class="pills">
+        <span class="vpill">v3.24</span>
+        <span class="pill pill-b">Update</span>
+      </div>
+    </div>
+    <div class="card-desc">
+      Compactação via plugin <code>memory-core</code> (mais estável, sem perda de dados). <code>/status</code> agora mostra corretamente até <strong>1M tokens</strong> para modelos 4.6+.
+    </div>
+  </div>
+
+  <!-- 4. Proatividade -->
+  <div class="card">
+    <div class="card-top">
+      <div class="card-top-left">
+        <div class="card-icon">💓</div>
+        <div>
+          <div class="card-title">Proatividade — heartbeat auto-recovery</div>
+          <div class="card-module">Módulo 7 · modulo-07-proatividade.md</div>
+        </div>
+      </div>
+      <div class="pills">
+        <span class="vpill">v3.24</span>
+        <span class="pill pill-g">Update</span>
+      </div>
+    </div>
+    <div class="card-desc">
+      Heartbeats têm <strong>auto-recovery</strong>: se um ciclo falhar, o próximo roda normalmente (sem travar o loop). Crons isolados NÃO leem HEARTBEAT.md — cada cron precisa de seu próprio message.
+    </div>
+  </div>
+
+  <!-- 5. Mission Control -->
+  <div class="card">
+    <div class="card-top">
+      <div class="card-top-left">
+        <div class="card-icon">🎛️</div>
+        <div>
+          <div class="card-title">Mission Control — /v1/models + auto-recovery</div>
+          <div class="card-module">Módulo 10 · modulo-10-mission-control.md</div>
+        </div>
+      </div>
+      <div class="pills">
+        <span class="vpill">v3.24</span>
+        <span class="pill pill-g">Update</span>
+      </div>
+    </div>
+    <div class="card-desc">
+      Gateway agora expõe <code>/v1/models</code> e <code>/v1/embeddings</code> — compatível com protocolo OpenAI para integrar ferramentas externas (RAG, etc).
+    </div>
+  </div>
+</div>
+
+<!-- MUDANÇAS APLICADAS - FASE 2 (v3.28 + Unreleased) -->
+<div class="section">
+  <div class="sec-title"><span>Mudanças aplicadas — v3.28 + Unreleased</span></div>
+
+  <!-- 6. Setup - Docker -->
+  <div class="card">
+    <div class="card-top">
+      <div class="card-top-left">
+        <div class="card-icon">🐳</div>
+        <div>
+          <div class="card-title">Setup — Docker <code>--container</code> flag</div>
+          <div class="card-module">Módulo 1 · modulo-01-setup.html</div>
+        </div>
+      </div>
+      <div class="pills">
+        <span class="vpill">v3.24</span>
+        <span class="pill pill-y">Novo</span>
+      </div>
+    </div>
+    <div class="card-desc">
+      Adicionado callout sobre <code>openclaw --container &lt;nome&gt;</code> — permite rodar comandos CLI dentro de um container Docker/Podman existente. Alternativa viável para quem já tem infra containerizada.
+    </div>
+    <div class="diff">
+      <div class="diff-label">Seção Docker vs Bare Metal — Adição</div>
+      <div class="diff-grid">
+        <div class="diff-box diff-before">(seção não existia)</div>
+        <div class="diff-arrow">→</div>
+        <div class="diff-box diff-after"><span class="hl">💡 Desde v2026.3.24, use</span>
+<span class="hl">openclaw --container &lt;nome&gt;</span>
+<span class="hl">para rodar comandos em container</span>
+<span class="hl">Docker/Podman existente.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Setup - gpt-5.4 -->
+  <div class="card">
+    <div class="card-top">
+      <div class="card-top-left">
+        <div class="card-icon">🤖</div>
+        <div>
+          <div class="card-title">Setup — modelo default OpenAI agora gpt-5.4</div>
+          <div class="card-module">Módulo 1 · modelo-config.md</div>
+        </div>
+      </div>
+      <div class="pills">
+        <span class="vpill">v3.22</span>
+        <span class="pill pill-y">Update</span>
+      </div>
+    </div>
+    <div class="card-desc">
+      O modelo padrão do provider OpenAI mudou para <strong>gpt-5.4</strong> (antes era gpt-4o). Se você usa fallback chain com OpenAI, o onboard já configura o novo modelo automaticamente.
+    </div>
+  </div>
+
+  <!-- 8. Multi-agentes - ACP bind -->
+  <div class="card">
+    <div class="card-top">
+      <div class="card-top-left">
+        <div class="card-icon">🔗</div>
+        <div>
+          <div class="card-title">Multi-Agentes — ACP Bind no chat</div>
+          <div class="card-module">Módulo 8 · modulo-08-multiagentes.html</div>
+        </div>
+      </div>
+      <div class="pills">
+        <span class="vpill">v3.28</span>
+        <span class="pill pill-p">Novo</span>
+      </div>
+    </div>
+    <div class="card-desc">
+      Novo: <code>/acp spawn codex --bind here</code> roda Codex direto no chat atual (Discord, BlueBubbles, iMessage) sem criar thread filho. Transforma o chat em workspace ACP.
+    </div>
+    <div class="diff">
+      <div class="diff-label">Seção ACP — Adição</div>
+      <div class="diff-grid">
+        <div class="diff-box diff-before">(ACP só via thread filho)</div>
+        <div class="diff-arrow">→</div>
+        <div class="diff-box diff-after"><span class="hl">/acp spawn codex --bind here</span>
+<span class="hl">Roda no chat atual, sem thread.</span>
+<span class="hl">Discord, BlueBubbles, iMessage.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Immune System - requireApproval -->
+  <div class="card">
+    <div class="card-top">
+      <div class="card-top-left">
+        <div class="card-icon">🛡️</div>
+        <div>
+          <div class="card-title">Immune System — requireApproval hooks</div>
+          <div class="card-module">Módulo 9 · modulo-09-immune-system.html</div>
+        </div>
+      </div>
+      <div class="pills">
+        <span class="vpill">v3.28</span>
+        <span class="pill pill-r">Segurança</span>
+      </div>
+    </div>
+    <div class="card-desc">
+      Plugins agora podem pedir <strong>aprovação do usuário</strong> antes de executar ferramentas via hook <code>requireApproval</code> em <code>before_tool_call</code>. Funciona via Telegram buttons, Discord interactions, ou <code>/approve</code>. Mais um layer de controle do immune system.
+    </div>
+    <div class="diff">
+      <div class="diff-label">Seção Plugins/Segurança — Adição</div>
+      <div class="diff-grid">
+        <div class="diff-box diff-before">(sem aprovação granular)</div>
+        <div class="diff-arrow">→</div>
+        <div class="diff-box diff-after"><span class="hl">requireApproval em</span>
+<span class="hl">before_tool_call → pausa execução</span>
+<span class="hl">e pede OK via Telegram/Discord</span>
+<span class="hl">ou /approve</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. Immune System - Plugin SDK -->
+  <div class="card">
+    <div class="card-top">
+      <div class="card-top-left">
+        <div class="card-icon">⚠️</div>
+        <div>
+          <div class="card-title">Plugin SDK — migração obrigatória</div>
+          <div class="card-module">Módulo 9 · modulo-09-immune-system.html</div>
+        </div>
+      </div>
+      <div class="pills">
+        <span class="vpill">v3.22</span>
+        <span class="pill pill-r">Breaking</span>
+      </div>
+    </div>
+    <div class="card-desc">
+      <strong>Nota para quem cria plugins custom:</strong> o SDK mudou de <code>openclaw/extension-api</code> para <code>openclaw/plugin-sdk/*</code>. Consulte <strong>docs.openclaw.ai/plugins/sdk-migration</strong> para migrar. Não afeta a maioria dos alunos (plugins bundled migram automaticamente).
+    </div>
+  </div>
+</div>
+
+<!-- NOTAS DE GRAVAÇÃO -->
+<div class="section">
+  <div class="sec-title"><span>Notas para próximas gravações</span></div>
+
+  <div class="card">
+    <div class="card-top">
+      <div class="card-top-left">
+        <div class="card-icon">🎥</div>
+        <div>
+          <div class="card-title">6 itens para gravar</div>
+          <div class="card-module">Arquivo: notas-gravacao-mar-2026.md (backlog-updates)</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-desc">
+      <table class="rec-table">
+        <tr><th>#</th><th>Nota</th><th>Urgência</th><th>Tempo</th></tr>
+        <tr><td>1</td><td><strong>exec config protegida</strong> — agente não altera próprias permissões</td><td><span class="pill pill-r">Alta</span></td><td>~2min</td></tr>
+        <tr><td>2</td><td><strong>requireApproval hook</strong> — guardrail pra skills sensíveis (demo ao vivo)</td><td><span class="pill pill-r">Alta</span></td><td>Demo</td></tr>
+        <tr><td>3</td><td><strong>ACP bind Discord</strong> — spawnar agente ACP direto no chat</td><td><span class="pill pill-y">Média</span></td><td>~2min</td></tr>
+        <tr><td>4</td><td><strong>--container Docker</strong> — modo recomendado pra quem usa Docker</td><td><span class="pill pill-y">Média</span></td><td>~1min</td></tr>
+        <tr><td>5</td><td><strong>/status 1M tokens</strong> — contexto correto em modelos 4.6+</td><td><span class="pill pill-g">Baixa</span></td><td>~30s</td></tr>
+        <tr><td>6</td><td><strong>/v1/models endpoint</strong> — gateway OpenAI-compatible</td><td><span class="pill pill-g">Baixa</span></td><td>~1min</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- PROMPT PARA ALUNOS -->
+<div class="section">
+  <div class="sec-title"><span>Prompt para testar as novidades</span></div>
+
+  <div class="card">
+    <div class="card-top">
+      <div class="card-top-left">
+        <div class="card-icon">🤖</div>
+        <div>
+          <div class="card-title">Cole no seu agente OpenClaw</div>
+          <div class="card-module">Prompt de validação pós-update</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-desc">
+      <div style="background:#f8f7f4;border:1px solid var(--border);border-radius:8px;padding:16px;font-size:13px;line-height:1.8;margin-top:8px;">
+        <strong>Preciso validar 4 funcionalidades que foram atualizadas:</strong><br><br>
+        1. <strong>Memory search:</strong> Rode <code>/new</code>, depois use <code>memory_search</code> para buscar algo nos seus arquivos. Confirme que funciona sem chave OpenAI.<br><br>
+        2. <strong>Rate limits:</strong> Rode <code>/status</code> — confirme que mostra a janela de contexto correta (1M para Claude 4.6). Verifique se rate limits são por modelo.<br><br>
+        3. <strong>Heartbeat recovery:</strong> Se você tem heartbeat configurado, confirme com <code>openclaw cron list</code> que o próximo heartbeat está agendado normalmente mesmo se o anterior falhou.<br><br>
+        4. <strong>Config schema:</strong> Rode <code>openclaw config schema</code> no terminal e confirme que retorna o JSON schema da configuração.<br><br>
+        Me diga o resultado de cada teste.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MENSAGEM PARA ALUNOS -->
+<div class="msg-section">
+  <div class="msg-head">💬 Draft de mensagem para os alunos</div>
+  <div class="msg-body"><strong>📦 Update de materiais — 30/03/2026</strong>
+
+Atualizamos 12 materiais do curso (7 módulos + extras).
+
+<strong>Principais mudanças:</strong>
+• Memory search definitivamente sem chave OpenAI
+• Compactação via plugin <code>memory-core</code> (mais estável)
+• Heartbeat auto-recovery (não trava mais o loop)
+• Rate limits agora são por modelo (30s → 1min → 5min)
+• <code>openclaw --container</code> flag pra Docker
+• ACP bind: <code>/acp spawn codex --bind here</code>
+• <code>requireApproval</code> hooks (segurança de plugins)
+• Default OpenAI agora é gpt-5.4
+• Node.js 22.14+ como requisito mínimo
+
+<strong>4 breaking changes verificados</strong> — nenhum afeta diretamente os materiais existentes (nano-banana-pro, env vars antigos, Plugin SDK, Qwen).
+
+Tudo já está atualizado no Drive — abram os materiais.
+
+📂 Report completo: <em>backlog-updates</em> no Drive
+
+Dúvidas, jogam aqui 👇</div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-brand"><div class="footer-dot"></div> Feito por <strong>Amora</strong> — Chief of Staff do Bruno Okamoto</div>
+  <span>Changelog: v2026.3.22 → v2026.3.28 + Unreleased &nbsp;·&nbsp; <a href="https://openclaw.pixeleducacao.com.br" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:600;">Curso OpenClaw →</a></span>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,1 @@
+/Users/lellisflaviooliveirasantos/Desktop/Orgazizaçao 2026 /Heminho/05_telegram/credpainel-bot.md

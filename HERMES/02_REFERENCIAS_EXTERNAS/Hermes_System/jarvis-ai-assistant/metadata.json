@@ -1,0 +1,6 @@
+{
+  "name": "Jarvis AI Assistant",
+  "description": "A premium futuristic personal assistant with voice interaction, HUD interface, and Google Calendar integration.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["voice_interaction", "calendar_integration", "ai_assistant"]
+}

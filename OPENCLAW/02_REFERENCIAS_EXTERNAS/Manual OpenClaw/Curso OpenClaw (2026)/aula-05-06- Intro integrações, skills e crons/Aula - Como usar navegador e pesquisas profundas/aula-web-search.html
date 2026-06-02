@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo 5 — Web Search: Seu Agente Navegando na Internet · Curso OpenClaw</title>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --surface2: #1a1a26;
+  --border: #2a2a3a;
+  --accent: #7c3aed;
+  --accent2: #a78bfa;
+  --text: #e2e2f0;
+  --muted: #6b7280;
+  --green: #22c55e;
+  --yellow: #eab308;
+  --orange: #f97316;
+  --red: #ef4444;
+  --blue: #3b82f6;
+  --teal: #14b8a6;
+  --pink: #ec4899;
+  --cyan: #06b6d4;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; }
+.wrap { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+
+/* HERO */
+.hero { background: linear-gradient(135deg, #080d1a 0%, #0f0e1f 40%, #0a0a0f 100%); border: 1px solid var(--border); border-radius: 20px; padding: 52px 44px; margin-bottom: 52px; position: relative; overflow: hidden; }
+.hero::before { content: ''; position: absolute; top: -80px; right: -80px; width: 320px; height: 320px; background: radial-gradient(circle, rgba(6,182,212,0.10) 0%, transparent 70%); pointer-events: none; }
+.hero::after { content: ''; position: absolute; bottom: -60px; left: 60px; width: 240px; height: 240px; background: radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%); pointer-events: none; }
+.hero-orb { position: absolute; top: 30px; left: -40px; width: 180px; height: 180px; background: radial-gradient(circle, rgba(20,184,166,0.06) 0%, transparent 70%); pointer-events: none; }
+.eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; flex-wrap: wrap; }
+.pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 20px; padding: 5px 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; }
+.pill-purple { background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3); color: var(--accent2); }
+.pill-cyan { background: rgba(6,182,212,0.12); border: 1px solid rgba(6,182,212,0.3); color: #67e8f9; }
+.pill-teal { background: rgba(20,184,166,0.12); border: 1px solid rgba(20,184,166,0.3); color: #5eead4; }
+.pill-green { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25); color: #86efac; }
+.pill-orange { background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.25); color: #fdba74; }
+.pill-yellow { background: rgba(234,179,8,0.12); border: 1px solid rgba(234,179,8,0.25); color: #fbbf24; }
+.pill-blue { background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.25); color: #93c5fd; }
+.hero h1 { font-size: 38px; font-weight: 900; line-height: 1.15; margin-bottom: 16px; }
+.hero h1 .grad { background: linear-gradient(90deg, #67e8f9, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: 16px; color: #9ca3af; margin-bottom: 32px; max-width: 600px; line-height: 1.65; }
+.kpis { display: flex; flex-wrap: wrap; gap: 32px; }
+.kpi .n { font-size: 28px; font-weight: 900; line-height: 1; }
+.kpi .l { font-size: 11px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* SECTION */
+.sh { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+.sh-num { width: 36px; height: 36px; min-width: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: #fff; }
+.sh-num-cyan { background: linear-gradient(135deg, #0891b2, #06b6d4); }
+.sh-num-teal { background: linear-gradient(135deg, #0d9488, #14b8a6); }
+.sh-num-purple { background: linear-gradient(135deg, #7c3aed, #818cf8); }
+.sh-num-orange { background: linear-gradient(135deg, #c2410c, #f97316); }
+.sh-num-green { background: linear-gradient(135deg, #15803d, #22c55e); }
+.sh-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent2); }
+.sh::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.section { margin-bottom: 56px; }
+
+/* CARDS */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px; margin-bottom: 16px; }
+.card-sm { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+.card-cyan { border-color: rgba(6,182,212,0.3); background: rgba(6,182,212,0.03); }
+.card-teal { border-color: rgba(20,184,166,0.3); background: rgba(20,184,166,0.03); }
+.card-purple { border-color: rgba(124,58,237,0.3); background: rgba(124,58,237,0.04); }
+.card-orange { border-color: rgba(249,115,22,0.3); background: rgba(249,115,22,0.03); }
+
+/* GRID */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.grid4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+@media(max-width:700px) { .grid2,.grid3,.grid4 { grid-template-columns:1fr; } .hero { padding:28px 20px; } .hero h1 { font-size:26px; } .kpis { gap: 20px; } }
+
+/* INS (callouts) */
+.ins { border-radius: 11px; padding: 15px 18px; margin: 14px 0; display: flex; gap: 12px; }
+.ins-icon { font-size: 20px; min-width: 26px; }
+.ins-body strong { display: block; font-size: 14px; margin-bottom: 4px; }
+.ins-body p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.ins-green { background: rgba(34,197,94,0.07); border: 1px solid rgba(34,197,94,0.2); }
+.ins-yellow { background: rgba(234,179,8,0.07); border: 1px solid rgba(234,179,8,0.2); }
+.ins-purple { background: rgba(124,58,237,0.07); border: 1px solid rgba(124,58,237,0.2); }
+.ins-red { background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.2); }
+.ins-blue { background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.2); }
+.ins-teal { background: rgba(20,184,166,0.07); border: 1px solid rgba(20,184,166,0.2); }
+.ins-cyan { background: rgba(6,182,212,0.07); border: 1px solid rgba(6,182,212,0.2); }
+.ins-orange { background: rgba(249,115,22,0.07); border: 1px solid rgba(249,115,22,0.2); }
+
+/* CODE */
+pre { background: #060810; border: 1px solid #1a2035; border-radius: 10px; padding: 18px 20px; overflow-x: auto; font-family: "JetBrains Mono", "Fira Code", monospace; font-size: 13px; line-height: 1.7; margin: 12px 0; }
+code { font-family: monospace; font-size: 12px; background: rgba(6,182,212,0.1); padding: 2px 6px; border-radius: 4px; color: #67e8f9; }
+pre code { background: none; padding: 0; color: inherit; font-size: 13px; }
+.kw-comment { color: #4b5563; }
+.kw-key { color: #67e8f9; }
+.kw-val { color: #86efac; }
+.kw-cmd { color: #c084fc; }
+.kw-str { color: #fbbf24; }
+.kw-muted { color: #6b7280; }
+
+/* TOOL FEATURE CARD */
+.tool-fc { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 22px; border-top: 3px solid; }
+.tool-fc-icon { font-size: 30px; margin-bottom: 10px; }
+.tool-fc-name { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+.tool-fc-desc { font-size: 13px; color: var(--muted); margin-bottom: 14px; line-height: 1.6; }
+.tool-fc-tag { display: inline-flex; align-items: center; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; }
+
+/* STEP CARD */
+.step { display: flex; gap: 16px; padding: 18px 0; border-bottom: 1px solid rgba(42,42,58,0.5); }
+.step:last-child { border-bottom: none; }
+.step-num { width: 32px; height: 32px; min-width: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; margin-top: 2px; }
+.step-body .step-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.step-body .step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* USE CASE CARD */
+.uc { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 22px; position: relative; overflow: hidden; }
+.uc::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.uc-num { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 8px; }
+.uc-title { font-size: 16px; font-weight: 800; margin-bottom: 6px; }
+.uc-prompt { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #9ca3af; font-style: italic; margin: 10px 0; border-left: 3px solid; line-height: 1.5; }
+.uc-detail { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.uc-1::before { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+.uc-2::before { background: linear-gradient(90deg, #0891b2, #06b6d4); }
+.uc-3::before { background: linear-gradient(90deg, #0d9488, #14b8a6); }
+.uc-4::before { background: linear-gradient(90deg, #c2410c, #f97316); }
+.uc-1 .uc-prompt { border-left-color: var(--accent2); }
+.uc-2 .uc-prompt { border-left-color: #67e8f9; }
+.uc-3 .uc-prompt { border-left-color: #5eead4; }
+.uc-4 .uc-prompt { border-left-color: #fdba74; }
+
+/* COMPARE ROW */
+.cmp { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(42,42,58,0.4); font-size: 13px; }
+.cmp:last-child { border-bottom: none; }
+.cmp-label { color: var(--muted); }
+.cmp-native { color: #86efac; font-weight: 600; }
+.cmp-api { color: #67e8f9; font-weight: 600; }
+.cmp-header { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 8px 0 4px; border-bottom: 1px solid var(--border); }
+
+/* BONUS SECTION */
+.bonus-wrap { background: linear-gradient(135deg, #0d0a1f 0%, #0f1220 50%, #0a0d14 100%); border: 2px solid rgba(251,191,36,0.25); border-radius: 20px; padding: 40px; margin-top: 60px; position: relative; overflow: hidden; }
+.bonus-wrap::before { content: ''; position: absolute; top: -80px; right: -60px; width: 280px; height: 280px; background: radial-gradient(circle, rgba(251,191,36,0.08) 0%, transparent 70%); pointer-events: none; }
+.bonus-wrap::after { content: ''; position: absolute; bottom: -40px; left: -40px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(124,58,237,0.07) 0%, transparent 70%); pointer-events: none; }
+.bonus-tag { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(90deg, rgba(251,191,36,0.15), rgba(234,179,8,0.08)); border: 1px solid rgba(251,191,36,0.3); border-radius: 20px; padding: 6px 16px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #fbbf24; margin-bottom: 20px; }
+.bonus-title { font-size: 28px; font-weight: 900; margin-bottom: 8px; }
+.bonus-title .grad-gold { background: linear-gradient(90deg, #fbbf24, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.bonus-sub { font-size: 15px; color: #9ca3af; margin-bottom: 28px; line-height: 1.6; }
+.bonus-code { background: #030508; border: 1px solid rgba(251,191,36,0.15); border-radius: 12px; padding: 24px; position: relative; overflow: hidden; }
+.bonus-code::before { content: 'SKILL.md'; position: absolute; top: 12px; right: 16px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(251,191,36,0.4); font-family: monospace; }
+.bonus-code pre { background: transparent; border: none; padding: 0; margin: 0; }
+.bonus-feature { background: rgba(251,191,36,0.05); border: 1px solid rgba(251,191,36,0.15); border-radius: 10px; padding: 14px 18px; margin-top: 12px; display: flex; gap: 12px; align-items: flex-start; }
+.bonus-feature .icon { font-size: 18px; min-width: 24px; }
+.bonus-feature .text { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.bonus-feature .text strong { display: block; font-size: 14px; color: var(--text); margin-bottom: 2px; }
+
+/* FLOW DIAGRAM */
+.flow { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; margin: 20px 0; }
+.flow-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; font-size: 13px; font-weight: 700; text-align: center; white-space: nowrap; }
+.flow-arrow { color: var(--muted); font-size: 16px; padding: 0 4px; }
+
+/* BADGE INLINE */
+.badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; vertical-align: middle; margin-left: 6px; }
+.badge-free { background: rgba(34,197,94,0.15); color: #86efac; border: 1px solid rgba(34,197,94,0.25); }
+.badge-paid { background: rgba(249,115,22,0.15); color: #fdba74; border: 1px solid rgba(249,115,22,0.25); }
+.badge-cheap { background: rgba(20,184,166,0.15); color: #5eead4; border: 1px solid rgba(20,184,166,0.25); }
+.badge-new { background: rgba(124,58,237,0.15); color: var(--accent2); border: 1px solid rgba(124,58,237,0.25); }
+
+/* DIVIDER */
+.div { height: 1px; background: var(--border); margin: 24px 0; }
+
+/* FOOTER */
+.footer { text-align: center; padding: 40px 0 20px; color: var(--muted); font-size: 13px; }
+.footer a { color: var(--accent2); text-decoration: none; }
+
+/* NAV BREADCRUMB */
+.nav { display: flex; align-items: center; gap: 8px; margin-bottom: 32px; font-size: 13px; color: var(--muted); }
+.nav a { color: var(--accent2); text-decoration: none; }
+.nav-sep { color: var(--border); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- NAV -->
+<div class="nav">
+  <span>📚 Curso OpenClaw</span>
+  <span class="nav-sep">›</span>
+  <span>Módulo 5 — Integrações</span>
+  <span class="nav-sep">›</span>
+  <span style="color:var(--text);">Web Search</span>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-orb"></div>
+  <div class="eyebrow">
+    <div class="pill pill-purple">📚 Curso OpenClaw</div>
+    <div class="pill pill-cyan">🌐 Módulo 5 · Integrações</div>
+    <div class="pill pill-green">✅ Nativo + Avançado</div>
+  </div>
+  <h1>Seu agente<br><span class="grad">navegando na internet</span></h1>
+  <p class="hero-sub">Web Search nativo, Brave Search API e Perplexity — do básico que já funciona hoje até a pesquisa profunda com IA. Seu agente pesquisando o mundo por você.</p>
+  <div class="kpis">
+    <div class="kpi"><div class="n" style="color:#22c55e;">Grátis</div><div class="l">pra começar</div></div>
+    <div class="kpi"><div class="n" style="color:#67e8f9;">2.000</div><div class="l">buscas/mês free</div></div>
+    <div class="kpi"><div class="n" style="color:#a78bfa;">$0,005</div><div class="l">por busca Perplexity</div></div>
+    <div class="kpi"><div class="n" style="color:#fbbf24;">4</div><div class="l">casos de uso reais</div></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- BLOCO 1 — O QUE O AGENTE JÁ FAZ DE GRAÇA -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="sh">
+    <div class="sh-num sh-num-green">1</div>
+    <div class="sh-label">O que o agente já faz de graça (sem configurar nada)</div>
+  </div>
+
+  <div class="card">
+    <p style="font-size:15px; font-weight:700; margin-bottom:6px;">🎁 Boa notícia: seu agente já sabe navegar na internet.</p>
+    <p style="font-size:14px; color:var(--muted); line-height:1.65;">Assim que você instala o OpenClaw, duas ferramentas de busca já estão disponíveis — sem configuração, sem API key, sem custo extra. São as primeiras coisas que o seu agente vai usar quando você pedir pra ele pesquisar alguma coisa.</p>
+  </div>
+
+  <div class="grid2">
+    <!-- web_search -->
+    <div class="tool-fc" style="border-top-color: #22c55e;">
+      <div class="tool-fc-icon">🔍</div>
+      <div class="tag" style="display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;color:#86efac;margin-bottom:10px;">GRÁTIS · NATIVO</div>
+      <div class="tool-fc-name"><code style="font-size:14px;background:rgba(34,197,94,0.1);color:#86efac;">web_search</code></div>
+      <div class="tool-fc-desc" style="margin-top:8px;">Busca na web via Brave integrado. Retorna títulos, URLs e snippets das páginas mais relevantes para uma query.</div>
+      <div style="font-size:12px; color:var(--muted); margin-top:8px; line-height:1.6;">
+        ✅ Busca em tempo real<br>
+        ✅ Filtro por data, idioma e região<br>
+        ✅ Sem API key necessária
+      </div>
+    </div>
+    <!-- web_fetch -->
+    <div class="tool-fc" style="border-top-color: #06b6d4;">
+      <div class="tool-fc-icon">📄</div>
+      <div class="tag" style="display:inline-flex;align-items:center;gap:6px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.25);border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;color:#67e8f9;margin-bottom:10px;">GRÁTIS · NATIVO</div>
+      <div class="tool-fc-name"><code style="font-size:14px;background:rgba(6,182,212,0.1);color:#67e8f9;">web_fetch</code></div>
+      <div class="tool-fc-desc" style="margin-top:8px;">Lê o conteúdo completo de qualquer URL — artigo, página de produto, landing page, documentação. Extrai o texto limpo.</div>
+      <div style="font-size:12px; color:var(--muted); margin-top:8px; line-height:1.6;">
+        ✅ Qualquer URL acessível<br>
+        ✅ HTML → texto legível<br>
+        ✅ Funciona com markdown
+      </div>
+    </div>
+  </div>
+
+  <!-- Como funciona na prática -->
+  <div class="card" style="margin-top:16px;">
+    <p style="font-size:14px; font-weight:700; color:var(--accent2); margin-bottom:16px;">💬 Como fica na prática — exemplos que você pode usar hoje:</p>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+
+      <div class="card-sm">
+        <div style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">Pesquisar concorrente</div>
+        <div style="font-size:13px; color:#9ca3af; font-style:italic;">"Pesquisa o que a empresa X está fazendo, quais são os últimos posts deles e me dá um resumo."</div>
+        <div style="font-size:12px; color:var(--muted); margin-top:4px;">→ Agente usa <code>web_search</code> + <code>web_fetch</code> nas páginas encontradas</div>
+      </div>
+
+      <div class="card-sm">
+        <div style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">Checar preço de produto</div>
+        <div style="font-size:13px; color:#9ca3af; font-style:italic;">"Qual o preço atual do plano Pro da [ferramenta]? Acessa o site deles e me fala."</div>
+        <div style="font-size:12px; color:var(--muted); margin-top:4px;">→ Agente acessa a URL diretamente com <code>web_fetch</code></div>
+      </div>
+
+      <div class="card-sm">
+        <div style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">Ler artigo / documentação</div>
+        <div style="font-size:13px; color:#9ca3af; font-style:italic;">"Lê esse artigo pra mim e me diz os 3 pontos mais importantes: [cola a URL]"</div>
+        <div style="font-size:12px; color:var(--muted); margin-top:4px;">→ <code>web_fetch</code> extrai o conteúdo e o agente sintetiza</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="ins ins-green">
+    <div class="ins-icon">💡</div>
+    <div class="ins-body">
+      <strong>Sem configurar nada, já funciona</strong>
+      <p>Esses dois comandos rodam no plano básico do OpenClaw. A diferença quando você configura a Brave API própria e o Perplexity é de volume e profundidade — mas o básico já te resolve 80% dos casos.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- BLOCO 2 — BRAVE SEARCH API -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="sh">
+    <div class="sh-num sh-num-cyan">2</div>
+    <div class="sh-label">Subindo o nível: Brave Search API própria</div>
+  </div>
+
+  <div class="card card-cyan">
+    <p style="font-size:15px; font-weight:700; margin-bottom:8px;">🦁 Por que usar sua própria API key do Brave?</p>
+    <p style="font-size:14px; color:var(--muted); line-height:1.65;">A busca nativa do OpenClaw é compartilhada — funciona, mas tem limites. Com sua própria key, você tem mais resultados por busca, sem filtros artificiais, e controle total sobre volume.</p>
+  </div>
+
+  <!-- Comparativo nativo vs própria -->
+  <div class="card" style="margin-bottom:16px;">
+    <p style="font-size:13px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:14px;">Busca nativa vs Brave API própria</p>
+    <div class="cmp-header">
+      <div style="display:flex; justify-content:space-between;">
+        <span>Funcionalidade</span>
+        <div style="display:flex; gap:60px;">
+          <span>Nativa</span>
+          <span>API própria</span>
+        </div>
+      </div>
+    </div>
+    <div class="cmp">
+      <span class="cmp-label">Resultados por busca</span>
+      <div style="display:flex; gap:40px; min-width:200px; justify-content:flex-end;">
+        <span class="cmp-native">Básico</span>
+        <span class="cmp-api">Até 20 results</span>
+      </div>
+    </div>
+    <div class="cmp">
+      <span class="cmp-label">Volume de buscas</span>
+      <div style="display:flex; gap:40px; min-width:200px; justify-content:flex-end;">
+        <span class="cmp-native">Compartilhado</span>
+        <span class="cmp-api">2.000/mês grátis</span>
+      </div>
+    </div>
+    <div class="cmp">
+      <span class="cmp-label">Filtros avançados</span>
+      <div style="display:flex; gap:40px; min-width:200px; justify-content:flex-end;">
+        <span class="cmp-native">Limitado</span>
+        <span class="cmp-api" style="color:#67e8f9;">Completo</span>
+      </div>
+    </div>
+    <div class="cmp">
+      <span class="cmp-label">Controle por data</span>
+      <div style="display:flex; gap:40px; min-width:200px; justify-content:flex-end;">
+        <span class="cmp-native">Parcial</span>
+        <span class="cmp-api" style="color:#67e8f9;">Total</span>
+      </div>
+    </div>
+    <div class="cmp">
+      <span class="cmp-label">Custo</span>
+      <div style="display:flex; gap:40px; min-width:200px; justify-content:flex-end;">
+        <span class="cmp-native" style="color:#86efac;">Grátis</span>
+        <span class="cmp-api" style="color:#86efac;">Grátis (2k/mês)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Como configurar -->
+  <div class="card">
+    <p style="font-size:14px; font-weight:700; color:#67e8f9; margin-bottom:20px;">⚙️ Como configurar — 3 passos simples:</p>
+
+    <div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(6,182,212,0.15); border:1px solid rgba(6,182,212,0.3); color:#67e8f9;">1</div>
+        <div class="step-body">
+          <div class="step-title">Crie sua conta e pegue a API key</div>
+          <div class="step-desc">
+            Acesse <strong style="color:#67e8f9;">brave.com/search/api</strong> → crie uma conta → vá em "API Keys" → clique em "New Key". O plano gratuito dá <strong>2.000 buscas/mês</strong> — suficiente pra maioria dos founders.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num" style="background:rgba(6,182,212,0.15); border:1px solid rgba(6,182,212,0.3); color:#67e8f9;">2</div>
+        <div class="step-body">
+          <div class="step-title">Configure no OpenClaw</div>
+          <div class="step-desc">Com a key em mãos, rode o comando abaixo no seu terminal:</div>
+        </div>
+      </div>
+    </div>
+
+    <pre><span class="kw-comment"># Configure sua Brave API Key no OpenClaw</span>
+<span class="kw-cmd">openclaw config set</span> <span class="kw-key">brave.apiKey</span> <span class="kw-str">BSA-xxxxxxxxxxxxxxxxxxxxxxxx</span>
+
+<span class="kw-comment"># Para confirmar que foi salva:</span>
+<span class="kw-cmd">openclaw config get</span> <span class="kw-key">brave.apiKey</span></pre>
+
+    <div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(6,182,212,0.15); border:1px solid rgba(6,182,212,0.3); color:#67e8f9;">3</div>
+        <div class="step-body">
+          <div class="step-title">Pronto — seu agente já usa a nova key</div>
+          <div class="step-desc">A partir de agora, toda vez que o agente usar <code>web_search</code>, ele vai bater na sua própria cota. Você consegue monitorar o consumo direto no painel da Brave.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ins ins-cyan">
+    <div class="ins-icon">📊</div>
+    <div class="ins-body">
+      <strong>2.000 buscas/mês — o que isso significa na prática?</strong>
+      <p>Se o seu agente faz 3-5 pesquisas por dia (monitoramento de concorrentes, notícias, etc.), você fica bem dentro do limite gratuito. Para uso mais intenso, o plano pago começa em $3/1.000 buscas — ainda barato.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- BLOCO 3 — PERPLEXITY API -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="sh">
+    <div class="sh-num sh-num-teal">3</div>
+    <div class="sh-label">Pesquisa profunda: Perplexity API</div>
+  </div>
+
+  <div class="card card-teal">
+    <p style="font-size:15px; font-weight:700; margin-bottom:8px;">🧠 Qual a diferença entre web_search e Perplexity?</p>
+    <p style="font-size:14px; color:var(--muted); line-height:1.65;">O <code>web_search</code> te dá <strong>links e snippets</strong>. O Perplexity te dá <strong>análise</strong>. É um modelo de IA que já leu as páginas, cruzou as informações e te entrega uma resposta sintetizada com fontes. Quando você quer entender algo, não só achar links — é Perplexity.</p>
+  </div>
+
+  <!-- Quando usar cada um -->
+  <div class="grid2" style="margin-bottom:16px;">
+    <div class="card-sm card-cyan" style="border-radius:12px; padding:20px;">
+      <div style="font-size:20px; margin-bottom:8px;">🔍</div>
+      <div style="font-size:14px; font-weight:800; color:#67e8f9; margin-bottom:6px;">web_search — use quando:</div>
+      <ul style="font-size:13px; color:var(--muted); padding-left:16px; line-height:1.8;">
+        <li>Quer achar uma URL específica</li>
+        <li>Monitorar se saiu novidade</li>
+        <li>Busca rápida de referência</li>
+        <li>Checar preço / contato de empresa</li>
+      </ul>
+    </div>
+    <div class="card-sm card-teal" style="border-radius:12px; padding:20px;">
+      <div style="font-size:20px; margin-bottom:8px;">🧠</div>
+      <div style="font-size:14px; font-weight:800; color:#5eead4; margin-bottom:6px;">Perplexity — use quando:</div>
+      <ul style="font-size:13px; color:var(--muted); padding-left:16px; line-height:1.8;">
+        <li>Quer entender um mercado</li>
+        <li>Pesquisa de contexto profundo</li>
+        <li>Análise de múltiplas fontes</li>
+        <li>Quer conclusão, não lista de links</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Como configurar Perplexity -->
+  <div class="card">
+    <p style="font-size:14px; font-weight:700; color:#5eead4; margin-bottom:20px;">⚙️ Como configurar o Perplexity:</p>
+
+    <div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(20,184,166,0.15); border:1px solid rgba(20,184,166,0.3); color:#5eead4;">1</div>
+        <div class="step-body">
+          <div class="step-title">Crie a conta e gere a API key</div>
+          <div class="step-desc">Acesse <strong style="color:#5eead4;">perplexity.ai</strong> → Settings → API → "Generate". O Perplexity usa créditos pré-pagos — você carrega $5, $10 ou mais e gasta conforme usa.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num" style="background:rgba(20,184,166,0.15); border:1px solid rgba(20,184,166,0.3); color:#5eead4;">2</div>
+        <div class="step-body">
+          <div class="step-title">Salve no 1Password</div>
+          <div class="step-desc">Não salve a key direto no config. Guarde no 1Password com o nome <strong>"Perplexity API"</strong> — seu agente busca de lá quando precisar.</div>
+        </div>
+      </div>
+    </div>
+
+    <pre><span class="kw-comment"># Salvar no 1Password (via CLI do op)</span>
+<span class="kw-cmd">op item create</span> \
+  <span class="kw-key">--category</span> <span class="kw-str">"API Credential"</span> \
+  <span class="kw-key">--title</span> <span class="kw-str">"Perplexity API"</span> \
+  <span class="kw-key">--vault</span> <span class="kw-str">"Amora Vault"</span> \
+  <span class="kw-str">"credential=pplx-xxxxxxxxxxxxxxxxxxxxxxxx"</span>
+
+<span class="kw-comment"># Para buscar depois (o agente faz isso automaticamente):</span>
+<span class="kw-cmd">op item get</span> <span class="kw-str">"Perplexity API"</span> <span class="kw-key">--field</span> credential <span class="kw-key">--reveal</span></pre>
+
+    <div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(20,184,166,0.15); border:1px solid rgba(20,184,166,0.3); color:#5eead4;">3</div>
+        <div class="step-body">
+          <div class="step-title">Pronto — chame via skill</div>
+          <div class="step-desc">A skill de Perplexity no seu workspace já sabe buscar a key no 1Password. Basta dizer "usa o Perplexity pra pesquisar X" ou configurar o deep research (veja o bônus abaixo).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custo -->
+  <div class="card" style="background: rgba(20,184,166,0.03); border-color: rgba(20,184,166,0.2);">
+    <p style="font-size:13px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:14px;">💰 Quanto custa na prática?</p>
+    <div style="display:flex; flex-wrap:wrap; gap:20px; align-items:center;">
+      <div>
+        <div style="font-size:32px; font-weight:900; color:#5eead4;">$0,005</div>
+        <div style="font-size:11px; color:var(--muted); margin-top:4px; text-transform:uppercase; letter-spacing:0.04em;">por busca / consulta</div>
+      </div>
+      <div style="flex:1; min-width:200px;">
+        <div style="font-size:13px; color:var(--muted); line-height:1.7;">
+          Com $5 de crédito você tem <strong style="color:var(--text);">1.000 buscas</strong>. Se o agente rodar um deep research por semana (5-8 consultas), você gasta <strong style="color:var(--text);">menos de $2/mês</strong>. É barato demais pra não usar.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ins ins-teal">
+    <div class="ins-icon">⚡</div>
+    <div class="ins-body">
+      <strong>Combinação ideal para pesquisa séria</strong>
+      <p>Use <code>web_search</code> para varredura rápida (achar as fontes certas) + Perplexity para análise profunda dessas fontes. É exatamente o que o protocolo de Deep Research do bloco bônus faz — automaticamente.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- BLOCO 4 — CASOS DE USO REAIS -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="sh">
+    <div class="sh-num sh-num-orange">4</div>
+    <div class="sh-label">Casos de uso reais para founders de Micro-SaaS</div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <p style="font-size:14px; color:var(--muted); line-height:1.65;">Tudo abaixo você consegue fazer <strong style="color:var(--text);">hoje</strong>, com as ferramentas que já configurou. É só falar pro agente.</p>
+  </div>
+
+  <div class="grid2">
+    <!-- UC 1 -->
+    <div class="uc uc-1">
+      <div class="uc-num">Caso de uso #1</div>
+      <div class="uc-title">🕵️ Monitorar concorrentes</div>
+      <div class="uc-prompt">
+        "Toda segunda de manhã, faz uma busca sobre o que [Concorrente X] e [Concorrente Y] publicaram essa semana — posts, releases, mudanças de site — e me manda um resumo no Telegram."
+      </div>
+      <div class="uc-detail">
+        Você agenda via cron no OpenClaw. O agente roda o <code>web_search</code> automaticamente, lê as páginas mais relevantes com <code>web_fetch</code> e te manda o report.
+      </div>
+    </div>
+
+    <!-- UC 2 -->
+    <div class="uc uc-2">
+      <div class="uc-num">Caso de uso #2</div>
+      <div class="uc-title">📊 Pesquisa de mercado</div>
+      <div class="uc-prompt">
+        "Analisa o mercado de ferramentas de automação de WhatsApp no Brasil — principais players, faixas de preço, features que se repetem, oportunidades."
+      </div>
+      <div class="uc-detail">
+        Perplexity + <code>web_fetch</code> nas páginas dos concorrentes. O agente volta com um relatório estruturado que levaria horas pra fazer manualmente.
+      </div>
+    </div>
+
+    <!-- UC 3 -->
+    <div class="uc uc-3">
+      <div class="uc-num">Caso de uso #3</div>
+      <div class="uc-title">📰 Acompanhar notícias do setor</div>
+      <div class="uc-prompt">
+        "Me avisa quando sair notícia importante sobre [tema — ex: regulamentação de IA no Brasil, mudanças na API do WhatsApp]."
+      </div>
+      <div class="uc-detail">
+        Heartbeat diário com <code>web_search</code> filtrando por data. Só te notifica se tiver algo novo — sem spam.
+      </div>
+    </div>
+
+    <!-- UC 4 -->
+    <div class="uc uc-4">
+      <div class="uc-num">Caso de uso #4</div>
+      <div class="uc-title">🗂️ Extrair dados de sites</div>
+      <div class="uc-prompt">
+        "Pega os preços dos planos dos 5 principais concorrentes e monta uma tabela comparativa pra mim."
+      </div>
+      <div class="uc-detail">
+        <code>web_fetch</code> em cada página de pricing. O agente extrai e organiza os dados. Funciona com preços, reviews, informações de contato — qualquer dado público.
+      </div>
+    </div>
+  </div>
+
+  <div class="ins ins-orange" style="margin-top:20px;">
+    <div class="ins-icon">🚀</div>
+    <div class="ins-body">
+      <strong>Dica: combine com crons para monitoramento automático</strong>
+      <p>Os casos de uso ficam ainda mais poderosos quando automatizados. Configure o agente pra rodar esses checks toda segunda, toda manhã, ou sempre que você precisar — sem precisar lembrar de pedir.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- BLOCO BÔNUS — SKILL DE DEEP RESEARCH -->
+<!-- ============================================================ -->
+<div class="bonus-wrap">
+  <div class="bonus-tag">
+    🎁 Bônus exclusivo
+  </div>
+  <div class="bonus-title">Skill de <span class="grad-gold">Deep Research</span></div>
+  <p class="bonus-sub">Essa skill transforma seu agente num pesquisador sênior. Uma instrução transforma web_search + web_fetch + Perplexity em um fluxo de pesquisa profunda completo — com relatório acionável no final. Cole direto no seu agente.</p>
+
+  <!-- Features do protocolo -->
+  <div class="grid3" style="margin-bottom:28px;">
+    <div class="bonus-feature">
+      <div class="icon">🔍</div>
+      <div class="text"><strong>Varredura (Brave)</strong>Mapeamento geral do tema com web_search — acha as fontes certas.</div>
+    </div>
+    <div class="bonus-feature">
+      <div class="icon">📖</div>
+      <div class="text"><strong>Leitura profunda</strong>web_fetch nas páginas mais relevantes — extrai o conteúdo completo.</div>
+    </div>
+    <div class="bonus-feature">
+      <div class="icon">🧠</div>
+      <div class="text"><strong>Análise com IA</strong>Perplexity cruza as informações e entrega síntese com conclusão.</div>
+    </div>
+  </div>
+
+  <!-- O prompt completo -->
+  <div class="bonus-code">
+    <pre><span class="kw-comment">---
+name: deep-research-protocol
+description: >
+  Use quando pedir: "pesquisa sobre", "deep research", "investiga",
+  "analisa o mercado de", "benchmark", "quero entender melhor",
+  "análise de concorrentes", "me dá um overview de".
+---</span>
+
+<span class="kw-key"># Deep Research Protocol</span>
+
+<span class="kw-comment">## Protocolo (executar em ordem)</span>
+
+<span class="kw-key">### 1. ENQUADRAMENTO (2 min)</span>
+<span class="kw-muted">- Qual a pergunta exata que estou respondendo?
+- Qual decisão essa pesquisa vai informar?
+- Profundidade: quick scan (5-10 min) | standard (15-30 min) | deep dive (30-60 min)?</span>
+
+<span class="kw-key">### 2. COLETA MULTI-FONTE</span>
+<span class="kw-muted">Fontes primárias (nesta ordem):</span>
+<span class="kw-muted">1.</span> <span class="kw-key">web_search</span>    <span class="kw-muted">— varredura geral (Brave)</span>
+<span class="kw-muted">2.</span> <span class="kw-key">web_fetch</span>     <span class="kw-muted">— extrair conteúdo das URLs mais relevantes</span>
+<span class="kw-muted">3.</span> <span class="kw-key">Perplexity API</span> <span class="kw-muted">— síntese com AI e citações (key no 1Password: "Perplexity API")</span>
+<span class="kw-muted">4.</span> <span class="kw-key">Knowledge Base</span> <span class="kw-muted">— se tiver conteúdo relevante já ingestado</span>
+
+<span class="kw-muted">Fontes especializadas (quando relevante):
+- Reddit/HackerNews — opinião de comunidade técnica
+- Twitter/X — sinais em tempo real
+- YouTube — análises longas</span>
+
+<span class="kw-key">### 3. SÍNTESE</span>
+<span class="kw-muted">Para cada fonte, classificar:
+-</span> <span class="kw-val">FATO</span>    <span class="kw-muted">→ confirmável, com fonte
+-</span> <span class="kw-val">OPINIÃO</span> <span class="kw-muted">→ interpretação, marcar como tal
+-</span> <span class="kw-val">SINAL</span>   <span class="kw-muted">→ sugere tendência, monitorar</span>
+
+<span class="kw-key">### 4. RELATÓRIO (formato padrão)</span>
+
+<span class="kw-str"># [Tema] — Deep Research
+Data: DD/MM/YYYY
+
+## TL;DR
+- [3-5 bullets com o essencial]
+
+## Contexto
+[Por que estamos pesquisando / qual decisão isso informa]
+
+## Findings
+### [Subtema 1]
+- Finding + fonte
+### [Subtema 2]
+- Finding + fonte
+
+## Análise
+[Cruzamento dos findings, padrões, o que significa]
+
+## Recomendação
+[O que fazer com essa informação]
+
+## Fontes
+1. [URL 1]
+2. [URL 2]</span>
+
+<span class="kw-key">### 5. SALVAMENTO</span>
+<span class="kw-muted">- Salvar em memory/research-YYYY-MM-DD-[slug].md</span>
+
+<span class="kw-comment">## Níveis de profundidade</span>
+<span class="kw-muted">| Quick scan  | 5-10 min  | 3-5 URLs   | 1 parágrafo + bullets  |
+| Standard    | 15-30 min | 8-12 URLs  | Relatório 1-2 páginas  |
+| Deep dive   | 30-60 min | 15-20 URLs | Relatório 3-5 páginas  |</span>
+
+<span class="kw-comment">## Vieses a evitar</span>
+<span class="kw-muted">- Confirmation bias → buscar ativamente contra-argumentos
+- Recency bias → verificar se tendências são reais ou hype
+- Survivorship bias → buscar casos de fracasso, não só sucesso</span>
+
+<span class="kw-comment">## Prompts que ativam esta skill</span>
+<span class="kw-str">"Deep research: ferramentas de automação para WhatsApp no Brasil"
+"Analisa o mercado de cursos online de IA em 2026"
+"Pesquisa os 5 maiores concorrentes do [produto]: features, preços, diferenciais"
+"Investiga por que a [empresa X] cresceu tão rápido"
+"Benchmark: como os melhores SaaS de [categoria] fazem onboarding?"</span></pre>
+  </div>
+
+  <!-- Flow visual do protocolo -->
+  <div style="margin-top:24px;">
+    <div style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:rgba(251,191,36,0.6); margin-bottom:12px;">Como o fluxo funciona:</div>
+    <div class="flow">
+      <div class="flow-box" style="border-color:rgba(251,191,36,0.2); color:#fbbf24;">📝 Sua pergunta</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:rgba(34,197,94,0.2); color:#86efac;">🔍 web_search</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:rgba(6,182,212,0.2); color:#67e8f9;">📄 web_fetch</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:rgba(20,184,166,0.2); color:#5eead4;">🧠 Perplexity</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:rgba(124,58,237,0.3); color:var(--accent2);">📊 Relatório</div>
+    </div>
+  </div>
+
+  <div class="ins ins-yellow" style="margin-top:24px; background:rgba(251,191,36,0.05); border-color:rgba(251,191,36,0.2);">
+    <div class="ins-icon">⭐</div>
+    <div class="ins-body">
+      <strong style="color:#fbbf24;">Como instalar essa skill no seu agente</strong>
+      <p>Salve o conteúdo acima num arquivo <code>skills/research/deep-research-protocol/SKILL.md</code> dentro do workspace do seu agente. A partir daí, quando você disser "faz um deep research", ele vai seguir o protocolo automaticamente.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer" style="margin-top:60px;">
+  <div style="font-size:12px; color:var(--border); margin-bottom:8px;">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+  <p>📚 <strong style="color:var(--text);">Curso OpenClaw</strong> · Módulo 5 — Integrações</p>
+  <p style="margin-top:4px; color:var(--muted);">Aula: Seu agente navegando na internet · Web Search + Brave API + Perplexity</p>
+  <p style="margin-top:12px; font-size:11px; color:rgba(107,114,128,0.5);">Material produzido para founders de Micro-SaaS · Reprodução para fins educacionais.</p>
+</div>
+
+</div><!-- /wrap -->
+</body>
+</html>

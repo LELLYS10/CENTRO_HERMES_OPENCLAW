@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atualização Curso OpenClaw — 11/04/2026</title>
+<style>
+:root {
+  --bg:#0a0a0f;--surface:#13131a;--surface2:#1a1a24;--border:#2a2a3a;
+  --accent:#7c3aed;--accent2:#a855f7;--green:#22c55e;--red:#ef4444;
+  --yellow:#eab308;--blue:#3b82f6;--text:#e2e8f0;--muted:#94a3b8;
+  --card:#16161f;--orange:#f97316;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.6}
+.container{max-width:900px;margin:0 auto;padding:32px 20px}
+h1{font-size:28px;font-weight:800;background:linear-gradient(90deg,#7c3aed,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+h2{font-size:18px;font-weight:700;color:#c4b5fd;margin:32px 0 12px;border-left:3px solid var(--accent);padding-left:10px}
+h3{font-size:15px;font-weight:600;color:#a78bfa;margin:20px 0 8px}
+.subtitle{color:var(--muted);font-size:13px;margin-bottom:28px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:28px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+.kpi .val{font-size:28px;font-weight:800;color:var(--accent2)}
+.kpi .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px}
+th{background:#1a1a2e;padding:8px 10px;text-align:left;color:var(--muted);font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:.5px}
+td{padding:8px 10px;border-bottom:1px solid var(--border)}
+tr:hover td{background:#1a1a28}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600}
+.badge-green{background:#166534;color:#86efac}
+.badge-yellow{background:#854d0e;color:#fde047}
+.badge-red{background:#991b1b;color:#fca5a5}
+.badge-blue{background:#1e3a5f;color:#93c5fd}
+.badge-orange{background:#9a3412;color:#fdba74}
+code{background:#1e1e2e;padding:2px 6px;border-radius:4px;font-size:12px;color:#a78bfa}
+.alert{background:#1a1020;border:1px solid #7c3aed;border-radius:10px;padding:14px;margin-bottom:16px}
+.alert-yellow{background:#1a1a10;border-color:var(--yellow)}
+.alert-red{background:#1a1010;border-color:var(--red)}
+ul{padding-left:20px;margin:8px 0}
+li{margin-bottom:4px}
+.section-divider{border:0;border-top:1px solid var(--border);margin:32px 0}
+.footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--border);color:var(--muted);font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Atualização do Curso OpenClaw</h1>
+<p class="subtitle">11 de Abril de 2026 — Migração Anthropic → ChatGPT OAuth + Correções de Modelo</p>
+
+<!-- KPIs -->
+<div class="kpi-grid">
+  <div class="kpi"><div class="val">32</div><div class="lbl">Arquivos atualizados</div></div>
+  <div class="kpi"><div class="val">9</div><div class="lbl">Uploads no Drive</div></div>
+  <div class="kpi"><div class="val">GPT-5.4</div><div class="lbl">Modelo padrão</div></div>
+  <div class="kpi"><div class="val">2026.4.9</div><div class="lbl">Versão OpenClaw</div></div>
+</div>
+
+<!-- CONTEXTO -->
+<h2>Contexto</h2>
+<div class="card">
+  <p>Em <strong>04/04/2026</strong>, a Anthropic bloqueou OAuth para planos Pro. O curso precisou migrar de <strong>Anthropic como provider padrão</strong> para <strong>ChatGPT (OpenAI) via OAuth</strong>.</p>
+  <p style="margin-top:8px">Este ciclo de atualização cobre:</p>
+  <ul>
+    <li>Migração completa de OAuth: Anthropic → <strong>ChatGPT OAuth</strong></li>
+    <li>Modelo padrão: <code>claude-sonnet-4-5</code> → <strong><code>openai/gpt-5.4</code></strong></li>
+    <li>Modelo heartbeat: <code>claude-haiku-4-5</code> → <strong><code>openai/gpt-4o-mini</code></strong></li>
+    <li>Novas features: <strong>Dreaming</strong> (M4), <strong>ACP Bind</strong> (M8), <strong>Secrets Audit</strong> (M9)</li>
+    <li>Infraestrutura: KVM 1 → <strong>KVM 2</strong>, cupom <code>BRUNOOKAMOTO</code>, SSH key setup</li>
+  </ul>
+</div>
+
+<!-- HIERARQUIA DE MODELOS -->
+<h2>Nova Hierarquia de Modelos</h2>
+<div class="card">
+  <table>
+    <thead><tr><th>Função</th><th>Antes</th><th>Agora</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Modelo padrão (conversas)</strong></td><td><code>anthropic/claude-sonnet-4-5</code></td><td><code>openai/gpt-5.4</code></td></tr>
+      <tr><td>Fallback</td><td><code>anthropic/claude-haiku-4-5</code></td><td><code>openai/gpt-4o</code></td></tr>
+      <tr><td>Heartbeat (econômico)</td><td><code>anthropic/claude-haiku-4-5</code></td><td><code>openai/gpt-4o-mini</code></td></tr>
+      <tr><td>Alternativa multi-LLM</td><td>—</td><td><strong>OpenRouter</strong> (aula dedicada em breve)</td></tr>
+      <tr><td>Opcional (API Key)</td><td>—</td><td><code>anthropic/claude-sonnet-4-6</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- MATERIAIS ATUALIZADOS -->
+<h2>Materiais Atualizados</h2>
+
+<h3>HTMLs no Drive (atualizados 11/04)</h3>
+<div class="card">
+  <table>
+    <thead><tr><th>Módulo</th><th>Arquivo</th><th>Mudanças principais</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>M1</td><td>modulo-01-setup.html (v3)</td><td>ChatGPT OAuth padrão, KVM 2, cupom, SSH key</td><td><span class="badge badge-green">✓ Drive</span></td></tr>
+      <tr><td>M2</td><td>modulo-02-seguranca.html</td><td>OpenAI/OpenRouter, Cloudflare removido</td><td><span class="badge badge-green">✓ Drive</span></td></tr>
+      <tr><td>M4</td><td>modulo-04-memoria.html (v2)</td><td>Dreaming (Light/Deep/REM), memory tiering</td><td><span class="badge badge-green">✓ Drive</span></td></tr>
+      <tr><td>M8</td><td>modulo-08-multiagentes-v2.html</td><td>ACP Bind, sessions_yield, GPT-4o</td><td><span class="badge badge-green">✓ Drive</span></td></tr>
+      <tr><td>M9</td><td>modulo-09-immune-system-v2.html</td><td>Secrets audit, Plugin SDK, GPT-4o-mini</td><td><span class="badge badge-green">✓ Drive</span></td></tr>
+      <tr><td>N1</td><td>aula-n1-oauth-config.html</td><td>Reescrita completa: ChatGPT OAuth como padrão, GPT-5.4</td><td><span class="badge badge-green">✓ Drive</span></td></tr>
+      <tr><td>N7</td><td>aula-n7-custos-modelos.html</td><td>Modelos GPT como padrão, GPT-5.4</td><td><span class="badge badge-green">✓ Drive</span></td></tr>
+      <tr><td>N7</td><td>aula-n7-custos-modelos-v2.html</td><td>Modelos GPT como padrão, pricing atualizado, GPT-5.4</td><td><span class="badge badge-green">✓ Drive</span></td></tr>
+      <tr><td>Bônus</td><td>aula-bonus-report-comunidade.html</td><td>Modelos em JSON corrigidos</td><td><span class="badge badge-green">✓ Drive</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>PRDs atualizados (13 arquivos)</h3>
+<div class="card">
+  <table>
+    <thead><tr><th>PRD</th><th>Mudanças</th></tr></thead>
+    <tbody>
+      <tr><td>aula-n1-oauth-config.md</td><td>306 linhas reescritas — ChatGPT OAuth padrão</td></tr>
+      <tr><td>vps-setup-hostinger.md</td><td>KVM 2, cupom BRUNOOKAMOTO, SSH key</td></tr>
+      <tr><td>aula-n7-custos-modelos.md</td><td>claude-* → gpt-*, GPT-5.4 como padrão</td></tr>
+      <tr><td>topicos-telegram-arquitetura.md</td><td>10 configs JSON migradas</td></tr>
+      <tr><td>aula-n4-lentidao-telegram.md</td><td>claude-sonnet → gpt-4o, claude-haiku → gpt-4o-mini</td></tr>
+      <tr><td>aula-n5-debug-runbook.md</td><td>Provider order: OpenAI primeiro</td></tr>
+      <tr><td>debug-vps-claude-code.md</td><td>Provider check atualizado</td></tr>
+      <tr><td>PRD-MASTER-REGRAVACAO.md</td><td>Narrativa OAuth atualizada</td></tr>
+      <tr><td>memory-architecture.md</td><td>Seção 8: Dreaming (Light/Deep/REM)</td></tr>
+      <tr><td>multi-agent-setup.md</td><td>ACP bind</td></tr>
+      <tr><td>multi-agent-v2.md</td><td>ACP bind + ACPX runtime/embed</td></tr>
+      <tr><td>immune-system.md</td><td>sessions_yield, Plugin SDK @openclaws/*</td></tr>
+      <tr><td>integrations-setup.md</td><td>GOG CLI, PDF tool, GPT como padrão</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Prompts de aluno atualizados (8 arquivos)</h3>
+<div class="card">
+  <table>
+    <thead><tr><th>Prompt</th><th>Mudanças</th></tr></thead>
+    <tbody>
+      <tr><td>modulo-01-setup.md</td><td>Anthropic → ChatGPT OAuth, GPT-5.4/4o/4o-mini</td></tr>
+      <tr><td>modulo-03-identidade.md</td><td>"Claude Code" → "SOUL.md"</td></tr>
+      <tr><td>modulo-05-integracoes.md</td><td>OpenRouter como hub, built-ins de mídia</td></tr>
+      <tr><td>modulo-06-skills-aula2.md</td><td>skill-creator alinhado ao clawhub</td></tr>
+      <tr><td>modulo-06-skills-aula3.md</td><td>skill-creator alinhado ao clawhub</td></tr>
+      <tr><td>modulo-08-multiagentes.md</td><td>GPT-4o, sessions_yield, ACP bind</td></tr>
+      <tr><td>modulo-09-immune-system.md</td><td>GPT-4o-mini heartbeats, secrets audit</td></tr>
+      <tr><td>modulo-04-memoria.md</td><td>Step 8: Configure dreaming (3 fases)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="section-divider">
+
+<!-- AUDITORIA DRIVE -->
+<h2>Auditoria Completa do Google Drive</h2>
+
+<div class="alert alert-yellow">
+  <strong>⚠️ Arquivos antigos no Drive com referências Anthropic</strong><br>
+  Os seguintes HTMLs ainda referenciam Anthropic como provider/modelo. Eles são versões anteriores e serão substituídos conforme novos HTMLs forem gerados.
+</div>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Arquivo</th><th>Pasta</th><th>Refs Anthropic</th><th>Prioridade</th></tr></thead>
+    <tbody>
+      <tr><td>modulo-01-setup-v2.html</td><td>Extras/modulos</td><td>5 refs (conta Anthropic, ai.provider, console)</td><td><span class="badge badge-red">Substituído pelo v3</span></td></tr>
+      <tr><td>modulo-02-seguranca-v2.html</td><td>Extras/modulos</td><td>4 refs (API_KEY, rotação, secrets)</td><td><span class="badge badge-yellow">Gerar v3</span></td></tr>
+      <tr><td>modulo-05-integracoes-v2.html</td><td>Extras/modulos</td><td>1 ref (Claude native)</td><td><span class="badge badge-yellow">Gerar v3</span></td></tr>
+      <tr><td>fallback-llms.html</td><td>Extras/Performance</td><td><strong>35+ refs</strong> (inteiro sobre Anthropic)</td><td><span class="badge badge-red">Regravar</span></td></tr>
+      <tr><td>aula-rate-limits.html</td><td>Extras/Performance</td><td><strong>12+ refs</strong> (tiers, console, modelos)</td><td><span class="badge badge-red">Regravar</span></td></tr>
+      <tr><td>modulo-00-abertura.html</td><td>aula-00</td><td>1 ref (pricing)</td><td><span class="badge badge-blue">Baixa</span></td></tr>
+      <tr><td>modulo-03-identidade.html</td><td>aula-03</td><td>1 ref (fallback cmd)</td><td><span class="badge badge-blue">Baixa</span></td></tr>
+      <tr><td>modulo-05-integracoes.html</td><td>aula-05</td><td>2 refs (env var, modelo)</td><td><span class="badge badge-yellow">Média</span></td></tr>
+      <tr><td>modulo-09-immune-system.html</td><td>aula-09</td><td>1 ref (modelo default)</td><td><span class="badge badge-orange">Substituído pelo v2</span></td></tr>
+      <tr><td>aula-telegram-grupos-topicos.html</td><td>aula-03/Topicos</td><td>1 ref (modelo config)</td><td><span class="badge badge-blue">Baixa</span></td></tr>
+      <tr><td>aula-extra-a-integracoes.html</td><td>Extras/Integracoes</td><td>1 ref (provider table)</td><td><span class="badge badge-blue">Baixa</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Arquivos limpos (sem referências Anthropic)</h3>
+<div class="card">
+  <table>
+    <thead><tr><th>Arquivo</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>modulo-07-proatividade.html</td><td><span class="badge badge-green">Limpo</span></td></tr>
+      <tr><td>modulo-08-multiagentes.html (v1)</td><td><span class="badge badge-green">Limpo</span></td></tr>
+      <tr><td>modulo-10-mission-control.html</td><td><span class="badge badge-green">Limpo</span></td></tr>
+      <tr><td>modulo-11-wrapup.html</td><td><span class="badge badge-green">Limpo</span></td></tr>
+      <tr><td>bot-sem-shell.html</td><td><span class="badge badge-green">Limpo</span></td></tr>
+      <tr><td>telegram-bot-grupo.html</td><td><span class="badge badge-green">Limpo</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="section-divider">
+
+<!-- NOVAS FEATURES -->
+<h2>Novas Features do OpenClaw cobertas</h2>
+<div class="card">
+  <table>
+    <thead><tr><th>Feature</th><th>Versão</th><th>Onde ensinado</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Dreaming</strong> (Light/Deep/REM)</td><td>2026.3.28+</td><td>M4 Memória</td></tr>
+      <tr><td><strong>ACP Bind</strong> (Agent Communication Protocol)</td><td>2026.4.x</td><td>M8 Multiagentes</td></tr>
+      <tr><td><strong>ACPX Runtime/Embed</strong></td><td>2026.4.x</td><td>M8 Multiagentes (PRD)</td></tr>
+      <tr><td><strong>sessions_yield</strong></td><td>2026.4.x</td><td>M8, M9</td></tr>
+      <tr><td><strong>openclaw secrets audit</strong></td><td>2026.4.x</td><td>M9 Immune System</td></tr>
+      <tr><td><strong>Plugin SDK @openclaws/*</strong></td><td>2026.4.x</td><td>M9 Immune System</td></tr>
+      <tr><td><strong>Built-in media generation</strong> (image/video/music)</td><td>2026.4.x</td><td>M5 Integrações (PRD)</td></tr>
+      <tr><td><strong>Dream Diary</strong></td><td>2026.3.28+</td><td>M4 Memória</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="section-divider">
+
+<!-- PRÓXIMOS PASSOS -->
+<h2>Próximos Passos</h2>
+<div class="card">
+  <h3>🔴 Alta prioridade</h3>
+  <ul>
+    <li><strong>fallback-llms.html</strong> — regravar com foco em OpenRouter como hub multi-LLM (aula dedicada prevista)</li>
+    <li><strong>aula-rate-limits.html</strong> — atualizar tiers/modelos para OpenAI + OpenRouter</li>
+    <li><strong>Aula 0 (Abertura)</strong> — regravar com benefits-first + use cases (Amora, Pixel, Walter)</li>
+    <li><strong>Aula VPS Hostinger</strong> — regravar com ChatGPT OAuth</li>
+  </ul>
+  <h3>🟡 Média prioridade</h3>
+  <ul>
+    <li><strong>M5/M6 HTML</strong> — gerar HTML final dos PRDs revisados (OpenRouter, GOG CLI, built-ins)</li>
+    <li><strong>modulo-02-seguranca-v2.html</strong> — gerar v3 sem refs Anthropic</li>
+    <li><strong>modulo-05-integracoes-v2.html</strong> — gerar v3 com OpenRouter</li>
+    <li><strong>Aula OpenRouter (nova)</strong> — multi-LLM fallback via OpenRouter</li>
+  </ul>
+  <h3>🟢 Baixa prioridade</h3>
+  <ul>
+    <li>modulo-00, modulo-03, aula-telegram-topicos, aula-extra-integracoes — refs pontuais, correção rápida</li>
+    <li>M12 Avançado — bloqueado por falta de fonte</li>
+    <li>Materiais de aluno (guias, cheatsheets) — formato a definir</li>
+  </ul>
+</div>
+
+<hr class="section-divider">
+
+<!-- REFERÊNCIAS INTENCIONAIS -->
+<h2>Referências Anthropic mantidas intencionalmente</h2>
+<div class="card">
+  <p>Estas referências <strong>NÃO são bugs</strong> — foram mantidas de propósito:</p>
+  <table>
+    <thead><tr><th>Onde</th><th>Referência</th><th>Motivo</th></tr></thead>
+    <tbody>
+      <tr><td>N1 OAuth Config</td><td>Seção 3: "Anthropic API Key — Caminho opcional"</td><td>Fallback documentado para quem quer usar Anthropic</td></tr>
+      <tr><td>N7 Custos v2</td><td>Tabela de pricing Anthropic</td><td>Aula comparativa — mostra opções reais</td></tr>
+      <tr><td>Community reports</td><td>Tags e discussões históricas</td><td>Dados de análise — snapshots</td></tr>
+      <tr><td>Failover chains</td><td><code>anthropic/claude-sonnet-4-6</code></td><td>Arquitetura de resiliência</td></tr>
+      <tr><td>debug-vps</td><td><code>@anthropic-ai/claude-code</code></td><td>Nome real do pacote npm</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="footer">
+  Curso OpenClaw — Atualização 11/04/2026<br>
+  Versão coberta: OpenClaw 2026.4.9 | Gerado por Claude Code
+</div>
+
+</div>
+</body>
+</html>

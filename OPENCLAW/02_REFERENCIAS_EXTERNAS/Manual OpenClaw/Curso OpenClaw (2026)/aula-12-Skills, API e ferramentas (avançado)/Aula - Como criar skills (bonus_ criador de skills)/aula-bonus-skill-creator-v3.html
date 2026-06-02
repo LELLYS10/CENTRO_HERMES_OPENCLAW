@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bônus: Crie Suas Próprias Skills com o /criar-skill — Curso OpenClaw 2026</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1a1a26;
+    --border: #2a2a3a;
+    --accent: #7c3aed;
+    --accent2: #a78bfa;
+    --text: #e2e2f0;
+    --muted: #6b7280;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --orange: #f97316;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --teal: #14b8a6;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ─── LAYOUT ─── */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  section {
+    padding: 64px 0 0;
+  }
+
+  /* ─── TYPOGRAPHY ─── */
+  h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; }
+  h2 { font-size: clamp(1.4rem, 3vw, 1.9rem); font-weight: 700; line-height: 1.25; letter-spacing: -0.015em; margin-bottom: 8px; }
+  h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 6px; }
+  p { margin-bottom: 12px; color: var(--text); }
+  p:last-child { margin-bottom: 0; }
+
+  .section-label {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    background: #7c3aed18;
+    border: 1px solid #7c3aed30;
+    border-radius: 6px;
+    padding: 4px 10px;
+    margin-bottom: 14px;
+  }
+
+  .section-subtitle {
+    color: var(--muted);
+    font-size: 1rem;
+    margin-top: 4px;
+    margin-bottom: 32px;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding: 72px 0 0;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #4c1d9530, #7c3aed20);
+    border: 1px solid #7c3aed50;
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent2);
+    margin-bottom: 28px;
+    letter-spacing: 0.02em;
+  }
+
+  .hero-badge::before {
+    content: "✦";
+    font-size: 0.65rem;
+  }
+
+  .hero h1 {
+    background: linear-gradient(135deg, #e2e2f0 0%, #a78bfa 60%, #7c3aed 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 20px;
+  }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--muted);
+    max-width: 640px;
+    margin: 0 auto 48px;
+    line-height: 1.65;
+  }
+
+  .hero-sub strong {
+    color: var(--text);
+  }
+
+  /* ─── KPIs ─── */
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 40px;
+  }
+
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kpi::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #7c3aed08, transparent);
+    pointer-events: none;
+  }
+
+  .kpi-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent2);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .kpi-label {
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 64px 0 0;
+  }
+
+  /* ─── CARDS GRID ─── */
+  .cards-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 28px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .card-icon-red { background: #ef444420; }
+  .card-icon-green { background: #22c55e20; }
+  .card-icon-purple { background: #7c3aed20; }
+  .card-icon-blue { background: #3b82f620; }
+  .card-icon-teal { background: #14b8a620; }
+  .card-icon-yellow { background: #eab30820; }
+  .card-icon-orange { background: #f9731620; }
+
+  .card-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+  }
+
+  .card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .card ul li {
+    font-size: 0.9rem;
+    color: var(--muted);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.5;
+  }
+
+  .card ul li::before {
+    content: "—";
+    color: var(--border);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .card-bad ul li::before { content: "✗"; color: var(--red); }
+  .card-good ul li::before { content: "✓"; color: var(--green); }
+
+  /* ─── CALLOUTS ─── */
+  .ins {
+    display: flex;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: 12px;
+    margin: 16px 0;
+  }
+
+  .ins-purple { background: #4c1d9520; border: 1px solid #7c3aed40; }
+  .ins-teal   { background: #14b8a620; border: 1px solid #14b8a640; }
+  .ins-yellow { background: #eab30820; border: 1px solid #eab30840; }
+  .ins-green  { background: #22c55e20; border: 1px solid #22c55e40; }
+  .ins-blue   { background: #3b82f620; border: 1px solid #3b82f640; }
+  .ins-orange { background: #f9731620; border: 1px solid #f9731640; }
+
+  .ins-icon { font-size: 20px; flex-shrink: 0; padding-top: 2px; }
+
+  .ins-body strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--text);
+    font-size: 0.92rem;
+  }
+
+  .ins-body p, .ins-body span {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  /* ─── MODO CARDS ─── */
+  .modo-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 28px;
+  }
+
+  .modo-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 22px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .modo-card::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .modo-card-1::after { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+  .modo-card-2::after { background: linear-gradient(90deg, var(--teal), #38bdf8); }
+  .modo-card-3::after { background: linear-gradient(90deg, var(--yellow), var(--orange)); }
+
+  .modo-num {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .modo-emoji {
+    font-size: 2rem;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .modo-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .modo-trigger {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+
+  .modo-desc {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.55;
+    margin-bottom: 14px;
+  }
+
+  .modo-example {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  .modo-example strong {
+    color: var(--accent2);
+    font-style: normal;
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── PIPELINE ─── */
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 28px;
+    position: relative;
+  }
+
+  .pipeline::before {
+    content: "";
+    position: absolute;
+    left: 28px;
+    top: 24px;
+    bottom: 24px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--accent) 0%, var(--teal) 50%, var(--green) 100%);
+    opacity: 0.3;
+  }
+
+  .pipe-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+
+  .pipe-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .pipe-dot-1 { background: #7c3aed30; border: 2px solid var(--accent); }
+  .pipe-dot-2 { background: #7c3aed30; border: 2px solid var(--accent2); }
+  .pipe-dot-3 { background: #eab30820; border: 2px solid var(--yellow); }
+  .pipe-dot-4 { background: #22c55e20; border: 2px solid var(--green); }
+  .pipe-dot-5 { background: #14b8a620; border: 2px solid var(--teal); }
+  .pipe-dot-6 { background: #22c55e30; border: 2px solid var(--green); }
+
+  .pipe-content h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .pipe-content p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  .pipe-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  .pipe-tag-auto { background: #7c3aed20; color: var(--accent2); }
+  .pipe-tag-deploy { background: #22c55e20; color: var(--green); }
+
+  /* ─── QA CHECKLIST ─── */
+  .qa-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 28px;
+  }
+
+  .qa-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+
+  .qa-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: #7c3aed20;
+    border: 1px solid #7c3aed40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent2);
+    flex-shrink: 0;
+  }
+
+  .qa-text {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.45;
+    padding-top: 3px;
+  }
+
+  .qa-text strong {
+    color: var(--text);
+    display: block;
+    margin-bottom: 1px;
+    font-size: 0.88rem;
+  }
+
+  /* ─── CODE BLOCK ─── */
+  .code-block {
+    background: #0d0d14;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-top: 24px;
+  }
+
+  .code-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .code-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .code-dot-r { background: #ff5f57; }
+  .code-dot-y { background: #febc2e; }
+  .code-dot-g { background: #28c840; }
+
+  .code-filename {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-left: 6px;
+    font-family: "SF Mono", "Fira Code", monospace;
+  }
+
+  .code-body {
+    padding: 20px 22px;
+    font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+    font-size: 0.83rem;
+    line-height: 1.75;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .kw-blue   { color: #60a5fa; }
+  .kw-green  { color: #4ade80; }
+  .kw-gray   { color: #6b7280; }
+  .kw-yellow { color: #fbbf24; }
+  .kw-purple { color: #a78bfa; }
+  .kw-orange { color: #fb923c; }
+  .kw-teal   { color: #2dd4bf; }
+
+  /* ─── ESTRUTURA DE ARQUIVOS ─── */
+  .file-tree {
+    background: #0d0d14;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 24px;
+    margin-top: 24px;
+    font-family: "SF Mono", "Fira Code", monospace;
+    font-size: 0.85rem;
+    line-height: 1.9;
+  }
+
+  .ft-dir  { color: var(--accent2); font-weight: 600; }
+  .ft-file { color: var(--green); }
+  .ft-key  { color: var(--blue); }
+  .ft-com  { color: var(--muted); font-style: italic; }
+  .ft-line { color: var(--border); }
+
+  /* ─── PATHS (DOIS CAMINHOS) — VERSÃO EXPANDIDA ─── */
+  .paths-section {
+    margin-top: 32px;
+  }
+
+  .path-full {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 32px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .path-full-a {
+    border-color: #7c3aed50;
+    background: linear-gradient(135deg, #4c1d9512, var(--surface) 60%);
+  }
+
+  .path-full-b {
+    border-color: #eab30850;
+    background: linear-gradient(135deg, #eab30810, var(--surface) 60%);
+  }
+
+  .path-full::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .path-full-a::before {
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+
+  .path-full-b::before {
+    background: linear-gradient(90deg, var(--yellow), var(--orange));
+  }
+
+  .path-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin-bottom: 14px;
+  }
+
+  .path-tag-a { background: #7c3aed20; color: var(--accent2); border: 1px solid #7c3aed40; }
+  .path-tag-b { background: #eab30820; color: var(--yellow); border: 1px solid #eab30840; }
+
+  .path-headline {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+
+  .path-context {
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  .path-examples {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .path-example-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+
+  .path-example-tag {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .path-example-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .path-example-desc {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .path-prompt-box {
+    background: #0d0d14;
+    border: 1px solid #7c3aed40;
+    border-radius: 14px;
+    padding: 20px 22px;
+    margin-top: 6px;
+  }
+
+  .path-prompt-box-b {
+    border-color: #eab30840;
+  }
+
+  .path-prompt-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .path-prompt-label-b {
+    color: var(--yellow);
+  }
+
+  .path-prompt-code {
+    font-family: "SF Mono", "Fira Code", monospace;
+    font-size: 1rem;
+    color: var(--teal);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .path-prompt-hint {
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* ─── PATHS GRID (legado) ─── */
+  .paths-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 28px;
+  }
+
+  .path-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 24px;
+  }
+
+  /* ─── TIMELINE ─── */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .tl-step {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .tl-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .tl-content strong {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .tl-content span {
+    font-size: 0.83rem;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+
+  /* ─── CHAT BUBBLES ─── */
+  .chat-sim {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .bubble-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
+
+  .bubble-row-user { justify-content: flex-end; }
+  .bubble-row-agent { justify-content: flex-start; }
+
+  .bubble-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+    margin-bottom: 2px;
+  }
+
+  .bubble-avatar-agent { background: #7c3aed30; }
+  .bubble-avatar-user  { background: #3b82f620; order: 2; }
+
+  .bubble {
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 0.87rem;
+    line-height: 1.5;
+  }
+
+  .bubble-user {
+    background: #7c3aed30;
+    border: 1px solid #7c3aed50;
+    color: var(--text);
+    border-bottom-right-radius: 4px;
+    font-family: "SF Mono", monospace;
+    font-size: 0.82rem;
+  }
+
+  .bubble-agent {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-bottom-left-radius: 4px;
+  }
+
+  .bubble-agent strong { color: var(--text); }
+
+  .chat-legend {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 12px;
+    font-style: italic;
+  }
+
+  /* ─── POWER SECTION ─── */
+  .power-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-top: 28px;
+  }
+
+  .power-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+  }
+
+  .power-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .power-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 8px;
+  }
+
+  .power-badge-cron   { background: #14b8a620; color: var(--teal); border: 1px solid #14b8a640; }
+  .power-badge-agents { background: #7c3aed20; color: var(--accent2); border: 1px solid #7c3aed40; }
+  .power-badge-comp   { background: #eab30820; color: var(--yellow); border: 1px solid #eab30840; }
+
+  .power-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .comparison-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 14px 0;
+  }
+
+  .comp-bad, .comp-good {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 0.87rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.45;
+  }
+
+  .comp-bad  { border: 1px solid #ef444430; color: var(--muted); }
+  .comp-good { border: 1px solid #22c55e30; color: var(--muted); }
+
+  .comp-icon { flex-shrink: 0; font-size: 1rem; }
+
+  /* ─── INSTALAÇÃO / CTA ─── */
+  .install-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .install-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .install-step-num {
+    width: 34px;
+    height: 34px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: white;
+    margin: 0 auto 12px;
+  }
+
+  .install-step-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .install-step-code {
+    font-family: "SF Mono", monospace;
+    font-size: 0.78rem;
+    color: var(--accent2);
+    background: #7c3aed15;
+    border-radius: 6px;
+    padding: 6px 8px;
+    display: block;
+  }
+
+  .cta-box {
+    background: linear-gradient(135deg, #4c1d9530 0%, #7c3aed20 50%, #4c1d9515 100%);
+    border: 1px solid #7c3aed40;
+    border-radius: 20px;
+    padding: 40px 36px;
+    text-align: center;
+    margin-top: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-box::before {
+    content: "";
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, #7c3aed30, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+  }
+
+  .cta-sub {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-bottom: 28px;
+  }
+
+  .cta-link {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 12px 28px;
+    border-radius: 12px;
+    letter-spacing: 0.02em;
+    transition: none;
+  }
+
+  .cta-link:hover { background: #6d28d9; }
+
+  .github-link {
+    display: block;
+    margin-top: 14px;
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-family: "SF Mono", monospace;
+  }
+
+  .github-link span { color: var(--accent2); }
+
+  /* ─── TELEGRAM SECTION ─── */
+  .tg-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 28px;
+  }
+
+  .tg-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+  }
+
+  .tg-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .tg-card-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: #3b82f620;
+    border: 1px solid #3b82f640;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--blue);
+    flex-shrink: 0;
+  }
+
+  .tg-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .tg-cmd-block {
+    background: #0d0d14;
+    border: 1px solid #3b82f630;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-family: "SF Mono", "Fira Code", monospace;
+    font-size: 0.88rem;
+    color: var(--teal);
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .tg-card-legend {
+    font-size: 0.83rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .tg-examples-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .tg-examples-list li {
+    font-family: "SF Mono", monospace;
+    font-size: 0.8rem;
+    color: var(--teal);
+    background: #0d0d14;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 1.4;
+  }
+
+  .tg-examples-list li::before {
+    content: "›";
+    color: var(--muted);
+    flex-shrink: 0;
+    font-size: 0.9rem;
+    margin-top: 1px;
+  }
+
+  /* ─── CASES ─── */
+  .cases-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 28px;
+  }
+
+  .case-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+
+  .case-card-wide {
+    grid-column: span 2;
+  }
+
+  .case-tag {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .case-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .case-desc {
+    font-size: 0.87rem;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .case-result {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--green);
+    background: #22c55e12;
+    border: 1px solid #22c55e30;
+    border-radius: 6px;
+    padding: 3px 10px;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    margin-top: 80px;
+    padding: 28px 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+    letter-spacing: 0.03em;
+  }
+
+  footer span { color: var(--accent2); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 700px) {
+    .kpis              { grid-template-columns: 1fr; }
+    .cards-2           { grid-template-columns: 1fr; }
+    .modo-cards        { grid-template-columns: 1fr; }
+    .qa-list           { grid-template-columns: 1fr; }
+    .paths-grid        { grid-template-columns: 1fr; }
+    .comparison-row    { grid-template-columns: 1fr; }
+    .install-steps     { grid-template-columns: 1fr; }
+    .cases-grid        { grid-template-columns: 1fr; }
+    .case-card-wide    { grid-column: span 1; }
+    .path-full         { padding: 24px 20px; }
+  }
+
+  @media (max-width: 540px) {
+    h1 { font-size: 1.7rem; }
+    h2 { font-size: 1.3rem; }
+    .cta-title { font-size: 1.2rem; }
+    .path-headline { font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!--  SEÇÃO 1 · HERO                                    -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <section class="hero">
+    <div class="hero-badge">Bônus &nbsp;·&nbsp; Complementa o Módulo 6</div>
+    <h1>Você já tem skills.<br>Agora cria as suas.</h1>
+    <p class="hero-sub">
+      O <strong>/criar-skill</strong> transforma qualquer processo que você resolve com seu agente
+      numa habilidade permanente — com <strong>QA automático</strong> e 3 modos de uso.
+    </p>
+
+    <div class="kpis">
+      <div class="kpi">
+        <div class="kpi-value">5 min</div>
+        <div class="kpi-label">pra criar uma skill</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-value">QA</div>
+        <div class="kpi-label">automático antes de salvar</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-value">3</div>
+        <div class="kpi-label">modos de uso</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!--  SEÇÃO 2 · O QUE É                                 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <section>
+    <div class="section-label">O que é</div>
+    <h2>Em 3 frases</h2>
+
+    <div style="display:flex;flex-direction:column;gap:16px;margin-top:28px;">
+
+      <div style="display:flex;gap:16px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 22px;">
+        <div style="font-size:1.4rem;flex-shrink:0;margin-top:2px;">😓</div>
+        <div>
+          <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">O problema</div>
+          <p style="font-size:1rem;color:var(--text);line-height:1.6;margin:0;">Cada vez que você resolve algo com seu agente, esse conhecimento some quando o chat fecha. Na próxima vez, você explica tudo de novo.</p>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:16px;align-items:flex-start;background:var(--surface);border:1px solid #7c3aed40;border-radius:14px;padding:20px 22px;">
+        <div style="font-size:1.4rem;flex-shrink:0;margin-top:2px;">⚡</div>
+        <div>
+          <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent2);margin-bottom:6px;">A solução</div>
+          <p style="font-size:1rem;color:var(--text);line-height:1.6;margin:0;">O <strong style="color:var(--accent2);">/criar-skill</strong> captura o processo que vocês resolveram juntos e ensina o agente de uma vez para sempre.</p>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:16px;align-items:flex-start;background:var(--surface);border:1px solid #22c55e40;border-radius:14px;padding:20px 22px;">
+        <div style="font-size:1.4rem;flex-shrink:0;margin-top:2px;">✅</div>
+        <div>
+          <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);margin-bottom:6px;">O resultado</div>
+          <p style="font-size:1rem;color:var(--text);line-height:1.6;margin:0;">Na próxima vez, ele já sabe. Você não explica de novo. O processo fica documentado no agente para sempre.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="ins ins-purple" style="margin-top:24px;">
+      <div class="ins-icon">📝</div>
+      <div class="ins-body">
+        <strong>É como anotar um processo no manual do seu agente. Só que o agente anota sozinho.</strong>
+        <span>Você resolve uma vez, digita /criar-skill, e pronto. O agente nunca mais vai esquecer como fazer.</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!--  SEÇÃO 3 · SKILL vs PROMPT                         -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <section>
+    <div class="section-label">Conceito</div>
+    <h2>Skill vs Prompt</h2>
+    <p class="section-subtitle">Entenda a diferença antes de criar.</p>
+
+    <div class="cards-2">
+      <div class="card card-bad">
+        <div class="card-header">
+          <div class="card-icon card-icon-red">💬</div>
+          <div class="card-title">Prompt</div>
+        </div>
+        <ul>
+          <li>Pedido único, para aquele momento</li>
+          <li>Some quando você fecha o chat</li>
+          <li>Você lembra — o agente não</li>
+          <li>Resultado diferente toda vez</li>
+        </ul>
+      </div>
+      <div class="card card-good">
+        <div class="card-header">
+          <div class="card-icon card-icon-green">⚡</div>
+          <div class="card-title">Skill</div>
+        </div>
+        <ul>
+          <li>Processo ensinado de vez</li>
+          <li>Fica para sempre no agente</li>
+          <li>Agente faz igual toda vez</li>
+          <li>Resultado consistente, sem explicar</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ins ins-purple" style="margin-top:20px;">
+      <div class="ins-icon">💡</div>
+      <div class="ins-body">
+        <strong>Prompt é o que você pede. Skill é como o agente aprende a fazer.</strong>
+        <span>Qualquer processo que você repete mais de 2 vezes é candidato a skill.</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!--  SEÇÃO 4 · OS DOIS CAMINHOS — SEÇÃO PRINCIPAL     -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <section>
+    <div class="section-label">O coração da aula</div>
+    <h2>Os dois caminhos para criar uma skill</h2>
+    <p class="section-subtitle">Dois pontos de partida diferentes. Ambos chegam no mesmo lugar: uma skill funcionando.</p>
+
+    <div class="paths-section">
+
+      <!-- ───────────────── CAMINHO A ───────────────── -->
+      <div class="path-full path-full-a">
+        <div class="path-tag path-tag-a">Caminho A</div>
+        <div class="path-headline">Já fiz. Quero preservar.</div>
+        <p class="path-context">
+          Você e o agente acabaram de resolver algo juntos — pode ter levado horas, várias tentativas, descoberta de bugs. Foi trabalhoso. Esse conhecimento não pode sumir quando o chat fechar.
+        </p>
+
+        <div style="font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:14px;">Como funciona:</div>
+
+        <div class="timeline" style="margin-bottom:28px;">
+          <div class="tl-step">
+            <div class="tl-num">1</div>
+            <div class="tl-content">
+              <strong>Você resolveu o problema</strong>
+              <span>Passaram um tempo juntos — testando, ajustando, encontrando o caminho certo. O histórico está ali.</span>
+            </div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-num">2</div>
+            <div class="tl-content">
+              <strong>Você digita só isso:</strong>
+              <span style="font-family:monospace;color:var(--accent2);font-size:1rem;">/criar-skill</span>
+            </div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-num">3</div>
+            <div class="tl-content">
+              <strong>O agente lê o histórico e cria</strong>
+              <span>Extrai o fluxo completo, os workarounds, as armadilhas — tudo que foi descoberto durante a conversa.</span>
+            </div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-num">4</div>
+            <div class="tl-content">
+              <strong>Você aprova e a skill fica salva</strong>
+              <span>Da próxima vez, leva 30 segundos. O agente já sabe o que fazer.</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:14px;">3 exemplos reais:</div>
+
+        <div class="path-examples">
+
+          <div class="path-example-item">
+            <div class="path-example-tag">Exemplo 1 · Nota Fiscal</div>
+            <div class="path-example-title">NF Prefeitura de Curitiba — 4h de tentativa e erro</div>
+            <p class="path-example-desc">
+              4 horas testando o portal, encontrando bugs, descobrindo que o campo "Tomador" exige CPF sem máscara, que o ISS retido precisa ser marcado manualmente em dois lugares diferentes, que o portal trava entre 8h–9h pelo volume de acesso. Tudo isso capturado em 2 minutos de /criar-skill. Nunca mais precisou explicar.
+            </p>
+            <div class="case-result">✓ Skill criada em 2 min, nunca mais perdeu tempo com o portal</div>
+          </div>
+
+          <div class="path-example-item">
+            <div class="path-example-tag">Exemplo 2 · Onboarding</div>
+            <div class="path-example-title">Onboarding de cliente — 12 passos que o agente esquecia no meio</div>
+            <p class="path-example-desc">
+              O processo tinha 12 passos: criar conta, configurar integração, mandar email de boas-vindas, agendar call de ativação, adicionar no grupo do WhatsApp, enviar materiais... O agente sempre esquecia algum no meio. Depois do /criar-skill, ele executa os 12 na ordem certa, toda vez, sem pular nenhum.
+            </p>
+            <div class="case-result">✓ Zero passos esquecidos desde que virou skill</div>
+          </div>
+
+          <div class="path-example-item">
+            <div class="path-example-tag">Exemplo 3 · Relatório</div>
+            <div class="path-example-title">Relatório de métricas — a formatação que nunca saía certa</div>
+            <p class="path-example-desc">
+              Tabela específica, ordem específica das métricas, cor vermelha para queda e verde para crescimento, comparação com mês anterior sempre no mesmo formato. Toda vez que pedia o relatório, precisava explicar tudo de novo. Depois do /criar-skill, chegou a palavra "relatório" e o agente já sabia exatamente como montar.
+            </p>
+            <div class="case-result">✓ Relatório pronto sem explicar formatação</div>
+          </div>
+
+        </div>
+
+        <div class="path-prompt-box">
+          <span class="path-prompt-label">Prompt exato para digitar:</span>
+          <span class="path-prompt-code">/criar-skill</span>
+          <span class="path-prompt-hint">Só isso. O agente lê o histórico da conversa e faz o resto.</span>
+        </div>
+      </div>
+
+      <!-- ───────────────── CAMINHO B ───────────────── -->
+      <div class="path-full path-full-b">
+        <div class="path-tag path-tag-b">Caminho B</div>
+        <div class="path-headline">Tenho uma ideia. Quero estruturar.</div>
+        <p class="path-context">
+          Você tem um processo na cabeça — ou uma ideia de como quer que o agente te ajude — mas não sabe exatamente como estruturar. Não precisa saber. O agente faz perguntas e descobre junto com você.
+        </p>
+
+        <div style="font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:14px;">Como funciona — conversa real:</div>
+
+        <div class="chat-sim">
+          <div class="bubble-row bubble-row-user">
+            <div class="bubble-avatar bubble-avatar-user">👤</div>
+            <div class="bubble bubble-user">/criar-skill quero uma skill pra analisar concorrentes</div>
+          </div>
+          <div class="bubble-row bubble-row-agent">
+            <div class="bubble-avatar bubble-avatar-agent">⚡</div>
+            <div class="bubble bubble-agent"><strong>Ótimo!</strong> Quando você fala "analisar", o que você quer saber? Preço, features, reviews — ou tudo?</div>
+          </div>
+          <div class="bubble-row bubble-row-user">
+            <div class="bubble-avatar bubble-avatar-user">👤</div>
+            <div class="bubble bubble-user">Principalmente preço e o que reclamam nos reviews</div>
+          </div>
+          <div class="bubble-row bubble-row-agent">
+            <div class="bubble-avatar bubble-avatar-agent">⚡</div>
+            <div class="bubble bubble-agent">Entendido. E o resultado final — você quer um <strong>texto curto pra ler rápido</strong> ou uma tabela comparativa?</div>
+          </div>
+          <div class="bubble-row bubble-row-user">
+            <div class="bubble-avatar bubble-avatar-user">👤</div>
+            <div class="bubble bubble-user">Texto curto, 3 pontos principais</div>
+          </div>
+          <div class="bubble-row bubble-row-agent">
+            <div class="bubble-avatar bubble-avatar-agent">⚡</div>
+            <div class="bubble bubble-agent">Perfeito. Mais uma coisa: você busca manualmente ou quer que eu pesquise online?</div>
+          </div>
+          <div class="bubble-row bubble-row-user">
+            <div class="bubble-avatar bubble-avatar-user">👤</div>
+            <div class="bubble bubble-user">Pesquisa online</div>
+          </div>
+          <div class="bubble-row bubble-row-agent">
+            <div class="bubble-avatar bubble-avatar-agent">⚡</div>
+            <div class="bubble bubble-agent">Entendido. Vou criar a skill <strong>"analise-concorrentes"</strong>. Você recebe: texto com 3 pontos — preço, principais reclamações nos reviews, e um resumo rápido. Posso confirmar o deploy?</div>
+          </div>
+        </div>
+
+        <p class="chat-legend">O agente não espera você saber o processo — ele ajuda a descobrir.</p>
+
+        <div style="margin-top:24px;margin-bottom:20px;">
+          <div style="font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:14px;">3 ideias vagas que viraram skills:</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;">
+              <div style="font-size:0.78rem;color:var(--muted);margin-bottom:4px;">Ideia vaga → Skill criada</div>
+              <div style="font-size:0.9rem;color:var(--text);">"Quero gerar relatório semanal de vendas" → skill <span style="font-family:monospace;color:var(--teal);">relatorio-semanal-vendas</span></div>
+            </div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;">
+              <div style="font-size:0.78rem;color:var(--muted);margin-bottom:4px;">Ideia vaga → Skill criada</div>
+              <div style="font-size:0.9rem;color:var(--text);">"Quero responder comentários mantendo meu tom" → skill <span style="font-family:monospace;color:var(--teal);">resposta-comentarios-instagram</span></div>
+            </div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;">
+              <div style="font-size:0.78rem;color:var(--muted);margin-bottom:4px;">Ideia vaga → Skill criada</div>
+              <div style="font-size:0.9rem;color:var(--text);">"Quero criar briefing de reunião com cliente" → skill <span style="font-family:monospace;color:var(--teal);">briefing-reuniao-cliente</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="path-prompt-box path-prompt-box-b">
+          <span class="path-prompt-label path-prompt-label-b">Prompt exato para usar:</span>
+          <span class="path-prompt-code">/criar-skill quero [descreva sua ideia aqui]</span>
+          <span class="path-prompt-hint">Quanto mais específico, menos perguntas o agente faz. Mas mesmo vago funciona — ele vai perguntar o que falta.</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!--  SEÇÃO 5 · CASES REAIS                             -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <section>
+    <div class="section-label">Cases reais</div>
+    <h2>Quem já usa e o que criou</h2>
+    <p class="section-subtitle">Skills criadas por alunos do Curso OpenClaw.</p>
+
+    <div class="cases-grid">
+
+      <div class="case-card">
+        <span class="case-tag">Financeiro</span>
+        <div class="case-title">emitir-nf-curitiba</div>
+        <p class="case-desc">7 passos, 3 bugs conhecidos do portal, horário ideal de acesso (7h da manhã), campos obrigatórios não marcados como tal. Zero retrabalho.</p>
+        <div class="case-result">✓ Salvo em 2 min após 4h de tentativa</div>
+      </div>
+
+      <div class="case-card">
+        <span class="case-tag">Vendas</span>
+        <div class="case-title">follow-up-proposta</div>
+        <p class="case-desc">Template personalizado por segmento de cliente, janela de envio ideal (D+2), check de abertura antes de reenviar. Taxa de resposta aumentou.</p>
+        <div class="case-result">✓ Usado 3× por semana automaticamente</div>
+      </div>
+
+      <div class="case-card">
+        <span class="case-tag">Conteúdo</span>
+        <div class="case-title">carrossel-linkedin-microsaas</div>
+        <p class="case-desc">Tom de voz específico, estrutura de 7 slides, hook com número no primeiro slide, CTA no último. O agente replica o padrão sem precisar explicar.</p>
+        <div class="case-result">✓ 3 carrosséis por semana sem rascunho</div>
+      </div>
+
+      <div class="case-card">
+        <span class="case-tag">Operações</span>
+        <div class="case-title">onboarding-cliente</div>
+        <p class="case-desc">12 passos em ordem, com checklist de verificação, emails automáticos para cada etapa e flag de alerta se algum passo ficar sem resposta por 24h.</p>
+        <div class="case-result">✓ Zero passos esquecidos desde o deploy</div>
+      </div>
+
+      <div class="case-card case-card-wide">
+        <span class="case-tag">Analytics</span>
+        <div class="case-title">relatorio-semanal-mrr</div>
+        <p class="case-desc">Skill agendada via cron todo domingo às 20h. Puxa dados do ChartMogul, formata com comparação semana anterior, destaca em vermelho qualquer métrica que caiu mais de 5%, manda direto no Telegram. O agente executa sozinho — ninguém precisa lembrar de pedir.</p>
+        <div class="case-result">✓ Executando toda semana há 3 meses sem intervenção</div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!--  SEÇÃO 6 · USANDO NO TELEGRAM                      -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <section>
+    <div class="section-label">Telegram</div>
+    <h2>Seus agentes no Telegram também criam skills</h2>
+    <p class="section-subtitle">A maioria dos alunos usa o OpenClaw pelo Telegram. O /criar-skill funciona igual — só digitar no chat do seu agente.</p>
+
+    <div class="ins ins-blue" style="margin-top:0;margin-bottom:28px;">
+      <div class="ins-icon">📱</div>
+      <div class="ins-body">
+        <strong>Funciona no Telegram do mesmo jeito</strong>
+        <span>Não precisa abrir o terminal, não precisa estar no computador. Resolveu algo no chat do seu agente? Digita /criar-skill ali mesmo. A skill fica salva no workspace do agente.</span>
+      </div>
+    </div>
+
+    <div style="font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:20px;">Prompts prontos para copiar e usar no Telegram:</div>
+
+    <div class="tg-cards">
+
+      <!-- Card 1 -->
+      <div class="tg-card">
+        <div class="tg-card-header">
+          <div class="tg-card-num">1</div>
+          <div class="tg-card-title">Capturar o que acabou de fazer</div>
+        </div>
+        <div class="tg-cmd-block">/criar-skill</div>
+        <p class="tg-card-legend">Use logo depois de resolver algo junto com o agente. Ele lê o histórico da conversa e cria a skill automaticamente. Você só aprova.</p>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="tg-card">
+        <div class="tg-card-header">
+          <div class="tg-card-num">2</div>
+          <div class="tg-card-title">Preservar um processo que você já sabe</div>
+        </div>
+        <div class="tg-cmd-block">/criar-skill [cole aqui os passos do processo]</div>
+        <p class="tg-card-legend" style="margin-bottom:12px;">Cole diretamente o processo que você faz. O agente extrai os passos e estrutura a skill. Exemplo:</p>
+        <div class="tg-cmd-block" style="font-size:0.78rem;color:var(--muted);">/criar-skill pra emitir NF no meu município:
+1) acesso portal.prefeitura.sp.gov.br
+2) clico em NFS-e
+3) preencho o campo Tomador com CPF sem máscara
+4) marco ISS Retido em "Sim"
+5) confirmo e salvo o PDF</div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="tg-card">
+        <div class="tg-card-header">
+          <div class="tg-card-num">3</div>
+          <div class="tg-card-title">Brainstorm de ideia nova</div>
+        </div>
+        <div class="tg-cmd-block">/criar-skill quero [descreva aqui]</div>
+        <p class="tg-card-legend" style="margin-bottom:12px;">Exemplos reais que viraram skills:</p>
+        <ul class="tg-examples-list">
+          <li>/criar-skill quero analisar o feed do Instagram de concorrentes</li>
+          <li>/criar-skill quero gerar relatório semanal de vendas automaticamente</li>
+          <li>/criar-skill quero responder comentários mantendo meu tom de voz</li>
+          <li>/criar-skill quero criar um briefing de reunião com cliente</li>
+        </ul>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="tg-card">
+        <div class="tg-card-header">
+          <div class="tg-card-num">4</div>
+          <div class="tg-card-title">Sem o /criar-skill — também funciona</div>
+        </div>
+        <div class="tg-cmd-block">transforma o que fizemos em skill
+salva esse processo como skill</div>
+        <p class="tg-card-legend">O agente entende a intenção mesmo sem o comando exato. Se você já está no meio de uma conversa e quer preservar o que fizeram, pode falar de forma natural.</p>
+      </div>
+
+    </div>
+
+    <div class="ins ins-orange" style="margin-top:24px;">
+      <div class="ins-icon">🤖</div>
+      <div class="ins-body">
+        <strong>Múltiplos agentes? Cada um tem suas próprias skills.</strong>
+        <span>Se você usa a Amora, um agente de vendas e um agente de conteúdo, cada um pode ter skills próprias. A skill criada fica no workspace do agente onde você digitou o comando — não se mistura.</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!--  SEÇÃO 7 · O QA E DEPLOY                           -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <section>
+    <div class="section-label">Qualidade</div>
+    <h2>O QA e o deploy</h2>
+    <p class="section-subtitle">Acontece antes de salvar. Você só precisa aprovar.</p>
+
+    <div class="ins ins-green" style="margin-top:0;margin-bottom:24px;">
+      <div class="ins-icon">🛡️</div>
+      <div class="ins-body">
+        <strong>O agente verifica a skill antes de salvar.</strong>
+        <span>Ele checa: nome correto, exemplos reais incluídos, casos de erro cobertos, caminho de deploy certo. Se algo falta, ele mesmo corrige. Você só aprova o resultado final.</span>
+      </div>
+    </div>
+
+    <div style="font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:14px;">O que é gerado — 2 arquivos:</div>
+
+    <div class="file-tree">
+<span class="ft-dir">skill-name/</span>
+<span class="ft-line">├──</span> <span class="ft-file">SKILL.md</span>       <span class="ft-com"># O processo documentado: passos, exemplos, edge cases</span>
+<span class="ft-line">└──</span> <span class="ft-dir">evals/</span>
+<span class="ft-line">    └──</span> <span class="ft-file">evals.json</span> <span class="ft-com"># Casos de teste — garante que a skill funciona como esperado</span>
+    </div>
+
+    <div class="ins ins-yellow" style="margin-top:20px;">
+      <div class="ins-icon">📐</div>
+      <div class="ins-body">
+        <strong>evals.json é a prova de que a skill funciona</strong>
+        <span>Não é só documentação. São testes reais com input e output esperado. Se a skill for atualizada no futuro, os evals confirmam que continua funcionando certo.</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!--  SEÇÃO 8 · COMPOSIÇÃO                              -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <section>
+    <div class="section-label">Composição</div>
+    <h2>Skills + Crons + Sub-agentes</h2>
+    <p class="section-subtitle">Skills sozinhas já valem. Combinadas, viram pipeline.</p>
+
+    <div class="power-grid">
+
+      <!-- Skills + Cron -->
+      <div class="power-card">
+        <div class="power-card-header">
+          <div class="power-badge power-badge-cron">⏰ Skill + Cron</div>
+        </div>
+        <div class="power-title" style="margin-bottom:12px;">O agente executa sozinho, no horário certo, sem você lembrar.</div>
+        <div class="comparison-row">
+          <div class="comp-bad">
+            <span class="comp-icon">❌</span>
+            <span>Lembrar toda semana de pedir o relatório de métricas</span>
+          </div>
+          <div class="comp-good">
+            <span class="comp-icon">✅</span>
+            <span>Skill + cron todo domingo às 20h — relatório chega no Telegram sem você fazer nada</span>
+          </div>
+        </div>
+        <div class="ins ins-teal" style="margin-top:0;">
+          <div class="ins-icon">🔁</div>
+          <div class="ins-body">
+            <span>A skill define o que fazer. O cron define quando. Juntos, o agente trabalha no piloto automático.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills + Sub-agentes -->
+      <div class="power-card">
+        <div class="power-card-header">
+          <div class="power-badge power-badge-agents">🤖 Skill + Sub-agente</div>
+        </div>
+        <div class="power-title" style="margin-bottom:12px;">Manda um assistente fazer uma tarefa com instruções claras.</div>
+        <div class="comparison-row">
+          <div class="comp-bad">
+            <span class="comp-icon">❌</span>
+            <span>Spawnar um agente pra "cuidar do conteúdo" — sem saber exatamente o que fazer</span>
+          </div>
+          <div class="comp-good">
+            <span class="comp-icon">✅</span>
+            <span>Spawnar um agente pra executar a skill <code style="color:var(--teal);font-family:monospace">carrossel-linkedin</code> com esse input específico</span>
+          </div>
+        </div>
+        <div class="ins ins-blue" style="margin-top:0;">
+          <div class="ins-icon">📋</div>
+          <div class="ins-body">
+            <span>A skill é o briefing do sub-agente. Com ela, o resultado é previsível — igual toda vez.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills + Skills -->
+      <div class="power-card">
+        <div class="power-card-header">
+          <div class="power-badge power-badge-comp">🔗 Skill + Skill</div>
+        </div>
+        <div class="power-title" style="margin-bottom:12px;">Um processo que chama outros processos — como um pipeline de conteúdo.</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:0.88rem;color:var(--muted);">
+            <span style="color:var(--text);font-weight:600;">1 vídeo gravado</span> → skill <span style="font-family:monospace;color:var(--teal)">yt-hype</span> gera título e descrição do YouTube
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:0.88rem;color:var(--muted);">
+            → skill <span style="font-family:monospace;color:var(--teal)">carrossel-linkedin</span> gera 7 slides do conceito principal
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:0.88rem;color:var(--muted);">
+            → skill <span style="font-family:monospace;color:var(--teal)">carrossel-instagram</span> gera versão para o feed
+          </div>
+        </div>
+        <div class="ins ins-yellow" style="margin-top:0;">
+          <div class="ins-icon">⚡</div>
+          <div class="ins-body">
+            <span>1 vídeo → 3 skills em sequência → 3 peças de conteúdo prontas. Pipeline completo, sem montar do zero toda vez.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!--  SEÇÃO 9 · INSTALAÇÃO + CTA                        -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <section>
+    <div class="section-label">Instalação</div>
+    <h2>Como instalar — e como usar</h2>
+    <p class="section-subtitle">2 minutos de setup. Funciona no Claude Code e no OpenClaw.</p>
+
+    <div class="ins ins-yellow" style="margin-top:0;">
+      <div class="ins-icon">🔒</div>
+      <div class="ins-body">
+        <strong>"É seguro rodar curl | bash?"</strong>
+        <span>Boa pergunta — e você deveria fazer sempre. Neste caso: o repositório é do Bruno (<strong>github.com/okjpg/skill-creator</strong>), é MIT license, código aberto. O script faz exatamente uma coisa: copia o SKILL.md para <code style="font-family:monospace">~/.claude/skills/criar-skill/</code>. Você pode ler o install.sh antes de rodar — o link está logo abaixo. Não executa nada, não instala dependências, não abre portas.</span>
+      </div>
+    </div>
+
+    <div class="code-block" style="margin-top:16px;">
+      <div class="code-header">
+        <div class="code-dot code-dot-r"></div>
+        <div class="code-dot code-dot-y"></div>
+        <div class="code-dot code-dot-g"></div>
+        <span class="code-filename">terminal — instalar</span>
+      </div>
+      <div class="code-body"><span class="kw-gray"># Instalar o /criar-skill</span>
+<span class="kw-blue">curl</span> <span class="kw-yellow">-fsSL</span> <span class="kw-green">https://raw.githubusercontent.com/okjpg/skill-creator/main/install.sh</span> <span class="kw-yellow">|</span> <span class="kw-blue">bash</span>
+
+<span class="kw-gray"># Verificar se foi instalado</span>
+<span class="kw-blue">ls</span> ~/.claude/skills/criar-skill/</div>
+    </div>
+
+    <div class="ins ins-purple" style="margin-top:16px;">
+      <div class="ins-icon">💬</div>
+      <div class="ins-body">
+        <strong>Como pedir pro seu agente criar a primeira skill</strong>
+        <span>Depois de instalar, abra o chat do seu agente e use qualquer uma dessas formas:</span>
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin-top:0;display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Exemplos reais de como acionar</div>
+
+      <div style="background:#0d0d14;border-radius:10px;padding:14px 16px;font-family:monospace;font-size:0.88rem;color:var(--teal);">/criar-skill</div>
+      <div style="font-size:0.82rem;color:var(--muted);padding:0 4px;margin-top:-4px;margin-bottom:4px;">→ Se você acabou de fazer algo com o agente, ele captura o histórico automaticamente</div>
+
+      <div style="background:#0d0d14;border-radius:10px;padding:14px 16px;font-family:monospace;font-size:0.88rem;color:var(--teal);">/criar-skill Todo dia eu exporto o relatório do ChartMogul e mando pro Slack da equipe</div>
+      <div style="font-size:0.82rem;color:var(--muted);padding:0 4px;margin-top:-4px;margin-bottom:4px;">→ Cola diretamente o que você faz. Ele extrai os passos</div>
+
+      <div style="background:#0d0d14;border-radius:10px;padding:14px 16px;font-family:monospace;font-size:0.88rem;color:var(--teal);">/criar-skill quero uma skill pra analisar comentários do Instagram e separar os negativos</div>
+      <div style="font-size:0.82rem;color:var(--muted);padding:0 4px;margin-top:-4px;margin-bottom:4px;">→ Ideia vaga. Ele vai fazer 3–5 perguntas pra estruturar</div>
+
+      <div style="background:#0d0d14;border-radius:10px;padding:14px 16px;font-family:monospace;font-size:0.88rem;color:var(--teal);">transforma o que fizemos hoje em skill</div>
+      <div style="font-size:0.82rem;color:var(--muted);padding:0 4px;margin-top:-4px;">→ Sem o /criar-skill também funciona. O agente reconhece a intenção</div>
+    </div>
+
+    <div class="ins ins-green" style="margin-top:20px;">
+      <div class="ins-icon">🎯</div>
+      <div class="ins-body">
+        <strong>Primeira skill recomendada</strong>
+        <span>Escolha o processo que você mais repete ou que mais dá trabalho quando erra. Emissão de nota fiscal, relatório recorrente, formato de post que você sempre esquece — qualquer um desses. O /criar-skill funciona melhor quando o processo já tem atrito real.</span>
+      </div>
+    </div>
+
+    <div class="cta-box" style="margin-top:28px;">
+      <div class="cta-title">Instale, crie sua primeira skill.<br>Depois nunca mais explica de novo.</div>
+      <p class="cta-sub">
+        O processo fica documentado no agente para sempre. Você resolve uma vez e garante para sempre.
+      </p>
+      <a class="cta-link" href="https://github.com/okjpg/skill-creator" target="_blank" rel="noopener">
+        github.com/okjpg/skill-creator →
+      </a>
+    </div>
+  </section>
+
+</div><!-- /container -->
+
+<footer>
+  <div class="container">
+    Bônus: <span>/criar-skill</span> &nbsp;·&nbsp; Complementa o Módulo 6 &nbsp;·&nbsp; <span>Curso OpenClaw 2026</span>
+  </div>
+</footer>
+
+</body>
+</html>

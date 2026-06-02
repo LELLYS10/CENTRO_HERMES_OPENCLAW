@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula Extra A — Integração de Ferramentas | Curso OpenClaw</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #0a0a0f;
+  --bg-elevated: #12121a;
+  --bg-card: #1a1a25;
+  --grape: #8b5cf6;
+  --grape-light: #a78bfa;
+  --grape-dim: rgba(139, 92, 246, 0.12);
+  --grape-border: rgba(139, 92, 246, 0.25);
+  --grape-glow: rgba(139, 92, 246, 0.08);
+  --emerald: #10b981;
+  --emerald-dim: rgba(16, 185, 129, 0.12);
+  --emerald-border: rgba(16, 185, 129, 0.25);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245, 158, 11, 0.12);
+  --amber-border: rgba(245, 158, 11, 0.25);
+  --rose: #f43f5e;
+  --rose-dim: rgba(244, 63, 94, 0.12);
+  --rose-border: rgba(244, 63, 94, 0.25);
+  --cyan: #22d3ee;
+  --cyan-dim: rgba(34, 211, 238, 0.12);
+  --text: #f1f1f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --border: rgba(255,255,255,0.06);
+  --code-bg: #0d0d15;
+  --code-border: rgba(255,255,255,0.08);
+}
+
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 10.5pt;
+  line-height: 1.6;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 22mm 24mm 28mm;
+  position: relative;
+  overflow: hidden;
+  page-break-after: always;
+  background: var(--bg);
+}
+
+.page::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -25%;
+  width: 70%;
+  height: 70%;
+  background: radial-gradient(ellipse, var(--grape-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* COVER */
+.cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 297mm;
+  padding: 36mm 28mm;
+  position: relative;
+}
+
+.cover-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  background: var(--grape-dim);
+  border: 1px solid var(--grape-border);
+  border-radius: 100px;
+  font-size: 10pt;
+  font-weight: 500;
+  color: var(--grape-light);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.cover-star {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  background: var(--amber-dim);
+  border: 1px solid var(--amber-border);
+  border-radius: 100px;
+  font-size: 9pt;
+  font-weight: 500;
+  color: var(--amber);
+  margin-bottom: 16px;
+}
+
+.cover-title {
+  font-size: 44pt;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+  color: var(--text);
+  margin-bottom: 18px;
+  max-width: 500px;
+}
+
+.cover-title em {
+  font-style: italic;
+  background: linear-gradient(135deg, var(--grape), var(--grape-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cover-subtitle {
+  font-size: 14pt;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 440px;
+  margin-bottom: 44px;
+}
+
+.cover-meta {
+  display: flex;
+  gap: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.cover-meta-item { display: flex; flex-direction: column; gap: 4px; }
+.cover-meta-label { font-size: 8pt; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-weight: 500; }
+.cover-meta-value { font-size: 12pt; font-weight: 600; color: var(--text); }
+
+/* HEADER/FOOTER */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.page-header-left { font-size: 9pt; color: var(--grape-light); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+.page-header-right { font-family: 'JetBrains Mono', monospace; font-size: 8pt; color: var(--text-muted); }
+
+.page-footer {
+  position: absolute;
+  bottom: 12mm;
+  left: 24mm; right: 24mm;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.page-footer-left { font-size: 8pt; color: var(--text-muted); }
+.page-footer-right { font-family: 'JetBrains Mono', monospace; font-size: 8pt; color: var(--text-muted); }
+
+/* SECTION */
+.section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.section-number { font-family: 'JetBrains Mono', monospace; font-size: 9pt; font-weight: 600; color: var(--grape); padding: 4px 10px; background: var(--grape-dim); border-radius: 6px; }
+.section-title { font-size: 22pt; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
+.section-subtitle { font-size: 11pt; color: var(--text-secondary); margin-top: -12px; margin-bottom: 22px; font-weight: 300; }
+
+h3 { font-size: 13pt; font-weight: 600; color: var(--grape-light); margin: 22px 0 10px; display: flex; align-items: center; gap: 8px; }
+h4 { font-size: 11pt; font-weight: 600; color: var(--text); margin: 16px 0 8px; }
+p { margin-bottom: 10px; color: var(--text-secondary); font-size: 10.5pt; }
+strong { color: var(--text); }
+ul, ol { margin: 8px 0 12px 18px; }
+li { margin-bottom: 3px; font-size: 10pt; color: var(--text-secondary); }
+
+/* CODE */
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 12px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  position: relative;
+  white-space: pre;
+}
+.code-block::before { content: attr(data-lang); position: absolute; top: 8px; right: 12px; font-size: 7.5pt; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+code { background: var(--grape-dim); color: var(--grape-light); padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 9pt; }
+
+/* TABLES */
+table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 14px 0; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+thead th { background: var(--bg-card); padding: 10px 14px; text-align: left; font-size: 9pt; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+tbody td { padding: 9px 14px; font-size: 10pt; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+tbody tr:last-child td { border-bottom: none; }
+tbody td:first-child { font-weight: 500; color: var(--text); }
+
+/* CARDS */
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin: 12px 0; }
+.card.grape { border-color: var(--grape-border); background: linear-gradient(135deg, rgba(139,92,246,0.06), var(--bg-card)); }
+.card.emerald { border-color: var(--emerald-border); background: linear-gradient(135deg, rgba(16,185,129,0.06), var(--bg-card)); }
+.card.amber { border-color: var(--amber-border); background: linear-gradient(135deg, rgba(245,158,11,0.06), var(--bg-card)); }
+.card-title { font-size: 12pt; font-weight: 600; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.card-desc { font-size: 10pt; color: var(--text-secondary); line-height: 1.5; }
+
+/* STEPS */
+.step { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px 16px 56px; margin: 12px 0; position: relative; }
+.step-num { position: absolute; left: 16px; top: 16px; width: 28px; height: 28px; background: var(--grape-dim); border: 1px solid var(--grape-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 12pt; font-weight: 700; color: var(--grape-light); }
+.step-title { font-size: 12pt; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.step-time { font-family: 'JetBrains Mono', monospace; font-size: 8.5pt; color: var(--emerald); padding: 2px 8px; background: var(--emerald-dim); border-radius: 4px; display: inline-block; margin-bottom: 6px; }
+
+/* CALLOUTS */
+.callout { border-radius: 10px; padding: 14px 16px; margin: 14px 0; display: flex; gap: 10px; align-items: flex-start; }
+.callout-icon { font-size: 16pt; flex-shrink: 0; line-height: 1; }
+.callout-content { flex: 1; }
+.callout-content strong { display: block; margin-bottom: 3px; color: var(--text); }
+.callout-content p { margin-bottom: 4px; }
+.callout.tip { background: var(--emerald-dim); border: 1px solid var(--emerald-border); }
+.callout.warning { background: var(--amber-dim); border: 1px solid var(--amber-border); }
+.callout.danger { background: var(--rose-dim); border: 1px solid var(--rose-border); }
+.callout.info { background: var(--grape-dim); border: 1px solid var(--grape-border); }
+
+/* CHECKLIST */
+.checklist { background: var(--bg-card); border: 1px solid var(--emerald-border); border-radius: 12px; padding: 18px 20px; margin: 18px 0; }
+.checklist-title { font-size: 13pt; font-weight: 700; color: var(--emerald); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.checklist-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 10pt; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+.checklist-item:last-child { border-bottom: none; }
+.check-box { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 5px; flex-shrink: 0; }
+
+/* TROUBLESHOOT */
+.troubleshoot { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin: 8px 0; }
+.troubleshoot-problem { font-weight: 600; color: var(--rose); font-size: 10pt; margin-bottom: 4px; }
+.troubleshoot-solution { font-size: 9.5pt; color: var(--text-secondary); }
+
+/* LEVEL GRID */
+.level-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+.level-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+.level-card.highlight { border-color: var(--grape-border); }
+.level-num { font-family: 'JetBrains Mono', monospace; font-size: 9pt; color: var(--grape); font-weight: 600; margin-bottom: 4px; }
+.level-name { font-size: 11pt; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.level-desc { font-size: 9pt; color: var(--text-secondary); }
+
+.new-badge { display: inline-block; padding: 2px 8px; background: var(--amber-dim); border: 1px solid var(--amber-border); border-radius: 4px; font-size: 7.5pt; font-weight: 700; color: var(--amber); letter-spacing: 1px; text-transform: uppercase; margin-left: 8px; vertical-align: middle; }
+.new-tag { display: inline-block; padding: 2px 8px; background: var(--emerald-dim); border: 1px solid var(--emerald-border); border-radius: 4px; font-size: 7.5pt; font-weight: 700; color: var(--emerald); letter-spacing: 1px; text-transform: uppercase; }
+
+/* SECURITY BOX */
+.security-box { background: linear-gradient(135deg, rgba(244,63,94,0.1), rgba(244,63,94,0.05)); border: 1px solid var(--rose-border); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+.security-box h4 { color: var(--rose); margin: 0 0 8px; }
+
+/* NEXT MODULE */
+.next-module { background: var(--bg-card); border: 1px solid var(--grape-border); border-radius: 12px; padding: 16px 18px; margin-top: 20px; display: flex; align-items: center; gap: 12px; }
+.next-module .next-icon { font-size: 20pt; }
+.next-module .next-text { flex: 1; }
+.next-module .next-label { font-size: 8.5pt; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.next-module .next-title { font-size: 12pt; font-weight: 600; color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="page cover">
+  <div class="cover-badge">🍇 Curso OpenClaw · Aula Extra A</div>
+  <div class="cover-star">⚡ Atualizado para v2026.3.2 — gog CLI + PDF Nativo</div>
+  <div class="cover-title">Integrações<br>de <em>Ferramentas</em></div>
+  <div class="cover-subtitle">Skills do ClawHub, gog CLI para Google Workspace, APIs diretas, PDF nativo e como documentar tudo no TOOLS.md.</div>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Duração</div>
+      <div class="cover-meta-value">20–25 min</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Nível</div>
+      <div class="cover-meta-value">Iniciante</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Versão</div>
+      <div class="cover-meta-value">v2026.3.2</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: POR QUE INTEGRAR + SKILLS CLAWHUB -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">Extra A — Integrações</div>
+    <div class="page-header-right">openclaw.ai/curso</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-number">01</div>
+    <div class="section-title">Por que Integrar?</div>
+  </div>
+  <p class="section-subtitle">Sem integrações, o agente é cego. Com integrações, ele vê tudo.</p>
+
+  <div class="callout info">
+    <div class="callout-icon">💡</div>
+    <div class="callout-content">
+      <strong>O divisor de águas</strong>
+      <p>Esta aula é onde seu agente passa de chatbot para um assistente que <strong>realmente trabalha</strong>. Um agente conectado às suas ferramentas elimina horas de trabalho manual toda semana.</p>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0;">
+    <div class="card">
+      <div class="card-title">❌ Sem Integração</div>
+      <div class="card-desc">Agente isolado, só responde perguntas, não tem acesso aos seus dados reais</div>
+    </div>
+    <div class="card emerald">
+      <div class="card-title">✅ Com Integração</div>
+      <div class="card-desc">Agente conectado: vê seus compromissos, cria tarefas, analisa métricas, gerencia arquivos</div>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top:28px;">
+    <div class="section-number">02</div>
+    <div class="section-title">Skills do ClawHub</div>
+  </div>
+  <p class="section-subtitle">O jeito mais fácil — instale como um app</p>
+
+  <div class="callout tip">
+    <div class="callout-icon">🏪</div>
+    <div class="callout-content">
+      <strong>ClawHub = App Store de skills</strong>
+      <p>Alguém já fez o trabalho pesado. Você só instala e usa. Sem configurar nada na mão.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-title">Buscar skills disponíveis</div>
+    <div class="code-block" data-lang="bash">clawhub search notion
+clawhub search google
+clawhub search github</div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-title">Instalar uma skill</div>
+    <div class="code-block" data-lang="bash"># Instalar skill do Notion
+clawhub install notion
+
+# Ver skills instaladas
+clawhub list</div>
+    <p>A skill fica registrada automaticamente no OpenClaw — o agente já sabe usá-la.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-title">Testar a skill</div>
+    <p>Envie pro agente:</p>
+    <div class="callout info">
+      <div class="callout-icon">💬</div>
+      <div class="callout-content">
+        <p><em>"Liste as tasks da database [ID] que estão com status 'In Progress'"</em></p>
+      </div>
+    </div>
+  </div>
+
+  <h3>⭐ Skills recomendadas para começar</h3>
+  <table>
+    <thead><tr><th>Skill</th><th>O que faz</th><th>Prioridade</th></tr></thead>
+    <tbody>
+      <tr><td><code>notion</code></td><td>Gestão de projetos, databases, CRM</td><td>🔴 Alta</td></tr>
+      <tr><td><code>1password</code></td><td>Credenciais seguras (obrigatório)</td><td>🔴 Alta</td></tr>
+      <tr><td><code>github</code></td><td>PRs, issues, CI/CD</td><td>🟡 Média</td></tr>
+      <tr><td><code>weather</code></td><td>Clima — bom pra testar</td><td>🟢 Baixa</td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer">
+    <div class="page-footer-left">Curso OpenClaw — Aula Extra A</div>
+    <div class="page-footer-right">2</div>
+  </div>
+</div>
+
+<!-- PAGE 3: GOG CLI + PDF TOOL NATIVO -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">Extra A — Integrações</div>
+    <div class="page-header-right">openclaw.ai/curso</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-number">03</div>
+    <div class="section-title">gog CLI <span class="new-tag">NOVO 3.2</span></div>
+  </div>
+  <p class="section-subtitle">Google Workspace de forma simples — sem criar projeto no Google Cloud</p>
+
+  <div class="callout warning">
+    <div class="callout-icon">⚠️</div>
+    <div class="callout-content">
+      <strong>Por que não usar o fluxo OAuth manual?</strong>
+      <p>O fluxo OAuth manual para Google exige criar projeto no Google Cloud Console, configurar OAuth credentials, habilitar APIs... É complicado e quebra fácil. O <strong>gog CLI</strong> elimina tudo isso.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-title">Instalar gog CLI</div>
+    <div class="code-block" data-lang="bash">npm install -g gog</div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-title">Autenticar (um comando para tudo)</div>
+    <div class="code-block" data-lang="bash"># Autentica Calendar, Drive, Gmail e Docs de uma vez
+gog auth login</div>
+    <p>Uma janela do browser vai abrir. Autorize com sua conta Google. Pronto — todos os serviços ficam autenticados.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-title">Usar os serviços</div>
+    <div class="code-block" data-lang="bash"># Google Calendar
+gog calendar list --account=SEU_EMAIL
+gog calendar create --title="Reunião" --start="2026-03-10T14:00"
+
+# Google Drive
+gog drive ls --account=SEU_EMAIL
+gog drive upload /caminho/arquivo.pdf --parent ID_PASTA
+
+# Gmail
+gog gmail inbox --limit 10 --account=SEU_EMAIL
+gog gmail send --to=fulano@email.com --subject="Oi"
+
+# Google Docs (leitura)
+gog docs get ID_DO_DOC --account=SEU_EMAIL</div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-icon">💡</div>
+    <div class="callout-content">
+      <strong>Dica: use variável de ambiente</strong>
+      <p>Configure <code>GOG_ACCOUNT=seu@email.com</code> no ambiente para não precisar passar <code>--account</code> em todo comando.</p>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top:28px;">
+    <div class="section-number">04</div>
+    <div class="section-title">PDF Tool Nativo <span class="new-tag">NOVO 3.2</span></div>
+  </div>
+  <p class="section-subtitle">Sem instalar nada — já funciona</p>
+
+  <div class="callout info">
+    <div class="callout-icon">📄</div>
+    <div class="callout-content">
+      <strong>Zero configuração necessária</strong>
+      <p>A partir da versão 3.2, seu agente analisa PDFs diretamente. Nenhuma skill, nenhuma configuração extra.</p>
+    </div>
+  </div>
+
+  <div class="code-block" data-lang="chat">
+# O agente simplesmente lida com PDFs:
+"Analise este contrato: /documentos/contrato.pdf"
+"Extraia os dados desta NF: /nf/nota-123.pdf"
+"Resuma este relatório de 50 páginas"</div>
+
+  <table>
+    <thead><tr><th>Modelo</th><th>Suporte</th><th>Como funciona</th></tr></thead>
+    <tbody>
+      <tr><td>Anthropic Claude</td><td>✅ Nativo</td><td>Análise direta do PDF</td></tr>
+      <tr><td>Google Gemini</td><td>✅ Nativo</td><td>Análise direta do PDF</td></tr>
+      <tr><td>Outros modelos</td><td>⚠️ Fallback</td><td>Extração de texto/imagens</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Casos de uso práticos</h4>
+  <ul>
+    <li>Analisar <strong>boletos e notas fiscais</strong> — extrair dados pro Notion</li>
+    <li>Resumir <strong>relatórios longos</strong> automaticamente</li>
+    <li>Revisar <strong>contratos</strong> e identificar pontos críticos</li>
+    <li>Extrair dados de <strong>planilhas em PDF</strong></li>
+    <li>Até <strong>10 PDFs por mensagem</strong></li>
+  </ul>
+
+  <div class="page-footer">
+    <div class="page-footer-left">Curso OpenClaw — Aula Extra A</div>
+    <div class="page-footer-right">3</div>
+  </div>
+</div>
+
+<!-- PAGE 4: APIs DIRETAS + SKILL CUSTOMIZADA -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">Extra A — Integrações</div>
+    <div class="page-header-right">openclaw.ai/curso</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-number">05</div>
+    <div class="section-title">APIs Diretas</div>
+  </div>
+  <p class="section-subtitle">Quando não tem skill pronta — o passo a passo</p>
+
+  <p>Qualquer ferramenta que tem uma API pode ser integrada. Siga o fluxo:</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-title">Conseguir a API Key</div>
+    <p>Acesse o painel da ferramenta → Developers / API → crie uma chave.</p>
+    <div class="callout danger">
+      <div class="callout-icon">🔴</div>
+      <div class="callout-content">
+        <strong>NUNCA hardcode a API Key</strong>
+        <p>Não coloque a chave direto no código, config.json ou qualquer arquivo. Use o 1Password.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-title">Guardar no 1Password</div>
+    <div class="code-block" data-lang="bash"># Via CLI (se tiver o op instalado)
+op item create --category=api-credential \
+  --title="Stripe Produção" \
+  --vault="Amora Vault" \
+  secret_key="sk_live_..."</div>
+    <p>Ou adicione manualmente pelo app/web do 1Password.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-title">Agente busca a credencial quando precisar</div>
+    <div class="code-block" data-lang="bash"># O agente faz isso nos bastidores:
+STRIPE_KEY=$(op item get "Stripe Produção" \
+  --vault "Amora Vault" --field secret_key --reveal)
+
+curl https://api.stripe.com/v1/balance \
+  -u "$STRIPE_KEY:"</div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-title">Documentar no TOOLS.md</div>
+    <div class="code-block" data-lang="markdown">### Stripe (Pagamentos)
+- **Item 1PW:** `Stripe Produção`
+- **Vault:** Amora Vault
+- **Acesso:** Read livre, Write = aprovação obrigatória</div>
+  </div>
+
+  <div class="section-header" style="margin-top:28px;">
+    <div class="section-number">06</div>
+    <div class="section-title">Skill Customizada</div>
+  </div>
+  <p class="section-subtitle">Para ferramentas nichadas — uma pasta com instruções</p>
+
+  <div class="code-block" data-lang="bash"># Criar a pasta da skill
+mkdir -p ~/.openclaw/skills/crm-empresa-x
+
+# Criar o SKILL.md (só texto, sem código!)
+# O agente lê e segue as instruções
+
+# Registrar
+openclaw skills register ~/.openclaw/skills/crm-empresa-x
+
+# Verificar
+openclaw skills list</div>
+
+  <div class="callout info">
+    <div class="callout-icon">💡</div>
+    <div class="callout-content">
+      <strong>Você não precisa programar</strong>
+      <p>O SKILL.md é texto puro. Copie a documentação da API da ferramenta, explique como o agente deve usar, pronto. O agente faz o resto.</p>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-left">Curso OpenClaw — Aula Extra A</div>
+    <div class="page-footer-right">4</div>
+  </div>
+</div>
+
+<!-- PAGE 5: CHECKLIST + SEGURANÇA + TROUBLESHOOTING -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">Extra A — Integrações</div>
+    <div class="page-header-right">openclaw.ai/curso</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-number">07</div>
+    <div class="section-title">Fluxo de Decisão</div>
+  </div>
+  <p class="section-subtitle">Como integrar qualquer ferramenta — 5 perguntas</p>
+
+  <div class="card grape">
+    <div class="card-title">🗺️ Árvore de Decisão</div>
+    <ol style="margin-top:8px;">
+      <li style="margin-bottom:8px;"><strong>A ferramenta tem API?</strong> (procure "API documentation" no Google)</li>
+      <li style="margin-bottom:8px;"><strong>Tem skill no ClawHub?</strong> → <code>clawhub search nome</code></li>
+      <li style="margin-bottom:8px;">Se sim → <code>clawhub install nome</code> → testar</li>
+      <li style="margin-bottom:8px;">Se não → pegar API key → guardar no 1Password → documentar no TOOLS.md</li>
+      <li><strong>Se vai usar frequentemente</strong> → criar skill customizada</li>
+    </ol>
+  </div>
+
+  <div class="security-box" style="margin-top:20px;">
+    <h4>🔒 Regras de Segurança — Invioláveis</h4>
+    <ul style="margin-top:8px;">
+      <li><strong>NUNCA</strong> colocar API keys direto no código ou arquivos de config</li>
+      <li><strong>NUNCA</strong> commitar credenciais no Git</li>
+      <li><strong>SEMPRE</strong> usar 1Password (ou gerenciador equivalente)</li>
+      <li><strong>SEMPRE</strong> definir permissões (read-only quando possível)</li>
+      <li><strong>SEMPRE</strong> documentar no TOOLS.md o que o agente pode e não pode fazer</li>
+    </ul>
+    <div class="code-block" data-lang="bash" style="margin-top:10px;"># Auditoria de secrets (nunca deixe chaves expostas)
+openclaw secrets audit
+# Se encontrar algo → migrar pro cofre seguro
+openclaw secrets apply</div>
+  </div>
+
+  <div class="checklist" style="margin-top:20px;">
+    <div class="checklist-title">✅ Checkpoint da Aula Extra A</div>
+    <div class="checklist-item"><div class="check-box"></div>Sabe buscar e instalar skills do ClawHub</div>
+    <div class="checklist-item"><div class="check-box"></div>gog CLI instalado e autenticado (se usa Google Workspace)</div>
+    <div class="checklist-item"><div class="check-box"></div>Pelo menos 1 serviço Google funcionando via gog</div>
+    <div class="checklist-item"><div class="check-box"></div>PDF tool nativo testado com um documento real</div>
+    <div class="checklist-item"><div class="check-box"></div>Sabe integrar API direto (1Password + curl + documentação)</div>
+    <div class="checklist-item"><div class="check-box"></div>Todas as credenciais no 1Password (zero hardcoded)</div>
+    <div class="checklist-item"><div class="check-box"></div>Integrações documentadas no TOOLS.md</div>
+    <div class="checklist-item"><div class="check-box"></div><code>openclaw secrets audit</code> retornando limpo</div>
+  </div>
+
+  <h3>🔧 Troubleshooting Comum</h3>
+
+  <div class="troubleshoot">
+    <div class="troubleshoot-problem">❌ "clawhub: command not found"</div>
+    <div class="troubleshoot-solution"><code>npm install -g clawhub</code></div>
+  </div>
+
+  <div class="troubleshoot">
+    <div class="troubleshoot-problem">❌ "Skill instalou mas agente não sabe usar"</div>
+    <div class="troubleshoot-solution">
+      <code>openclaw skills list</code> → se não aparece: <code>openclaw skills register ~/.openclaw/skills/nome</code> → <code>openclaw gateway restart</code>
+    </div>
+  </div>
+
+  <div class="troubleshoot">
+    <div class="troubleshoot-problem">❌ "API retorna 401 Unauthorized"</div>
+    <div class="troubleshoot-solution">Verificar se a API key está correta, se não expirou e se tem permissões suficientes. Gere uma nova chave se necessário.</div>
+  </div>
+
+  <div class="troubleshoot">
+    <div class="troubleshoot-problem">❌ "gog: authentication failed"</div>
+    <div class="troubleshoot-solution">Rode <code>gog auth login</code> novamente. Se persistir, verifique <code>GOG_KEYRING_PASSWORD</code> configurado no ambiente.</div>
+  </div>
+
+  <div class="next-module">
+    <div class="next-icon">🤖</div>
+    <div class="next-text">
+      <div class="next-label">Próxima Aula</div>
+      <div class="next-title">Módulo 8 — Multi-Agentes: quando um não é suficiente</div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-left">Curso OpenClaw — Aula Extra A · v2026.3.2</div>
+    <div class="page-footer-right">5</div>
+  </div>
+</div>
+
+</body>
+</html>

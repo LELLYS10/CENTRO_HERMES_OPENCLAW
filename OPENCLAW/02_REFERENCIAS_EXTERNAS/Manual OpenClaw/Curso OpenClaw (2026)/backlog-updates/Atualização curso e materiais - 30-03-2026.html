@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curso OpenClaw — Análise de Impacto | 30/03/2026</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3250;
+    --accent: #6c63ff;
+    --accent2: #a78bfa;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --green: #34d399;
+    --blue: #60a5fa;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --font: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.6; }
+  .wrapper { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+
+  /* Header */
+  .header { margin-bottom: 40px; }
+  .header h1 { font-size: 28px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .header .sub { color: var(--muted); font-size: 13px; }
+  .header .badge { display: inline-flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--accent2); margin-top: 12px; }
+
+  /* Summary cards */
+  .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 16px; }
+  .card .num { font-size: 32px; font-weight: 700; }
+  .card .label { color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .card.red .num { color: var(--red); }
+  .card.yellow .num { color: var(--yellow); }
+  .card.green .num { color: var(--green); }
+  .card.blue .num { color: var(--blue); }
+
+  /* Sections */
+  .section { margin-bottom: 40px; }
+  .section h2 { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+  /* Change items */
+  .change { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .change-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+  .tag { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; white-space: nowrap; flex-shrink: 0; }
+  .tag.breaking { background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+  .tag.prompt { background: rgba(108,99,255,0.15); color: var(--accent2); border: 1px solid rgba(108,99,255,0.3); }
+  .tag.prd { background: rgba(251,191,36,0.15); color: var(--yellow); border: 1px solid rgba(251,191,36,0.3); }
+  .tag.note { background: rgba(96,165,250,0.15); color: var(--blue); border: 1px solid rgba(96,165,250,0.3); }
+  .tag.noaction { background: rgba(148,163,184,0.1); color: var(--muted); border: 1px solid rgba(148,163,184,0.2); }
+  .tag.fix { background: rgba(52,211,153,0.1); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+
+  .change-title { font-size: 14px; font-weight: 600; color: #fff; }
+  .change-body { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .change-body strong { color: var(--text); }
+  .modules { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .mod { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-size: 11px; color: var(--accent2); }
+  .action-box { background: var(--surface2); border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0; padding: 10px 12px; margin-top: 10px; font-size: 13px; }
+  .action-box .action-label { font-size: 11px; font-weight: 600; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+
+  /* Version badge */
+  .ver-badge { display: inline-flex; align-items: center; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-size: 11px; color: var(--muted); margin-left: 6px; font-family: monospace; }
+
+  /* Priority levels */
+  .p-critical { border-left: 3px solid var(--red); }
+  .p-important { border-left: 3px solid var(--yellow); }
+  .p-info { border-left: 3px solid var(--muted); }
+
+  /* Footer */
+  .footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); padding-top: 20px; margin-top: 40px; }
+
+  /* Unreleased banner */
+  .unreleased-banner { background: linear-gradient(135deg, rgba(108,99,255,0.1), rgba(167,139,250,0.05)); border: 1px solid rgba(108,99,255,0.3); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; font-size: 13px; color: var(--accent2); }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="header">
+    <h1>🎓 Curso OpenClaw — Análise de Impacto</h1>
+    <div class="sub">Revisão semanal do changelog para decisão de atualização de materiais</div>
+    <div class="badge">📅 30/03/2026 · Período: 21/03 → 30/03 · Versão: 2026.3.13 → 2026.3.28 + Unreleased</div>
+  </div>
+
+  <div class="summary-grid">
+    <div class="card red">
+      <div class="num">2</div>
+      <div class="label">Breaking Changes</div>
+    </div>
+    <div class="card yellow">
+      <div class="num">5</div>
+      <div class="label">Ações Recomendadas</div>
+    </div>
+    <div class="card blue">
+      <div class="num">4</div>
+      <div class="label">Módulos Afetados</div>
+    </div>
+    <div class="card green">
+      <div class="num">12</div>
+      <div class="label">Sem Ação</div>
+    </div>
+  </div>
+
+  <!-- BREAKING CHANGES -->
+  <div class="section">
+    <h2>🚨 Breaking Changes (requer ação nos materiais)</h2>
+
+    <div class="change p-critical">
+      <div class="change-header">
+        <span class="tag breaking">BREAKING</span>
+        <span class="tag prd">PRD</span>
+        <span class="change-title">Remoção de nodes.run shell wrapper</span>
+        <span class="ver-badge">Unreleased</span>
+      </div>
+      <div class="change-body">
+        O wrapper de shell <code>nodes.run</code> foi removido do CLI e da tool <code>nodes</code>. Execução de shell em nodes agora vai exclusivamente via <code>exec host=node</code>. Capacidades específicas de node continuam em <code>nodes invoke</code> e ações dedicadas.
+      </div>
+      <div class="modules">
+        <span class="mod">M8 Multi-Agentes</span>
+        <span class="mod">M5 Integrações</span>
+      </div>
+      <div class="action-box">
+        <div class="action-label">📄 Ação recomendada — PRD</div>
+        Atualizar materiais de M8 (multi-agentes) que mencionam <code>nodes.run</code> para shell remoto. Substituir exemplos por <code>exec host=node</code>. Verificar prompts que instroem uso de <code>nodes</code> tool para execução de comandos.
+      </div>
+    </div>
+
+    <div class="change p-critical">
+      <div class="change-header">
+        <span class="tag breaking">BREAKING</span>
+        <span class="tag prd">PRD</span>
+        <span class="change-title">Task ledger JSON → SQLite (background tasks)</span>
+        <span class="ver-badge">Unreleased</span>
+      </div>
+      <div class="change-body">
+        O ledger JSON de tasks (<code>tasks/runs.json</code>) foi substituído por store SQLite. Qualquer script ou material que instrua alunos a ler esse arquivo diretamente vai quebrar. A interface suportada agora é via <code>openclaw tasks</code>.
+      </div>
+      <div class="modules">
+        <span class="mod">M8 Multi-Agentes</span>
+        <span class="mod">M7 Proatividade</span>
+      </div>
+      <div class="action-box">
+        <div class="action-label">📄 Ação recomendada — PRD</div>
+        Verificar se algum material ou prompt do curso referencia <code>tasks/runs.json</code> diretamente. Se sim, substituir por <code>openclaw tasks</code>. Baixo risco — improvável que esteja nos materiais atuais, mas confirmar.
+      </div>
+    </div>
+
+    <div class="change p-critical">
+      <div class="change-header">
+        <span class="tag breaking">BREAKING</span>
+        <span class="tag prd">PRD</span>
+        <span class="change-title">Remoção de qwen-portal-auth OAuth</span>
+        <span class="ver-badge">2026.3.28</span>
+      </div>
+      <div class="change-body">
+        A integração OAuth <code>qwen-portal-auth</code> para <code>portal.qwen.ai</code> foi removida. Migração necessária para Model Studio com <code>openclaw onboard --auth-choice modelstudio-api-key</code>.
+      </div>
+      <div class="modules">
+        <span class="mod">M1 Setup</span>
+        <span class="mod">M5 Integrações</span>
+      </div>
+      <div class="action-box">
+        <div class="action-label">📄 Ação recomendada — NOTA DE GRAVAÇÃO</div>
+        Impacto baixo para o curso — Qwen não é modelo recomendado no material atual. Verificar se alguma menção existe; se não, sem ação. Anotar como contexto caso aluno pergunte.
+      </div>
+    </div>
+
+    <div class="change p-critical">
+      <div class="change-header">
+        <span class="tag breaking">BREAKING</span>
+        <span class="tag prd">PRD</span>
+        <span class="change-title">Config/Doctor: remoção de migrações antigas (>2 meses)</span>
+        <span class="ver-badge">2026.3.28</span>
+      </div>
+      <div class="change-body">
+        Migrações automáticas de config mais antigas que 2 meses foram removidas. Chaves de configuração legadas muito antigas agora falham na validação em vez de serem reescritas automaticamente.
+      </div>
+      <div class="modules">
+        <span class="mod">M1 Setup</span>
+        <span class="mod">M2 Segurança</span>
+      </div>
+      <div class="action-box">
+        <div class="action-label">📄 Ação recomendada — NOTA DE GRAVAÇÃO</div>
+        Alunos que instalaram na primeira versão do curso (Jan/2026) e nunca rodaram <code>openclaw doctor</code> podem ter configs inválidas após essa mudança. Recomendar que todos rodem <code>openclaw doctor</code> + <code>openclaw config validate</code> antes de prosseguir. Adicionar ao checklist do M1 ou M2.
+      </div>
+    </div>
+  </div>
+
+  <!-- AÇÕES IMPORTANTES -->
+  <div class="section">
+    <h2>🟡 Mudanças Importantes (analisar para materiais)</h2>
+
+    <div class="change p-important">
+      <div class="change-header">
+        <span class="tag prompt">PROMPT DO ALUNO</span>
+        <span class="change-title">Before_tool_call hooks com requireApproval — aprovações via /approve</span>
+        <span class="ver-badge">2026.3.28</span>
+      </div>
+      <div class="change-body">
+        Plugins podem agora pausar execução de tools e pedir aprovação do usuário. O comando <code>/approve</code> agora trata tanto exec approvals quanto plugin approvals, com fallback automático. Isso afeta o fluxo de aprovação que ensinamos no M2 (Immune System) e M9.
+      </div>
+      <div class="modules">
+        <span class="mod">M2 Segurança</span>
+        <span class="mod">M9 Immune System</span>
+      </div>
+      <div class="action-box">
+        <div class="action-label">✍️ Ação recomendada — PROMPT DO ALUNO</div>
+        O sistema de <code>/approve</code> ficou mais unificado. Atualizar prompts/exemplos nos módulos de segurança para refletir que <code>/approve</code> agora cobre múltiplos tipos de aprovação. Oportunidade de simplificar o ensinamento: "um único comando para aprovar qualquer ação pendente".
+      </div>
+    </div>
+
+    <div class="change p-important">
+      <div class="change-header">
+        <span class="tag prompt">PROMPT DO ALUNO</span>
+        <span class="change-title">Flows/tasks — parent flows para trabalho orquestrado</span>
+        <span class="ver-badge">Unreleased</span>
+      </div>
+      <div class="change-body">
+        Novo conceito de <strong>flows</strong> como entidade pai para ACP e subagents — trabalho orquestrado começa a ter um registro central. ACP e subagent updates agora roteiam pelo contexto de flow pai, emergindo no thread/session correto.
+      </div>
+      <div class="modules">
+        <span class="mod">M8 Multi-Agentes</span>
+      </div>
+      <div class="action-box">
+        <div class="action-label">✍️ Ação recomendada — NOTA DE GRAVAÇÃO</div>
+        Funcionalidade em desenvolvimento (Unreleased), mas sinaliza nova abstração importante. Monitorar para o módulo de multi-agentes — quando lançado, pode simplificar muito o ensino de orquestração. Por ora, apenas registrar como contexto futuro.
+      </div>
+    </div>
+
+    <div class="change p-important">
+      <div class="change-header">
+        <span class="tag note">NOTA DE GRAVAÇÃO</span>
+        <span class="change-title">ACP current-conversation binds — Discord, BlueBubbles, iMessage</span>
+        <span class="ver-badge">2026.3.28</span>
+      </div>
+      <div class="change-body">
+        <code>/acp spawn codex --bind here</code> agora funciona no Discord sem criar child thread — transforma o chat atual num workspace ACP. Muda o fluxo de uso do Codex via Discord que pode estar nos exemplos do curso.
+      </div>
+      <div class="modules">
+        <span class="mod">M8 Multi-Agentes</span>
+        <span class="mod">M5 Integrações</span>
+      </div>
+      <div class="action-box">
+        <div class="action-label">✍️ Ação recomendada — NOTA DE GRAVAÇÃO</div>
+        Adicionar nota nos materiais de ACP/multi-agentes sobre o novo <code>--bind here</code>. Flexibilidade adicional para alunos que usam Discord como interface.
+      </div>
+    </div>
+
+    <div class="change p-important">
+      <div class="change-header">
+        <span class="tag prd">PRD</span>
+        <span class="change-title">Exec/runtime: host=auto por default — sandbox só quando existe</span>
+        <span class="ver-badge">Unreleased</span>
+      </div>
+      <div class="change-body">
+        Exec agora usa <code>host=auto</code> por default, resolvendo para sandbox apenas quando existe. Comportamento anterior podia confundir alunos em setup sem sandbox — agora falha fechado corretamente.
+      </div>
+      <div class="modules">
+        <span class="mod">M1 Setup</span>
+        <span class="mod">M2 Segurança</span>
+      </div>
+      <div class="action-box">
+        <div class="action-label">📄 Ação recomendada — PRD</div>
+        Verificar se os materiais de setup mencionam comportamento de exec/sandbox. Mudança torna comportamento mais intuitivo — pode simplificar explicação de troubleshooting do M1.
+      </div>
+    </div>
+
+    <div class="change p-important">
+      <div class="change-header">
+        <span class="tag prompt">PROMPT DO ALUNO</span>
+        <span class="change-title">WhatsApp Reactions — agentes podem reagir com emoji</span>
+        <span class="ver-badge">Unreleased</span>
+      </div>
+      <div class="change-body">
+        Agentes agora podem reagir com emoji em mensagens WhatsApp recebidas — feedback não-verbal mais natural (ex: ❤️ em vez de resposta de texto).
+      </div>
+      <div class="modules">
+        <span class="mod">M5 Integrações</span>
+        <span class="mod">M3 Identidade</span>
+      </div>
+      <div class="action-box">
+        <div class="action-label">✍️ Ação recomendada — PROMPT DO ALUNO</div>
+        Boa feature para adicionar em exemplos de prompts de identidade e integrações WhatsApp. Torna agentes mais "humanos". Sugerir como melhoria nos prompts de SOUL.md dos alunos.
+      </div>
+    </div>
+
+    <div class="change p-important">
+      <div class="change-header">
+        <span class="tag note">NOTA DE GRAVAÇÃO</span>
+        <span class="change-title">Cron/announce: payloads multi-linha entregues completos no Telegram</span>
+        <span class="ver-badge">Unreleased</span>
+      </div>
+      <div class="change-body">
+        Fix importante: relatórios de cron em modo announce agora entregam todos os chunks de texto no Telegram forum topics (tópicos). Bug anterior fazia truncar relatórios longos.
+      </div>
+      <div class="modules">
+        <span class="mod">M7 Proatividade</span>
+      </div>
+      <div class="action-box">
+        <div class="action-label">✍️ Ação recomendada — NOTA DE GRAVAÇÃO</div>
+        Relevante para alunos que usam crons com delivery no Telegram (tópico HQ). Registrar como fix — alunos que reclamavam de relatórios truncados podem atualizar para resolver.
+      </div>
+    </div>
+  </div>
+
+  <!-- SEM AÇÃO -->
+  <div class="section">
+    <h2>✅ Sem Ação para o Curso (contexto/informativo)</h2>
+
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px;">
+      <table style="width:100%; border-collapse: collapse; font-size: 13px;">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <th style="text-align:left; padding: 8px; color: var(--muted);">Mudança</th>
+            <th style="text-align:left; padding: 8px; color: var(--muted);">Versão</th>
+            <th style="text-align:left; padding: 8px; color: var(--muted);">Motivo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px;">LINE outbound media (image/video/audio)</td>
+            <td style="padding: 8px;"><span class="ver-badge">Unreleased</span></td>
+            <td style="padding: 8px; color: var(--muted);">Canal não abordado no curso</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px;">MCP remote HTTP/SSE server support</td>
+            <td style="padding: 8px;"><span class="ver-badge">Unreleased</span></td>
+            <td style="padding: 8px; color: var(--muted);">Avanços técnicos — MCP avançado não está no escopo atual</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px;">Android notification forwarding</td>
+            <td style="padding: 8px;"><span class="ver-badge">Unreleased</span></td>
+            <td style="padding: 8px; color: var(--muted);">Feature mobile — não é foco do curso (VPS-first)</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px;">Matrix proxy + history context</td>
+            <td style="padding: 8px;"><span class="ver-badge">Unreleased</span></td>
+            <td style="padding: 8px; color: var(--muted);">Canal Matrix não abordado no curso</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px;">MiniMax image generation</td>
+            <td style="padding: 8px;"><span class="ver-badge">2026.3.28</span></td>
+            <td style="padding: 8px; color: var(--muted);">Provider adicional — sem impacto no currículo</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px;">xAI/Grok x_search + Responses API</td>
+            <td style="padding: 8px;"><span class="ver-badge">2026.3.28</span></td>
+            <td style="padding: 8px; color: var(--muted);">Provider complementar — não é modelo principal no curso</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px;">Podman rootless simplification</td>
+            <td style="padding: 8px;"><span class="ver-badge">2026.3.28</span></td>
+            <td style="padding: 8px; color: var(--muted);">Curso foca em Docker e VPS tradicional</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px;">Slack upload-file action</td>
+            <td style="padding: 8px;"><span class="ver-badge">2026.3.28</span></td>
+            <td style="padding: 8px; color: var(--muted);">Feature Slack específica</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px;">Memory/QMD múltiplos fixes</td>
+            <td style="padding: 8px;"><span class="ver-badge">Unreleased</span></td>
+            <td style="padding: 8px; color: var(--muted);">QMD é backend avançado — curso usa FTS padrão</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px;">Anthropic service tiers + /fast</td>
+            <td style="padding: 8px;"><span class="ver-badge">Unreleased</span></td>
+            <td style="padding: 8px; color: var(--muted);">Otimização avançada — contexto adicional apenas</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px;">TUI model picker melhorias</td>
+            <td style="padding: 8px;"><span class="ver-badge">Unreleased</span></td>
+            <td style="padding: 8px; color: var(--muted);">UX fix — sem impacto pedagógico</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px;">Telegram splitting + delivery fixes</td>
+            <td style="padding: 8px;"><span class="ver-badge">2026.3.28</span></td>
+            <td style="padding: 8px; color: var(--muted);">Fix interno de entrega — transparente para alunos</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PRÓXIMOS PASSOS -->
+  <div class="section">
+    <h2>🎯 Resumo de Decisões para Bruno</h2>
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px;">
+      <table style="width:100%; border-collapse: collapse; font-size: 13px;">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <th style="text-align:left; padding: 8px 12px; color: var(--muted);">Item</th>
+            <th style="text-align:left; padding: 8px 12px; color: var(--muted);">Tipo</th>
+            <th style="text-align:left; padding: 8px 12px; color: var(--muted);">Módulo</th>
+            <th style="text-align:left; padding: 8px 12px; color: var(--muted);">Prioridade</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px 12px; color: #fff;">nodes.run removido → usar exec host=node</td>
+            <td style="padding: 8px 12px;"><span class="tag prd">PRD</span></td>
+            <td style="padding: 8px 12px; color: var(--muted);">M8</td>
+            <td style="padding: 8px 12px; color: var(--red);">🔴 Alta</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px 12px; color: #fff;">openclaw doctor obrigatório para alunos antigos</td>
+            <td style="padding: 8px 12px;"><span class="tag note">NOTA</span></td>
+            <td style="padding: 8px 12px; color: var(--muted);">M1/M2</td>
+            <td style="padding: 8px 12px; color: var(--red);">🔴 Alta</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px 12px; color: #fff;">/approve unificado (exec + plugin)</td>
+            <td style="padding: 8px 12px;"><span class="tag prompt">PROMPT</span></td>
+            <td style="padding: 8px 12px; color: var(--muted);">M2/M9</td>
+            <td style="padding: 8px 12px; color: var(--yellow);">🟡 Média</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px 12px; color: #fff;">WhatsApp reactions nos prompts de identidade</td>
+            <td style="padding: 8px 12px;"><span class="tag prompt">PROMPT</span></td>
+            <td style="padding: 8px 12px; color: var(--muted);">M3/M5</td>
+            <td style="padding: 8px 12px; color: var(--yellow);">🟡 Média</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 12px; color: #fff;">Cron announce fix — avisar alunos que usam crons no Telegram</td>
+            <td style="padding: 8px 12px;"><span class="tag note">NOTA</span></td>
+            <td style="padding: 8px 12px; color: var(--muted);">M7</td>
+            <td style="padding: 8px 12px; color: var(--green);">🟢 Baixa</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- VERSÃO E CONTEXTO -->
+  <div class="section">
+    <h2>📦 Versões Lançadas no Período</h2>
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; font-size: 13px; color: var(--muted);">
+      <div style="margin-bottom: 8px;"><strong style="color: #fff;">2026.3.22</strong> — 23/03/2026 · Versão intermediária</div>
+      <div style="margin-bottom: 8px;"><strong style="color: #fff;">2026.3.23</strong> — 23-24/03/2026 · Versão intermediária (3 patches)</div>
+      <div style="margin-bottom: 8px;"><strong style="color: #fff;">2026.3.24</strong> — 25/03/2026 · Versão intermediária (betas + release)</div>
+      <div style="margin-bottom: 8px;"><strong style="color: #fff;">2026.3.28</strong> — 29/03/2026 · Versão mais recente (publicada) — contém breaking changes qwen + doctor</div>
+      <div><strong style="color: var(--accent2);">Unreleased</strong> — Em desenvolvimento — contém os breaking changes mais críticos (nodes.run, tasks/sqlite)</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Gerado por Amora · 30/03/2026 · Revisão semanal automática (cron) · Período coberto: 21/03 → 30/03/2026<br>
+    Último review anterior: 21/03/2026 · Versão de referência: pós-2026.3.13<br>
+    Fonte: <a href="https://raw.githubusercontent.com/openclaw/openclaw/main/CHANGELOG.md" style="color: var(--accent2);">CHANGELOG.md</a> + npm registry
+  </div>
+
+</div>
+</body>
+</html>

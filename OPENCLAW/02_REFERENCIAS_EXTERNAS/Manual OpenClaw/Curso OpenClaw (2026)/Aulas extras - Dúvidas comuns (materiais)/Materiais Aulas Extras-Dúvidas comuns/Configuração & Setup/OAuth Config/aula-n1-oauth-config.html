@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>N-1 — Configurar Credenciais: ChatGPT OAuth (Padrão) + OpenAI API Key · Curso OpenClaw</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1a1a26;
+    --border: #2a2a3a;
+    --accent: #7c3aed;
+    --accent2: #a78bfa;
+    --text: #e2e2f0;
+    --muted: #9ca3af;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --red: #ef4444;
+    --blue: #3b82f6;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.7;
+    font-size: 16px;
+  }
+  body > * {
+    max-width: 920px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  header {
+    max-width: 920px;
+    margin: 32px auto 0;
+    padding: 44px 36px;
+    background: linear-gradient(135deg, #0f0a1f 0%, #13131a 60%, #0a0a0f 100%);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+  }
+  header h1 { margin: 0 0 12px; font-size: 38px; line-height: 1.15; }
+  header .subtitle, header .author, header .date { color: var(--muted); }
+  nav#TOC {
+    margin: 28px auto;
+    padding: 24px 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+  nav#TOC ul { margin: 10px 0 0 20px; }
+  main, section, article {
+    max-width: 920px;
+  }
+  body > h1, body > h2, body > h3, body > h4, body > h5, body > h6,
+  body > p, body > table, body > pre, body > blockquote, body > ul, body > ol, body > div {
+    max-width: 920px;
+  }
+  h1, h2, h3, h4 {
+    line-height: 1.2;
+  }
+  h1 { font-size: 2.1rem; margin: 36px auto 18px; }
+  h2 {
+    margin: 48px auto 18px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    color: #fff;
+    font-size: 1.55rem;
+  }
+  h3 {
+    margin: 28px auto 12px;
+    color: var(--accent2);
+    font-size: 1.15rem;
+  }
+  p, ul, ol, table, pre, blockquote { margin: 0 auto 16px; }
+  ul, ol { padding-left: 24px; }
+  li + li { margin-top: 6px; }
+  a { color: #c4b5fd; }
+  strong { color: #fff; }
+  blockquote {
+    padding: 16px 18px;
+    border-left: 4px solid var(--accent);
+    background: rgba(124,58,237,0.08);
+    border-radius: 10px;
+  }
+  code {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2px 7px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.92em;
+  }
+  pre {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    overflow-x: auto;
+  }
+  pre code { border: 0; background: transparent; padding: 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  th {
+    text-align: left;
+    padding: 12px 14px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    background: var(--surface2);
+  }
+  td {
+    padding: 12px 14px;
+    border-top: 1px solid rgba(42,42,58,0.8);
+    vertical-align: top;
+  }
+  hr {
+    border: 0;
+    height: 1px;
+    background: var(--border);
+    margin: 36px auto;
+  }
+  @media (max-width: 720px) {
+    body { font-size: 15px; }
+    header { margin: 18px 16px 0; padding: 28px 20px; }
+    body > * { margin-left: 16px; margin-right: 16px; }
+    header h1 { font-size: 28px; }
+  }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">N-1 — Configurar Credenciais: ChatGPT OAuth (Padrão) +
+OpenAI API Key · Curso OpenClaw</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a
+href="#prd--aula-n-1-configurar-credenciais--chatgpt-oauth-padrão--openai-api-key"
+id="toc-prd--aula-n-1-configurar-credenciais--chatgpt-oauth-padrão--openai-api-key">PRD
+— Aula N-1: Configurar Credenciais — ChatGPT OAuth (Padrão) + OpenAI API
+Key</a>
+<ul>
+<li><a href="#dart-objetivo-da-aula" id="toc-dart-objetivo-da-aula">🎯
+Objetivo da Aula</a></li>
+<li><a href="#clipboard-script-de-gravação--seção-por-seção"
+id="toc-clipboard-script-de-gravação--seção-por-seção">📋 Script de
+Gravação — Seção por Seção</a>
+<ul>
+<li><a href="#clapper-abertura-000--200"
+id="toc-clapper-abertura-000--200">🎬 ABERTURA (0:00 – 2:00)</a></li>
+<li><a href="#books-seção-1-os-dois-caminhos-de-autenticação-200--500"
+id="toc-books-seção-1-os-dois-caminhos-de-autenticação-200--500">📚
+SEÇÃO 1: Os dois caminhos de autenticação (2:00 – 5:00)</a></li>
+<li><a
+href="#closed_lock_with_key-seção-2-chatgpt-oauth--o-caminho-recomendado-500--1000"
+id="toc-closed_lock_with_key-seção-2-chatgpt-oauth--o-caminho-recomendado-500--1000">🔐
+SEÇÃO 2: ChatGPT OAuth — O caminho recomendado (5:00 – 10:00)</a></li>
+<li><a
+href="#key-seção-25-openai-api-key--o-caminho-flexível-1000--1400"
+id="toc-key-seção-25-openai-api-key--o-caminho-flexível-1000--1400">🔑
+SEÇÃO 2.5: OpenAI API Key — O caminho flexível (10:00 – 14:00)</a></li>
+<li><a
+href="#key-seção-3-anthropic-api-key--o-caminho-opcional-1400--1700"
+id="toc-key-seção-3-anthropic-api-key--o-caminho-opcional-1400--1700">🔑
+SEÇÃO 3: Anthropic API Key — O caminho opcional (14:00 – 17:00)</a></li>
+<li><a
+href="#white_check_mark-seção-4-verificando-tudo-com-openclaw-status-1700--1900"
+id="toc-white_check_mark-seção-4-verificando-tudo-com-openclaw-status-1700--1900">✅
+SEÇÃO 4: Verificando tudo com <code>openclaw status</code> (17:00 –
+19:00)</a></li>
+<li><a href="#wrench-seção-5-erros-comuns-e-como-resolver-1900--2200"
+id="toc-wrench-seção-5-erros-comuns-e-como-resolver-1900--2200">🔧 SEÇÃO
+5: Erros Comuns e Como Resolver (19:00 – 22:00)</a></li>
+<li><a href="#dart-encerramento-2200--2300"
+id="toc-dart-encerramento-2200--2300">🎯 ENCERRAMENTO (22:00 –
+23:00)</a></li>
+</ul></li>
+<li><a href="#hammer_and_wrench-passo-a-passo-técnico-detalhado"
+id="toc-hammer_and_wrench-passo-a-passo-técnico-detalhado">🛠️ Passo a
+Passo Técnico Detalhado</a>
+<ul>
+<li><a href="#1-chatgpt-oauth-recomendado"
+id="toc-1-chatgpt-oauth-recomendado">1. ChatGPT OAuth
+(Recomendado)</a></li>
+<li><a href="#2-openai-api-key-fallback"
+id="toc-2-openai-api-key-fallback">2. OpenAI API Key (Fallback)</a></li>
+<li><a href="#3-openrouter-para-testar-outros-llms-recomendado-para-experimentação"
+id="toc-3-openrouter-para-testar-outros-llms-recomendado-para-experimentação">3. OpenRouter para testar outros LLMs
+(Recomendado para experimentação)</a></li>
+<li><a href="#4-anthropic-api-key-opcional"
+id="toc-4-anthropic-api-key-opcional">4. Anthropic API Key
+(Opcional)</a></li>
+<li><a href="#5-verificar" id="toc-5-verificar">5. Verificar</a></li>
+<li><a href="#5-onde-as-credenciais-são-armazenadas"
+id="toc-6-onde-as-credenciais-são-armazenadas">6. Onde as Credenciais
+são Armazenadas</a></li>
+</ul></li>
+<li><a href="#rotating_light-tabela-de-erros-comuns--solução"
+id="toc-rotating_light-tabela-de-erros-comuns--solução">🚨 Tabela de
+Erros Comuns + Solução</a></li>
+<li><a href="#white_check_mark-checklist-final-do-aluno"
+id="toc-white_check_mark-checklist-final-do-aluno">✅ Checklist Final do
+Aluno</a></li>
+<li><a href="#question-dúvidas-frequentes"
+id="toc-question-dúvidas-frequentes">❓ Dúvidas Frequentes</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1
+id="prd--aula-n-1-configurar-credenciais--chatgpt-oauth-padrão--openai-api-key">PRD
+— Aula N-1: Configurar Credenciais — ChatGPT OAuth (Padrão) + OpenAI API
+Key</h1>
+<blockquote>
+<p><strong>Nível:</strong> Iniciante / Setup <strong>Duração
+estimada:</strong> 15–20 minutos <strong>Pré-requisito:</strong>
+OpenClaw instalado, acesso à internet, conta ChatGPT (Plus ou Pro)
+<strong>Atualizado:</strong> ChatGPT OAuth como caminho recomendado
+(2026-04)</p>
+</blockquote>
+<hr />
+<h2 id="dart-objetivo-da-aula">🎯 Objetivo da Aula</h2>
+<p>Ao final desta aula, o aluno será capaz de:</p>
+<ol type="1">
+<li>Configurar o OpenClaw com <strong>ChatGPT via OAuth</strong>
+(recomendado — 1 clique, sem API key)</li>
+<li>Configurar <strong>OpenAI API Key</strong> como fallback (para quem
+prefere ou precisa de controle fino)</li>
+<li>Entender quando usar <strong>OpenRouter</strong> para testar outros LLMs sem sair da stack principal</li>
+<li>Configurar <strong>Anthropic API Key</strong> opcionalmente, apenas se quiser Claude de forma direta</li>
+<li>Configurar as credenciais no OpenClaw via
+<code>openclaw auth login</code></li>
+<li>Verificar se a configuração está funcionando com
+<code>openclaw status</code></li>
+<li>Diagnosticar e resolver os <strong>erros mais comuns</strong> de
+autenticação</li>
+</ol>
+<hr />
+<h2 id="clipboard-script-de-gravação--seção-por-seção">📋 Script de
+Gravação — Seção por Seção</h2>
+<h3 id="clapper-abertura-000--200">🎬 ABERTURA (0:00 – 2:00)</h3>
+<p><strong>[Bruno na tela, tom direto]</strong></p>
+<blockquote>
+<p>"Fala, pessoal! Aula N-1 do curso OpenClaw — configurar credenciais.
+Essa é a aula onde a maioria das pessoas trava, e o objetivo aqui é
+acabar com essa dúvida de vez."</p>
+</blockquote>
+<blockquote>
+<p>"Vou te mostrar o caminho mais simples: usar sua conta do ChatGPT que
+você já tem. Sim — se você já paga R$99/mês de ChatGPT Plus, o OpenClaw
+pode usar essa mesma conta via OAuth. Um clique, sem API key, sem
+configurar billing separado."</p>
+</blockquote>
+<blockquote>
+<p>"Também vou mostrar como configurar via API key direta, que é útil
+pra quem quer mais controle. E, se você quiser experimentar outros LLMs depois, o caminho recomendado é adicionar OpenRouter como camada de testes, sem mexer no fluxo principal do curso."</p>
+</blockquote>
+<hr />
+<h3 id="books-seção-1-os-dois-caminhos-de-autenticação-200--500">📚
+SEÇÃO 1: Os dois caminhos de autenticação (2:00 – 5:00)</h3>
+<p><strong>[Tela: diagrama comparativo]</strong></p>
+<blockquote>
+<p>"Existem dois caminhos pra conectar o OpenClaw na OpenAI:"</p>
+</blockquote>
+<table>
+<thead>
+<tr class="header">
+<th>Caminho</th>
+<th>Como funciona</th>
+<th>Melhor pra</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>OAuth (recomendado)</strong></td>
+<td>1 clique no navegador, usa sua assinatura existente</td>
+<td>Quem já tem ChatGPT Plus/Pro</td>
+</tr>
+<tr class="even">
+<td><strong>API Key</strong></td>
+<td>Gera chave na plataforma, cola no terminal</td>
+<td>Quem quer controle fino de gasto, usa múltiplos modelos</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>"O OAuth é mais simples. A API Key é mais flexível. Os dois funcionam
+— escolhe o que faz mais sentido pra você."</p>
+</blockquote>
+<hr />
+<h3
+id="closed_lock_with_key-seção-2-chatgpt-oauth--o-caminho-recomendado-500--1000">🔐
+SEÇÃO 2: ChatGPT OAuth — O caminho recomendado (5:00 – 10:00)</h3>
+<p><strong>[Tela: terminal + navegador lado a lado]</strong></p>
+<blockquote>
+<p>"Vamos pelo OAuth. Esse é o caminho mais simples."</p>
+</blockquote>
+<blockquote>
+<p>"No terminal, digita:"</p>
+</blockquote>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openclaw</span> auth login <span class="at">--provider</span> openai</span></code></pre></div>
+<blockquote>
+<p>"O OpenClaw vai abrir o navegador automaticamente. Faz login com sua
+conta ChatGPT — pode ser Plus ou Pro. Autoriza o acesso."</p>
+</blockquote>
+<blockquote>
+<p>"Na tela que aparecer, confirma. O terminal vai mostrar algo
+como:"</p>
+</blockquote>
+<pre><code>✅ OAuth completo
+📧 Conta: seu-email@exemplo.com
+🔗 Provider: openai (OpenAI)
+📊 Plano: ChatGPT Plus
+⏰ Validade: ~30 dias (renova automaticamente)</code></pre>
+<blockquote>
+<p>"Pronto. Sem chave pra copiar, sem billing pra configurar. Você já
+tem tudo."</p>
+</blockquote>
+<blockquote>
+<p>"<strong>Importante:</strong> o OAuth usa a assinatura existente. Se
+você tem ChatGPT Plus, o OpenClaw vai usar o mesmo modelo que você tem
+acesso no chat. Não gasta nada adicional."</p>
+</blockquote>
+<hr />
+<h3 id="key-seção-25-openai-api-key--o-caminho-flexível-1000--1400">🔑
+SEÇÃO 2.5: OpenAI API Key — O caminho flexível (10:00 – 14:00)</h3>
+<p><strong>[Tela: browser em platform.openai.com]</strong></p>
+<blockquote>
+<p>"Se você prefere API Key — seja por controle de gasto, seja porque
+quer usar modelos que não estão no Plus — vamos configurar."</p>
+</blockquote>
+<blockquote>
+<p>"Acesse <strong>platform.openai.com/api-keys</strong> e clica em
+<strong>'Create new secret key'</strong>."</p>
+</blockquote>
+<blockquote>
+<p>"Dá um nome (ex: <code>openclaw</code>), copia a chave. Começa com
+<code>sk-proj-</code> ou <code>sk-</code>. <strong>Copia agora — não
+aparece de novo.</strong>"</p>
+</blockquote>
+<blockquote>
+<p>"Verifica se tem crédito em <strong>Billing → Usage</strong>."</p>
+</blockquote>
+<blockquote>
+<p>"Volta pro terminal:"</p>
+</blockquote>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openclaw</span> config set provider openai</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># O OpenClaw vai pedir a chave</span></span></code></pre></div>
+<blockquote>
+<p>"Cole a chave. Pronto."</p>
+</blockquote>
+<blockquote>
+<p>"<strong>Dica:</strong> API Key dá acesso a todos os modelos da
+OpenAI, incluindo os mais novos. Mas precisa gerenciar créditos."</p>
+<blockquote>
+<p>"Se a sua meta é testar Gemini, Claude, Llama e outras opções sem reescrever seu setup principal, o caminho recomendado é ligar OpenRouter depois. Assim você mantém OpenAI como base do curso e usa OpenRouter só para experimentação."</p>
+</blockquote>
+</blockquote>
+<hr />
+<h3 id="key-seção-3-anthropic-api-key--o-caminho-opcional-1400--1700">🔑
+SEÇÃO 3: Anthropic API Key — O caminho opcional (14:00 – 17:00)</h3>
+<p><strong>[Tela: browser em console.anthropic.com]</strong></p>
+<blockquote>
+<p>"Se você quer comparar com Claude especificamente, a Anthropic continua opcional. A
+Anthropic <strong>não tem OAuth funcional</strong> para a maioria dos
+planos — então é API Key direto. Para testar vários LLMs sem trocar a narrativa principal do curso, prefira OpenRouter; Anthropic direta faz sentido quando Claude for uma escolha consciente."</p>
+</blockquote>
+<blockquote>
+<p>"Acesse <strong>console.anthropic.com</strong> (não claude.ai — é
+outro sistema)."</p>
+</blockquote>
+<blockquote>
+<p>"Se você tem plano Pro ($20/mês): atenção — assinatura Pro e API são
+<strong>sistemas de billing separados</strong>. Você pode ter Pro no
+chat e não ter acesso à API. Verifica em Settings → Billing."</p>
+</blockquote>
+<blockquote>
+<p>"Se não tiver billing, adiciona um cartão ou créditos."</p>
+</blockquote>
+<blockquote>
+<p>"Clica em <strong>API Keys → Create Key</strong>. Copia
+imediatamente."</p>
+</blockquote>
+<blockquote>
+<p>"No terminal:"</p>
+</blockquote>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openclaw</span> auth login <span class="at">--provider</span> anthropic</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Escolhe &quot;API Key&quot; (não OAuth — não funciona pra maioria)</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Cole a chave</span></span></code></pre></div>
+<blockquote>
+<p>"<strong>Resumo rápido:</strong> ChatGPT OAuth = mais simples.
+Anthropic API Key = mais trabalho mas acesso ao Claude."</p>
+</blockquote>
+<hr />
+<h3
+id="white_check_mark-seção-4-verificando-tudo-com-openclaw-status-1700--1900">✅
+SEÇÃO 4: Verificando tudo com <code>openclaw status</code> (17:00 –
+19:00)</h3>
+<p><strong>[Tela: Terminal]</strong></p>
+<blockquote>
+<p>"Pra confirmar que tá tudo certo:"</p>
+</blockquote>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openclaw</span> status</span></code></pre></div>
+<blockquote>
+<p>"Saída esperada:"</p>
+</blockquote>
+<pre><code>✅ OpenClaw Status
+─────────────────────────────
+Provider: OpenAI (OAuth)     ✅ Connected
+Provider: Anthropic (API Key) ✅ Connected
+─────────────────────────────
+All providers configured ✓</code></pre>
+<blockquote>
+<p>"Se aparecer Connected — perfeito! Próxima seção pra
+troubleshootings."</p>
+</blockquote>
+<hr />
+<h3 id="wrench-seção-5-erros-comuns-e-como-resolver-1900--2200">🔧 SEÇÃO
+5: Erros Comuns e Como Resolver (19:00 – 22:00)</h3>
+<p><strong>[Tela: Slides com erros]</strong></p>
+<p><strong>[Erro 1]</strong></p>
+<blockquote>
+<p>"<strong>'OAuth access denied' ou 'Authorization failed'</strong> — o
+login OAuth foi cancelado ou a conta não tem permissão. Tenta de novo:
+<code>openclaw auth login --provider openai</code>. Verifica se aceitou
+todos os termos."</p>
+</blockquote>
+<p><strong>[Erro 2]</strong></p>
+<blockquote>
+<p>"<strong>'Invalid API Key'</strong> — a chave tá errada, expirou ou
+foi revogada. Vai no console do provider, cria uma nova."</p>
+</blockquote>
+<p><strong>[Erro 3]</strong></p>
+<blockquote>
+<p>"<strong>'HTTP 402 Payment Required'</strong> — sem billing.
+Anthropic: console.anthropic.com → Billing. OpenAI API:
+platform.openai.com → Billing → créditos."</p>
+</blockquote>
+<p><strong>[Erro 4]</strong></p>
+<blockquote>
+<p>"<strong>'Insufficient credits'</strong> — OpenAI API sem créditos.
+Adiciona em platform.openai.com → Billing."</p>
+</blockquote>
+<p><strong>[Erro 5]</strong></p>
+<blockquote>
+<p>"<strong>Rate limit (HTTP 429)</strong> — limite temporário do
+provider. Espera 1-5 minutos. Considere modelos mais econômicos
+(GPT-4o-mini) se acontecer muito."</p>
+</blockquote>
+<p><strong>[Erro 6]</strong></p>
+<blockquote>
+<p>"<strong>'model_not_available'</strong> — modelo não disponível no
+seu plano. Tenta com <code>gpt-4o-mini</code> ou
+<code>gpt-4o</code>."</p>
+</blockquote>
+<hr />
+<h3 id="dart-encerramento-2200--2300">🎯 ENCERRAMENTO (22:00 –
+23:00)</h3>
+<blockquote>
+<p>"Resumo da aula: o caminho mais simples é ChatGPT/OpenAI via OAuth — 1 clique, usa sua assinatura existente. OpenAI API Key entra quando você quer mais controle. Configuramos com <code>openclaw auth login</code>, verificamos com <code>openclaw status</code>."</p>
+</blockquote>
+<blockquote>
+<p>"Pra testar outros LLMs, o caminho recomendado do curso é OpenRouter como camada de experimentação. Anthropic direta continua opcional, não o fallback principal."</p>
+</blockquote>
+<blockquote>
+<p>"Próxima aula: a gente começa a usar de verdade!"</p>
+</blockquote>
+<hr />
+<h2 id="hammer_and_wrench-passo-a-passo-técnico-detalhado">🛠️ Passo a
+Passo Técnico Detalhado</h2>
+<h3 id="1-chatgpt-oauth-recomendado">1. ChatGPT OAuth (Recomendado)</h3>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Passo 1: No terminal</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">openclaw</span> auth login <span class="at">--provider</span> openai</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Passo 2: O navegador abre — faz login no ChatGPT</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Aceita a autorização</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Passo 3: Confirmação no terminal</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># ✅ OAuth completo</span></span></code></pre></div>
+<h3 id="2-openai-api-key-fallback">2. OpenAI API Key (Fallback)</h3>
+<ol type="1">
+<li>Acesse <a
+href="https://platform.openai.com/api-keys">platform.openai.com/api-keys</a></li>
+<li>Clique em <strong>"Create new secret key"</strong></li>
+<li>Nome: <code>openclaw</code></li>
+<li><strong>COPIE A CHAVE</strong> — não aparece de novo</li>
+<li>Verifique créditos em <strong>Billing → Usage</strong></li>
+</ol>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openclaw</span> config set provider openai</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Cole a chave quando solicitado</span></span></code></pre></div>
+<h3 id="3-openrouter-para-testar-outros-llms-recomendado-para-experimentação">3. OpenRouter para testar outros LLMs (Recomendado para experimentação)</h3>
+<ol type="1">
+<li>Acesse <a href="https://openrouter.ai">openrouter.ai</a></li>
+<li>Crie sua conta e gere uma API key</li>
+<li>Use essa chave quando quiser testar outros modelos mantendo OpenAI como base do curso</li>
+<li>Trate OpenRouter como camada de experimentação, não como substituição obrigatória do setup inicial</li>
+</ol>
+<h3 id="4-anthropic-api-key-opcional">4. Anthropic API Key
+(Opcional)</h3>
+<ol type="1">
+<li>Acesse <a
+href="https://console.anthropic.com">console.anthropic.com</a></li>
+<li>Verifique billing em <strong>Settings → Billing</strong></li>
+<li><strong>API Keys → Create Key</strong></li>
+<li><strong>COPIE A CHAVE</strong> — não aparece de novo</li>
+<li>Configure no terminal:</li>
+</ol>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openclaw</span> auth login <span class="at">--provider</span> anthropic</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Escolha API Key (não OAuth)</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Cole a chave</span></span></code></pre></div>
+<h3 id="5-verificar">5. Verificar</h3>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openclaw</span> status</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Saída: All providers configured ✅</span></span></code></pre></div>
+<h3 id="5-onde-as-credenciais-são-armazenadas">6. Onde as Credenciais
+são Armazenadas</h3>
+<table>
+<thead>
+<tr class="header">
+<th>SO</th>
+<th>Caminho</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Linux / macOS</td>
+<td><code>~/.openclaw/config.json</code></td>
+</tr>
+<tr class="even">
+<td>Windows</td>
+<td><code>C:\Users\&lt;SeuNome&gt;\.openclaw\config.json</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>🔒 <strong>Segurança:</strong> Esse arquivo nunca vai pro git.
+<strong>Nunca commite esse arquivo.</strong></p>
+</blockquote>
+<hr />
+<h2 id="rotating_light-tabela-de-erros-comuns--solução">🚨 Tabela de
+Erros Comuns + Solução</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Erro</th>
+<th>Causa</th>
+<th>Solução</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>OAuth access denied</code></td>
+<td>Login OAuth cancelado</td>
+<td><code>openclaw auth login --provider openai</code> de novo</td>
+</tr>
+<tr class="even">
+<td><code>Invalid API Key</code></td>
+<td>Chave errada/expirada</td>
+<td>Recriar chave no console do provider</td>
+</tr>
+<tr class="odd">
+<td><code>HTTP 402 Payment Required</code></td>
+<td>Sem billing ativo</td>
+<td>Adicionar cartão/créditos no provider</td>
+</tr>
+<tr class="even">
+<td><code>Insufficient credits</code></td>
+<td>OpenAI sem créditos</td>
+<td>platform.openai.com → Billing → créditos</td>
+</tr>
+<tr class="odd">
+<td><code>HTTP 429 Too Many Requests</code></td>
+<td>Rate limit temporário</td>
+<td>Esperar 1-5 min. Considerar modelo menor</td>
+</tr>
+<tr class="even">
+<td><code>model_not_available</code></td>
+<td>Modelo indisponível no plano</td>
+<td>Trocar para <code>gpt-4o-mini</code></td>
+</tr>
+<tr class="odd">
+<td>Chave funciona mas agente não responde</td>
+<td><code>tools.profile = messaging</code></td>
+<td><code>openclaw config set tools.profile full</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="white_check_mark-checklist-final-do-aluno">✅ Checklist Final do
+Aluno</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />ChatGPT OAuth configurado
+(<code>openclaw auth login --provider openai</code>) —
+<strong>recomendado</strong></label></li>
+<li><label><input type="checkbox" />(Opcional) OpenAI API Key
+configurada</label></li>
+<li><label><input type="checkbox" />(Opcional) Anthropic API Key
+configurada</label></li>
+<li><label><input type="checkbox" /><code>openclaw status</code>
+mostrando Connected</label></li>
+<li><label><input type="checkbox" />Primeiros testes realizados com
+sucesso</label></li>
+<li><label><input type="checkbox" /><code>~/.openclaw/config.json</code>
+não está no git</label></li>
+</ul>
+<hr />
+<h2 id="question-dúvidas-frequentes">❓ Dúvidas Frequentes</h2>
+<p><strong>1. Qual provider eu preciso configurar?</strong></p>
+<blockquote>
+<p>Só um é suficiente. <strong>ChatGPT/OpenAI via OAuth é o mais simples</strong> — usa sua assinatura existente. Se depois quiser testar outros modelos, adicione OpenRouter como etapa extra. Anthropic direta fica opcional.</p>
+</blockquote>
+<p><strong>2. OAuth e API Key — qual a diferença de custo?</strong></p>
+<blockquote>
+<p>OAuth usa sua assinatura existente (Plus R<span
+class="math inline">99/<em>m</em><em>ê</em><em>s</em><em>o</em><em>u</em><em>P</em><em>r</em><em>o</em>).<em>N</em><em>ã</em><em>o</em><em>g</em><em>a</em><em>s</em><em>t</em><em>a</em><em>m</em><em>a</em><em>i</em><em>s</em>.<em>A</em><em>P</em><em>I</em><em>K</em><em>e</em><em>y</em><em>c</em><em>o</em><em>b</em><em>r</em><em>a</em><em>p</em><em>o</em><em>r</em><em>u</em><em>s</em><em>o</em><em>r</em><em>e</em><em>a</em><em>l</em>( </span>5-15/mês
+com uso moderado).</p>
+</blockquote>
+<p><strong>3. Posso usar os dois (ChatGPT + Claude)?</strong></p>
+<blockquote>
+<p>Sim! Configure os dois providers. O OpenClaw pode usar os dois. Você
+escolhe qual usar por padrão.</p>
+</blockquote>
+<p><strong>4. Minha assinatura Pro da Anthropic funciona pro OAuth do
+OpenClaw?</strong></p>
+<blockquote>
+<p>Não. A Anthropic bloqueou OAuth para planos Pro. O que funciona é API
+Key direta. Por isso o ChatGPT/OpenAI OAuth continua sendo o caminho mais simples, e OpenRouter vira a opção mais prática para experimentação multi-modelo.</p>
+</blockquote>
+<p><strong>5. Como trocar o provider padrão depois?</strong></p>
+<blockquote>
+<p><code>openclaw config set model openai/gpt-5.4</code> (padrão do curso), ou troque temporariamente por outro modelo só quando estiver testando via OpenRouter ou Anthropic opcional.</p>
+</blockquote>
+<p><strong>6. O OpenClaw almacena minhas chaves na nuvem?</strong></p>
+<blockquote>
+<p>Não. Chaves ficam em <code>~/.openclaw/config.json</code> —
+localmente. O OpenClaw não envia credenciais pra servidores
+externos.</p>
+</blockquote>
+</body>
+</html>

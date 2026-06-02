@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fallback entre LLMs — OpenClaw</title>
+  <style>
+    :root {
+      --bg: #0a0a12;
+      --surface: #12121e;
+      --surface2: #1a1a2e;
+      --border: #2a2a42;
+      --accent: #818cf8;
+      --accent2: #34d399;
+      --warn: #f59e0b;
+      --danger: #f87171;
+      --text: #e2e8f0;
+      --muted: #8892a4;
+      --code-bg: #0d0d1a;
+      --prompt-bg: #0a1f0d;
+      --prompt-border: #34d399;
+      --provider-anthropic: #d97706;
+      --provider-google: #4285f4;
+      --provider-openai: #10a37f;
+      --provider-opencode: #818cf8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 880px; margin: 0 auto; }
+
+    /* HEADER */
+    header {
+      display: flex; align-items: center; gap: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem; margin-bottom: 2rem;
+    }
+    .logo {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, #818cf8, #34d399);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.7rem;
+    }
+    header h1 { font-size: 1.5rem; font-weight: 700; }
+    header p { color: var(--muted); font-size: 0.9rem; margin-top: 2px; }
+    .badge {
+      display: inline-block; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: 999px;
+      padding: 2px 10px; font-size: 0.75rem; color: var(--accent2);
+      font-weight: 600; vertical-align: middle; margin-left: 0.5rem;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, rgba(129,140,248,0.08), rgba(52,211,153,0.05));
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.75rem; margin-bottom: 2rem; text-align: center;
+    }
+    .hero h2 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .hero p { color: var(--muted); max-width: 560px; margin: 0 auto 1.5rem; font-size: 0.92rem; }
+    .flow { display: flex; align-items: center; justify-content: center; gap: 0.4rem; flex-wrap: wrap; }
+    .flow-step {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.45rem 0.9rem; font-size: 0.82rem; font-weight: 600;
+    }
+    .flow-step.ok { border-color: rgba(52,211,153,0.4); color: var(--accent2); }
+    .flow-step.warn { border-color: rgba(245,158,11,0.4); color: var(--warn); }
+    .flow-step.danger { border-color: rgba(248,113,113,0.4); color: var(--danger); }
+    .flow-arrow { color: var(--muted); }
+
+    /* SECTION */
+    .section {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    h2 {
+      font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    h2 .num {
+      background: var(--accent); color: #fff; border-radius: 50%;
+      width: 24px; height: 24px; display: flex; align-items: center;
+      justify-content: center; font-size: 0.72rem; font-weight: 800; flex-shrink: 0;
+    }
+    h3 {
+      font-size: 0.92rem; font-weight: 700; margin: 1.25rem 0 0.6rem;
+      padding-bottom: 0.4rem; border-bottom: 1px solid var(--border);
+    }
+    h3:first-child { margin-top: 0; }
+
+    /* CALLOUT */
+    .callout {
+      border-left: 3px solid var(--accent); background: rgba(129,140,248,0.07);
+      padding: 0.8rem 1rem; border-radius: 0 8px 8px 0; margin: 0.75rem 0; font-size: 0.9rem;
+    }
+    .callout.ok     { border-color: var(--accent2); background: rgba(52,211,153,0.07); }
+    .callout.warn   { border-color: var(--warn);    background: rgba(245,158,11,0.07); }
+    .callout.danger { border-color: var(--danger);  background: rgba(248,113,113,0.07); }
+
+    /* PROMPT */
+    .prompt-block {
+      background: var(--prompt-bg); border: 1px solid var(--prompt-border);
+      border-radius: 10px; padding: 0.9rem 1rem; margin: 0.6rem 0;
+    }
+    .prompt-label {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--accent2); margin-bottom: 0.4rem;
+    }
+    .prompt-text { font-size: 0.92rem; color: #d1fae5; line-height: 1.65; }
+    .prompt-text em { color: #6ee7b7; font-style: normal; font-weight: 600; }
+
+    /* CODE */
+    pre, code {
+      font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+      font-size: 0.82rem;
+    }
+    pre {
+      background: var(--code-bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem 1.2rem; overflow-x: auto; margin: 0.75rem 0;
+    }
+    code {
+      background: var(--surface2); padding: 1px 6px; border-radius: 4px;
+      font-size: 0.82rem; color: #a5f3fc;
+    }
+    pre code { background: none; padding: 0; color: inherit; }
+    .cm { color: #4b5568; }
+    .ck { color: #93c5fd; }
+    .ca { color: #86efac; }
+    .cs { color: #fde68a; }
+    .cn { color: #f9a8d4; }
+    .cx { color: #fca5a5; }
+
+    /* PROVIDER TABLE */
+    .provider-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 0.75rem; margin: 0.75rem 0;
+    }
+    .provider-card {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.9rem 1rem;
+    }
+    .provider-card-header {
+      display: flex; align-items: center; gap: 0.5rem;
+      margin-bottom: 0.6rem; font-weight: 700; font-size: 0.9rem;
+    }
+    .provider-dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    }
+    .provider-card ul { list-style: none; }
+    .provider-card li {
+      font-size: 0.8rem; padding: 0.2rem 0;
+      border-bottom: 1px solid var(--border); color: var(--muted);
+    }
+    .provider-card li:last-child { border-bottom: none; }
+    .provider-card li code { font-size: 0.77rem; color: #a5f3fc; }
+    .provider-card .model-name { color: var(--text); font-weight: 600; }
+
+    /* TABLE */
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 0.75rem 0; }
+    th {
+      text-align: left; padding: 0.5rem 0.75rem;
+      background: var(--surface2); color: var(--muted);
+      font-weight: 600; border-bottom: 1px solid var(--border);
+    }
+    td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+
+    /* DOCTOR BOX */
+    .doctor-box {
+      background: rgba(248,113,113,0.05); border: 1px solid rgba(248,113,113,0.25);
+      border-radius: 12px; padding: 1.2rem; margin: 0.75rem 0;
+    }
+    .doctor-box-title {
+      font-weight: 700; color: var(--danger); margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem;
+    }
+
+    .pill {
+      display: inline-block; padding: 2px 8px; border-radius: 999px;
+      font-size: 0.72rem; font-weight: 600;
+    }
+    .pill-purple { background: rgba(129,140,248,0.15); color: var(--accent); }
+    .pill-green  { background: rgba(52,211,153,0.12);  color: var(--accent2); }
+    .pill-yellow { background: rgba(245,158,11,0.12);  color: var(--warn); }
+    .pill-red    { background: rgba(248,113,113,0.12); color: var(--danger); }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+    .channel-tag {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 2px 8px; font-size: 0.78rem; margin: 2px;
+    }
+
+    a.link { color: var(--accent); text-decoration: none; }
+    a.link:hover { text-decoration: underline; }
+
+    footer {
+      text-align: center; color: var(--muted); font-size: 0.8rem;
+      margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">🔀</div>
+    <div>
+      <h1>Fallback entre LLMs <span class="badge">OpenClaw</span></h1>
+      <p>Nunca mais ficar sem agente — configure alternativas e troque modelos na hora</p>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero">
+    <h2>Como funciona o fallback</h2>
+    <p>
+      Quando os tokens acabam ou a API trava, o OpenClaw tenta automaticamente o próximo modelo configurado.
+      Você pode trocar na hora pelo chat, sem precisar tocar no servidor.
+    </p>
+    <div class="flow">
+      <div class="flow-step ok">✅ Anthropic<br><small>modelo primário</small></div>
+      <div class="flow-arrow">→ falha →</div>
+      <div class="flow-step warn">⚡ Google Gemini<br><small>fallback 1</small></div>
+      <div class="flow-arrow">→ falha →</div>
+      <div class="flow-step warn">🔷 OpenAI<br><small>fallback 2</small></div>
+      <div class="flow-arrow">→ falha →</div>
+      <div class="flow-step danger">🚨 openclaw doctor<br><small>diagnóstico</small></div>
+    </div>
+  </div>
+
+  <!-- ===== SEÇÃO 1: VIA AGENTE ===== -->
+  <div class="section">
+    <h2><span class="num">1</span>🌟 Trocar modelo via agente (modo principal)</h2>
+
+    <div class="callout ok">
+      Não precisa de terminal. Basta mandar uma mensagem pro agente pelo
+      <span class="channel-tag">📱 Telegram</span>
+      <span class="channel-tag">💬 WhatsApp</span>
+      <span class="channel-tag">🎮 Discord</span>
+    </div>
+
+    <h3>Ver qual modelo está ativo</h3>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt</div>
+      <div class="prompt-text">/model</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt</div>
+      <div class="prompt-text">/model status</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt</div>
+      <div class="prompt-text">Qual modelo você está usando agora? Tem créditos disponíveis?</div>
+    </div>
+
+    <h3>Listar modelos disponíveis</h3>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt</div>
+      <div class="prompt-text">/model list</div>
+    </div>
+
+    <h3>Trocar de modelo na hora</h3>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — trocar para Gemini</div>
+      <div class="prompt-text">/model <em>google/gemini-3.1-pro-preview</em></div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — trocar para OpenAI</div>
+      <div class="prompt-text">/model <em>openai/gpt-5.1-codex</em></div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — trocar para Claude Haiku (mais barato)</div>
+      <div class="prompt-text">/model <em>anthropic/claude-haiku-4-5</em></div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — trocar por alias</div>
+      <div class="prompt-text">/model <em>Gemini</em></div>
+    </div>
+
+    <h3>Meus tokens acabaram — o que fazer?</h3>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — trocar pra Gemini (gratuito via Gemini CLI)</div>
+      <div class="prompt-text">/model google-gemini-cli/gemini-2.5-pro</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — pedir diagnóstico</div>
+      <div class="prompt-text">Meus créditos Anthropic acabaram. Me ajuda a configurar o Gemini como fallback e trocar pra ele agora</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — voltar ao modelo original</div>
+      <div class="prompt-text">Volta pro Claude Sonnet como modelo principal</div>
+    </div>
+
+    <h3>Configurar fallback automático via chat</h3>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt</div>
+      <div class="prompt-text">
+        Configura o Gemini como fallback automático pra quando o Anthropic falhar.
+        Primário: <em>anthropic/claude-sonnet-4-6</em>. Fallback: <em>google/gemini-3.1-pro-preview</em>.
+      </div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — fallback em cadeia</div>
+      <div class="prompt-text">
+        Quero uma cadeia de fallback: primeiro Claude Sonnet, depois Gemini Pro, depois GPT como último recurso.
+        Me ajuda a configurar isso no openclaw.json.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== SEÇÃO 2: MODELOS DISPONÍVEIS ===== -->
+  <div class="section">
+    <h2><span class="num">2</span>🗂️ Modelos disponíveis (nomes oficiais)</h2>
+
+    <div class="callout">
+      Os IDs abaixo são os nomes <strong>exatos</strong> conforme a documentação oficial do OpenClaw.
+      Use esses IDs no <code>openclaw.json</code>, no terminal ou nos prompts.
+    </div>
+
+    <div class="provider-grid">
+
+      <!-- ANTHROPIC -->
+      <div class="provider-card">
+        <div class="provider-card-header">
+          <div class="provider-dot" style="background:#d97706;"></div>
+          Anthropic
+        </div>
+        <ul>
+          <li><span class="model-name">Claude Opus</span><br><code>anthropic/claude-opus-4-6</code></li>
+          <li><span class="model-name">Claude Sonnet</span><br><code>anthropic/claude-sonnet-4-6</code></li>
+          <li><span class="model-name">Claude Sonnet (anterior)</span><br><code>anthropic/claude-sonnet-4-5</code></li>
+          <li><span class="model-name">Claude Haiku</span><br><code>anthropic/claude-haiku-4-5</code></li>
+        </ul>
+      </div>
+
+      <!-- GOOGLE -->
+      <div class="provider-card">
+        <div class="provider-card-header">
+          <div class="provider-dot" style="background:#4285f4;"></div>
+          Google (API Key)
+        </div>
+        <ul>
+          <li><span class="model-name">Gemini 3.1 Pro</span><br><code>google/gemini-3.1-pro-preview</code></li>
+          <li><span class="model-name">Gemini 2.5 Pro</span><br><code>google/gemini-2.5-pro-preview</code></li>
+          <li><span class="model-name">Gemini Flash 2.0</span><br><code>google/gemini-flash-2.0</code></li>
+          <li><span class="model-name">Gemini 3 Pro</span><br><code>google/gemini-3-pro-preview</code></li>
+        </ul>
+      </div>
+
+      <!-- GOOGLE GEMINI CLI (GRÁTIS) -->
+      <div class="provider-card" style="border-color: rgba(66,133,244,0.4);">
+        <div class="provider-card-header">
+          <div class="provider-dot" style="background:#4285f4;"></div>
+          Google Gemini CLI <span class="pill pill-green" style="font-size:.65rem;">grátis</span>
+        </div>
+        <ul>
+          <li><span class="model-name">Gemini 2.5 Pro</span><br><code>google-gemini-cli/gemini-2.5-pro</code></li>
+          <li style="color:var(--muted); font-size:.78rem;">Auth: plugin OAuth (sem API key)</li>
+          <li style="color:var(--muted); font-size:.78rem;">Ativar: <code>openclaw plugins enable google-gemini-cli-auth</code></li>
+          <li style="color:#f59e0b; font-size:.78rem;">⚠️ Use conta não-crítica (não oficial)</li>
+        </ul>
+      </div>
+
+      <!-- OPENAI -->
+      <div class="provider-card">
+        <div class="provider-card-header">
+          <div class="provider-dot" style="background:#10a37f;"></div>
+          OpenAI
+        </div>
+        <ul>
+          <li><span class="model-name">GPT-5.1 Codex</span><br><code>openai/gpt-5.1-codex</code></li>
+          <li><span class="model-name">GPT-5.2</span><br><code>openai/gpt-5.2</code></li>
+        </ul>
+      </div>
+
+      <!-- OPENAI CODEX (OAUTH) -->
+      <div class="provider-card">
+        <div class="provider-card-header">
+          <div class="provider-dot" style="background:#10a37f;"></div>
+          OpenAI Codex <span class="pill pill-green" style="font-size:.65rem;">OAuth</span>
+        </div>
+        <ul>
+          <li><span class="model-name">GPT-5.3 Codex</span><br><code>openai-codex/gpt-5.3-codex</code></li>
+          <li style="color:var(--muted); font-size:.78rem;">Auth: OAuth ChatGPT (sem API key)</li>
+          <li style="color:var(--muted); font-size:.78rem;">Suportado oficialmente pelo OpenAI</li>
+        </ul>
+      </div>
+
+      <!-- OPENCODE ZEN -->
+      <div class="provider-card">
+        <div class="provider-card-header">
+          <div class="provider-dot" style="background:#818cf8;"></div>
+          OpenCode Zen
+        </div>
+        <ul>
+          <li><span class="model-name">Claude Opus via OpenCode</span><br><code>opencode/claude-opus-4-6</code></li>
+          <li style="color:var(--muted); font-size:.78rem;">Auth: <code>OPENCODE_API_KEY</code></li>
+        </ul>
+      </div>
+
+      <!-- Z.AI -->
+      <div class="provider-card">
+        <div class="provider-card-header">
+          <div class="provider-dot" style="background:#a78bfa;"></div>
+          Z.AI (GLM)
+        </div>
+        <ul>
+          <li><span class="model-name">GLM-5</span><br><code>zai/glm-5</code></li>
+          <li style="color:var(--muted); font-size:.78rem;">Auth: <code>ZAI_API_KEY</code></li>
+        </ul>
+      </div>
+
+      <!-- MINIMAX -->
+      <div class="provider-card">
+        <div class="provider-card-header">
+          <div class="provider-dot" style="background:#6ee7b7;"></div>
+          MiniMax
+        </div>
+        <ul>
+          <li><span class="model-name">MiniMax-01</span><br><code>minimax/minimax-01</code></li>
+          <li style="color:var(--muted); font-size:.78rem;">1M tokens de contexto, custo mínimo</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <h3>Modelos recomendados por caso de uso</h3>
+    <table>
+      <thead>
+        <tr><th>Uso</th><th>Modelo recomendado</th><th>Por quê</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Chat principal / dia a dia</td>
+          <td><code>anthropic/claude-sonnet-4-6</code></td>
+          <td>Melhor custo-benefício geral</td>
+        </tr>
+        <tr>
+          <td>Tarefas complexas / raciocínio</td>
+          <td><code>anthropic/claude-opus-4-6</code></td>
+          <td>Mais potente, maior contexto</td>
+        </tr>
+        <tr>
+          <td>Crons e automações</td>
+          <td><code>anthropic/claude-haiku-4-5</code></td>
+          <td>~95% mais barato, suficiente</td>
+        </tr>
+        <tr>
+          <td>Fallback padrão</td>
+          <td><code>google/gemini-3.1-pro-preview</code></td>
+          <td>Reasoning avançado, boa alternativa</td>
+        </tr>
+        <tr>
+          <td>Sem dinheiro / grátis</td>
+          <td><code>google-gemini-cli/gemini-2.5-pro</code></td>
+          <td>OAuth sem API key (conta Google)</td>
+        </tr>
+        <tr>
+          <td>Contexto longo (1M tokens)</td>
+          <td><code>google/gemini-2.5-pro-preview</code></td>
+          <td>Melhor pra arquivos enormes</td>
+        </tr>
+        <tr>
+          <td>Custo mínimo + volume</td>
+          <td><code>minimax/minimax-01</code></td>
+          <td>1M tokens, preço extremamente baixo</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== SEÇÃO 3: CONFIG NO OPENCLAW.JSON ===== -->
+  <div class="section">
+    <h2><span class="num">3</span>⚙️ Configurar fallback no openclaw.json</h2>
+
+    <div class="callout">
+      Essa configuração garante que, se um modelo falhar, o OpenClaw tenta automaticamente o próximo —
+      sem você precisar fazer nada.
+    </div>
+
+    <h3>Configuração básica com fallback</h3>
+    <pre><span class="cm">// ~/.openclaw/openclaw.json</span>
+{
+  <span class="ck">agents</span>: {
+    <span class="ck">defaults</span>: {
+      <span class="ck">model</span>: {
+        <span class="cs">primary</span>: <span class="ca">"anthropic/claude-sonnet-4-6"</span>,
+        <span class="cs">fallbacks</span>: [
+          <span class="ca">"google/gemini-3.1-pro-preview"</span>,
+          <span class="ca">"openai/gpt-5.1-codex"</span>
+        ]
+      }
+    }
+  }
+}</pre>
+
+    <h3>Com aliases (nomes amigáveis) e allowlist</h3>
+    <pre>{
+  <span class="ck">agents</span>: {
+    <span class="ck">defaults</span>: {
+      <span class="ck">model</span>: {
+        <span class="cs">primary</span>: <span class="ca">"anthropic/claude-sonnet-4-6"</span>,
+        <span class="cs">fallbacks</span>: [
+          <span class="ca">"google/gemini-3.1-pro-preview"</span>,
+          <span class="ca">"openai/gpt-5.1-codex"</span>
+        ]
+      },
+      <span class="ck">models</span>: {
+        <span class="cs">"anthropic/claude-sonnet-4-6"</span>: { <span class="cs">alias</span>: <span class="ca">"Sonnet"</span> },
+        <span class="cs">"anthropic/claude-opus-4-6"</span>:   { <span class="cs">alias</span>: <span class="ca">"Opus"</span> },
+        <span class="cs">"anthropic/claude-haiku-4-5"</span>:   { <span class="cs">alias</span>: <span class="ca">"Haiku"</span> },
+        <span class="cs">"google/gemini-3.1-pro-preview"</span>: { <span class="cs">alias</span>: <span class="ca">"Gemini"</span> },
+        <span class="cs">"openai/gpt-5.1-codex"</span>:          { <span class="cs">alias</span>: <span class="ca">"GPT"</span> }
+      }
+    }
+  }
+}</pre>
+
+    <h3>Comandos CLI para gerenciar fallbacks</h3>
+    <pre><span class="cm"># Ver modelo atual e fallbacks configurados</span>
+<span class="ck">openclaw</span> <span class="ca">models status</span>
+
+<span class="cm"># Listar todos os modelos disponíveis</span>
+<span class="ck">openclaw</span> <span class="ca">models list</span>
+
+<span class="cm"># Trocar modelo primário</span>
+<span class="ck">openclaw</span> <span class="ca">models set</span> anthropic/claude-sonnet-4-6
+
+<span class="cm"># Adicionar fallback</span>
+<span class="ck">openclaw</span> <span class="ca">models fallbacks add</span> google/gemini-3.1-pro-preview
+
+<span class="cm"># Listar fallbacks</span>
+<span class="ck">openclaw</span> <span class="ca">models fallbacks list</span>
+
+<span class="cm"># Remover fallback</span>
+<span class="ck">openclaw</span> <span class="ca">models fallbacks remove</span> openai/gpt-5.1-codex
+
+<span class="cm"># Limpar todos os fallbacks</span>
+<span class="ck">openclaw</span> <span class="ca">models fallbacks clear</span>
+
+<span class="cm"># Adicionar alias (nome amigável)</span>
+<span class="ck">openclaw</span> <span class="ca">models aliases add</span> Gemini google/gemini-3.1-pro-preview</pre>
+
+    <h3>Configurar via config set (sem editar arquivo)</h3>
+    <pre><span class="cm"># Definir modelo primário pela linha de comando</span>
+<span class="ck">openclaw</span> <span class="ca">config set</span> <span class="cn">agents.defaults.model.primary</span> <span class="cs">"anthropic/claude-sonnet-4-6"</span>
+
+<span class="cm"># Ver a config ativa</span>
+<span class="ck">openclaw</span> <span class="ca">config get</span> agents.defaults.model</pre>
+  </div>
+
+  <!-- ===== SEÇÃO 4: ADICIONAR CREDENCIAIS ===== -->
+  <div class="section">
+    <h2><span class="num">4</span>🔑 Adicionar credenciais de novos provedores</h2>
+
+    <div class="two-col">
+      <div>
+        <h3>Anthropic (API key)</h3>
+        <pre><span class="ck">openclaw</span> <span class="ca">onboard</span> --auth-choice anthropic-api-key</pre>
+        <p style="font-size:.85rem; color:var(--muted);">Ou cole direto:</p>
+        <pre><span class="ck">openclaw</span> <span class="ca">models auth paste-token</span> \
+  --provider anthropic</pre>
+      </div>
+      <div>
+        <h3>Google Gemini (API key)</h3>
+        <pre><span class="ck">openclaw</span> <span class="ca">onboard</span> --auth-choice gemini-api-key</pre>
+        <p style="font-size:.85rem; color:var(--muted);">Ou via variável de ambiente:</p>
+        <pre><span class="cn">export</span> GEMINI_API_KEY=<span class="cs">sua_chave</span></pre>
+      </div>
+    </div>
+
+    <div class="two-col" style="margin-top:.75rem;">
+      <div>
+        <h3>OpenAI (API key)</h3>
+        <pre><span class="ck">openclaw</span> <span class="ca">onboard</span> --auth-choice openai-api-key</pre>
+      </div>
+      <div>
+        <h3>Gemini CLI (grátis, OAuth)</h3>
+        <pre><span class="ck">openclaw</span> <span class="ca">plugins enable</span> google-gemini-cli-auth
+<span class="ck">openclaw</span> <span class="ca">models auth login</span> \
+  --provider google-gemini-cli \
+  --set-default</pre>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      ⚠️ O Gemini CLI OAuth é uma integração <strong>não oficial</strong>. Use uma conta Google não crítica.
+      O Google pode restringir contas que utilizam clientes de terceiros.
+    </div>
+
+    <h3>Guardar credenciais via prompt</h3>
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt</div>
+      <div class="prompt-text">Guarda essa API key do Google Gemini no 1Password com o nome <em>"Gemini API Key - OpenClaw"</em> e já configura ela como fallback: <em>AIzaSy...</em></div>
+    </div>
+  </div>
+
+  <!-- ===== SEÇÃO 5: OPENCLAW DOCTOR ===== -->
+  <div class="section">
+    <h2><span class="num">5</span>🩺 openclaw doctor — diagnóstico e correção</h2>
+
+    <div class="callout danger">
+      <strong>Sintomas de que você precisa do doctor:</strong> agente não responde, erro de modelo, gateway offline,
+      configuração corrompida após trocar LLM.
+    </div>
+
+    <h3>Via agente (mais fácil)</h3>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — diagnóstico básico</div>
+      <div class="prompt-text">Roda o openclaw doctor e me fala o que encontrou</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — com correção automática</div>
+      <div class="prompt-text">Roda <em>openclaw doctor --fix</em> e corrige os problemas encontrados</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">💬 Prompt — varredura profunda</div>
+      <div class="prompt-text">Faz uma varredura completa do sistema com <em>openclaw doctor --deep --fix</em></div>
+    </div>
+
+    <h3>Via terminal</h3>
+
+    <div class="doctor-box">
+      <div class="doctor-box-title">🩺 Comandos do Doctor</div>
+      <pre><span class="cm"># Verificação básica de saúde</span>
+<span class="ck">openclaw</span> <span class="ca">doctor</span>
+
+<span class="cm"># Verificar E aplicar correções recomendadas</span>
+<span class="ck">openclaw</span> <span class="ca">doctor --fix</span>
+
+<span class="cm"># Varredura profunda do sistema</span>
+<span class="ck">openclaw</span> <span class="ca">doctor --deep</span>
+
+<span class="cm"># Correção profunda sem confirmações (automático)</span>
+<span class="ck">openclaw</span> <span class="ca">doctor --deep --fix --yes</span>
+
+<span class="cm"># Correção forçada (sobrescreve configurações customizadas)</span>
+<span class="ck">openclaw</span> <span class="ca">doctor --fix --force</span>
+
+<span class="cm"># Regenerar gateway token se perdido</span>
+<span class="ck">openclaw</span> <span class="ca">doctor --generate-gateway-token</span>
+
+<span class="cm"># Modo não interativo (pra scripts/automação)</span>
+<span class="ck">openclaw</span> <span class="ca">doctor --fix --non-interactive</span></pre>
+    </div>
+
+    <h3>Quando usar cada comando</h3>
+    <table>
+      <thead>
+        <tr><th>Problema</th><th>Comando</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Agente não responde após trocar LLM</td>
+          <td><code>openclaw doctor --fix</code></td>
+        </tr>
+        <tr>
+          <td>Gateway offline</td>
+          <td><code>openclaw doctor --deep --fix</code></td>
+        </tr>
+        <tr>
+          <td>Config corrompida / inválida</td>
+          <td><code>openclaw doctor --fix --yes</code></td>
+        </tr>
+        <tr>
+          <td>Erro "model not allowed" após mudança</td>
+          <td><code>openclaw doctor --fix</code> + verificar allowlist</td>
+        </tr>
+        <tr>
+          <td>Token do gateway sumiu</td>
+          <td><code>openclaw doctor --generate-gateway-token</code></td>
+        </tr>
+        <tr>
+          <td>Tudo quebrado, quero reset total</td>
+          <td><code>openclaw doctor --deep --fix --force --yes</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Validar a config antes de aplicar</h3>
+    <pre><span class="cm"># Valida o openclaw.json sem reiniciar o gateway</span>
+<span class="ck">openclaw</span> <span class="ca">config validate</span>
+
+<span class="cm"># Ver o caminho do arquivo de config ativo</span>
+<span class="ck">openclaw</span> <span class="ca">config file</span></pre>
+  </div>
+
+  <!-- ===== SEÇÃO 6: FLUXO DE EMERGÊNCIA ===== -->
+  <div class="section">
+    <h2><span class="num">6</span>🚨 Fluxo de emergência: tokens acabaram</h2>
+
+    <div class="callout danger">
+      Se os créditos do Anthropic acabarem e você não tiver outro modelo configurado,
+      o agente para de responder. Siga esse fluxo para resolver via terminal.
+    </div>
+
+    <pre><span class="cm"># Passo 1: Verificar o status atual</span>
+<span class="ck">openclaw</span> <span class="ca">models status</span>
+
+<span class="cm"># Passo 2: Adicionar Gemini como fallback imediato</span>
+<span class="ck">openclaw</span> <span class="ca">models fallbacks add</span> google/gemini-3.1-pro-preview
+
+<span class="cm"># Passo 3: Trocar o primário para Gemini agora</span>
+<span class="ck">openclaw</span> <span class="ca">models set</span> google/gemini-3.1-pro-preview
+
+<span class="cm"># Passo 4: Reiniciar o gateway para aplicar</span>
+<span class="ck">openclaw</span> <span class="ca">gateway restart</span>
+
+<span class="cm"># Passo 5: Verificar se está funcionando</span>
+<span class="ck">openclaw</span> <span class="ca">doctor</span></pre>
+
+    <h3>Opção grátis: Gemini CLI (sem API key)</h3>
+    <pre><span class="cm"># Ativar plugin do Gemini CLI</span>
+<span class="ck">openclaw</span> <span class="ca">plugins enable</span> google-gemini-cli-auth
+
+<span class="cm"># Fazer login com conta Google (abre navegador)</span>
+<span class="ck">openclaw</span> <span class="ca">models auth login</span> --provider google-gemini-cli --set-default
+
+<span class="cm"># Trocar pra Gemini CLI</span>
+<span class="ck">openclaw</span> <span class="ca">models set</span> google-gemini-cli/gemini-2.5-pro
+
+<span class="cm"># Reiniciar</span>
+<span class="ck">openclaw</span> <span class="ca">gateway restart</span></pre>
+
+    <div class="callout ok">
+      💡 Para evitar essa situação: configure fallbacks <strong>antes</strong> de precisar.
+      O OpenClaw trocará automaticamente quando detectar que os créditos acabaram.
+    </div>
+  </div>
+
+  <!-- ===== SEÇÃO 7: REFERÊNCIA RÁPIDA ===== -->
+  <div class="section">
+    <h2><span class="num">7</span>📋 Referência rápida — comandos essenciais</h2>
+
+    <table>
+      <thead>
+        <tr><th>Ação</th><th>Terminal</th><th>Via chat</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Ver modelo ativo</td>
+          <td><code>openclaw models status</code></td>
+          <td><code>/model status</code></td>
+        </tr>
+        <tr>
+          <td>Listar modelos</td>
+          <td><code>openclaw models list</code></td>
+          <td><code>/model list</code></td>
+        </tr>
+        <tr>
+          <td>Trocar modelo</td>
+          <td><code>openclaw models set provider/model</code></td>
+          <td><code>/model provider/model</code></td>
+        </tr>
+        <tr>
+          <td>Add fallback</td>
+          <td><code>openclaw models fallbacks add provider/model</code></td>
+          <td>Peça ao agente em linguagem natural</td>
+        </tr>
+        <tr>
+          <td>Diagnóstico</td>
+          <td><code>openclaw doctor</code></td>
+          <td>Peça ao agente rodar o doctor</td>
+        </tr>
+        <tr>
+          <td>Correção automática</td>
+          <td><code>openclaw doctor --fix</code></td>
+          <td>Peça ao agente rodar com --fix</td>
+        </tr>
+        <tr>
+          <td>Validar config</td>
+          <td><code>openclaw config validate</code></td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Reiniciar gateway</td>
+          <td><code>openclaw gateway restart</code></td>
+          <td>Peça ao agente reiniciar o gateway</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>IDs oficiais — cola rápida</h3>
+    <pre><span class="cm"># Anthropic</span>
+<span class="ca">anthropic/claude-opus-4-6</span>          <span class="cm"># mais poderoso</span>
+<span class="ca">anthropic/claude-sonnet-4-6</span>        <span class="cm"># recomendado dia a dia</span>
+<span class="ca">anthropic/claude-haiku-4-5</span>         <span class="cm"># mais barato</span>
+
+<span class="cm"># Google (API key)</span>
+<span class="ca">google/gemini-3.1-pro-preview</span>      <span class="cm"># fallback principal</span>
+<span class="ca">google/gemini-2.5-pro-preview</span>      <span class="cm"># contexto 1M tokens</span>
+<span class="ca">google/gemini-flash-2.0</span>            <span class="cm"># mais rápido/barato</span>
+
+<span class="cm"># Google grátis (OAuth, sem API key)</span>
+<span class="ca">google-gemini-cli/gemini-2.5-pro</span>   <span class="cm"># emergência sem créditos</span>
+
+<span class="cm"># OpenAI</span>
+<span class="ca">openai/gpt-5.1-codex</span>               <span class="cm"># API key</span>
+<span class="ca">openai-codex/gpt-5.3-codex</span>         <span class="cm"># OAuth ChatGPT</span>
+
+<span class="cm"># Outros</span>
+<span class="ca">opencode/claude-opus-4-6</span>           <span class="cm"># Claude via OpenCode Zen</span>
+<span class="ca">zai/glm-5</span>                          <span class="cm"># Z.AI GLM</span>
+<span class="ca">minimax/minimax-01</span>                  <span class="cm"># custo mínimo, contexto longo</span></pre>
+  </div>
+
+  <footer>
+    Gerado por Amora · <a class="link" href="https://docs.openclaw.ai/concepts/models" target="_blank">docs.openclaw.ai/concepts/models</a>
+    · <a class="link" href="https://docs.openclaw.ai/concepts/model-failover" target="_blank">docs.openclaw.ai/concepts/model-failover</a>
+    · Curso OpenClaw · Março 2026
+  </footer>
+
+</div>
+</body>
+</html>
