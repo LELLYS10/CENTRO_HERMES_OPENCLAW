@@ -1193,15 +1193,17 @@ def selecionar_parcela_juros(actor, escolha):
                     f"Faltam: {op.get('parcelas_pendentes')} parcela(s) pendente(s), contando esta.\n\n"
                     f"Confirma receber só os juros e empurrar a parcela? Responda SIM ou NÃO.")
         if alvo == '2':
+            contrato_atual = (sb_get('contratos', {'select': 'id,capital_atual', 'id': f"eq.{op['contrato_id']}", 'limit': '1'}) or [None])[0] or {}
             pending[actor] = {
                 'tipo': 'parcela_completa',
                 'cliente_nome': op['cliente_nome'], 'responsavel_nome': op['responsavel_nome'], 'contrato_id': op['contrato_id'], 'parcela_id': op['parcela_id'],
                 'numero_parcela': op['numero_parcela'], 'total_parcelas': op.get('total_parcelas'), 'parcelas_pendentes': op.get('parcelas_pendentes'),
                 'capital_parcela': op.get('capital_parcela'), 'juros_parcela': op.get('juros_parcela'), 'total': op.get('total'),
-                'vencimento': op.get('vencimento'), 'capital_atual_antes': None, 'prepared_at': br_now_iso()
+                'vencimento': op.get('vencimento'), 'capital_atual_antes': round2(contrato_atual.get('capital_atual') or 0), 'prepared_at': br_now_iso()
             }
             save_pending(pending)
             return (f"Parcela completa {op['numero_parcela']}/{op.get('total_parcelas')} de {op['cliente_nome']}.\n"
+                    f"Vencimento: {br_date(op.get('vencimento'))}\n"
                     f"Capital: {br_money(op.get('capital_parcela') or 0)}\n"
                     f"Juros: {br_money(op.get('juros_parcela') or 0)}\n"
                     f"Total: {br_money(op.get('total') or 0)}\n"
